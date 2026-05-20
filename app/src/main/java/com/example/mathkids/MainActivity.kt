@@ -1,14 +1,14 @@
 package com.example.mathkids
 
 import android.os.Bundle
-
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.example.mathkids.ui.theme.MathkidsTheme
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.ui.unit.toSize
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,9 +18,8 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxWi
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -34,12 +33,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Star
-
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -47,42 +44,33 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
-
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
+import com.example.mathkids.ui.theme.MathkidsTheme
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -91,14 +79,17 @@ import kotlin.math.sin
 data class Student(
     val id: Int,
     val name: String,
+    val lastName: String,
+    val grade: String,
+    val classroom: String,
+    val pin: String,
     val level: Int,
     val stars: Int,
     val accuracy: Int,
-    val grade: String,
     val streak: Int,
     val weekData: List<Int>,
     val skills: Map<String, Int>,
-    val avatar: String = "🦁"
+    val avatar: String
 )
 
 data class Reward(
@@ -169,14 +160,159 @@ val REWARDS = listOf(
     Reward(9, "Leyenda MathIA", "🏆", 210, "¡Nivel máximo alcanzado!")
 )
 
-val MOCK_STUDENTS = listOf(
-    Student(1, "Ana García", 5, 142, 85, "Excelente", 7, listOf(20, 25, 30, 35, 22, 18, 8), mapOf("Sumas" to 85, "Restas" to 70, "Números" to 90, "Lógica" to 60, "Problemas" to 65)),
-    Student(2, "Carlos López", 4, 98, 72, "Bien", 3, listOf(15, 20, 18, 25, 30, 10, 5), mapOf("Sumas" to 70, "Restas" to 55, "Números" to 75, "Lógica" to 50, "Problemas" to 45)),
-    Student(3, "María Pérez", 6, 201, 92, "Excelente", 14, listOf(30, 35, 40, 38, 28, 20, 12), mapOf("Sumas" to 92, "Restas" to 88, "Números" to 95, "Lógica" to 80, "Problemas" to 78)),
-    Student(4, "Juan Díaz", 3, 54, 58, "Regular", 1, listOf(10, 12, 8, 15, 18, 6, 3), mapOf("Sumas" to 60, "Restas" to 40, "Números" to 65, "Lógica" to 35, "Problemas" to 30))
+val MOCK_STUDENTS = mutableListOf(
+    Student(
+        id = 1,
+        name = "Ana",
+        lastName = "Pérez",
+        grade = "1ro",
+        classroom = "1ro A",
+        pin = "1234",
+        level = 5,
+        stars = 142,
+        accuracy = 85,
+        streak = 7,
+        weekData = listOf(20, 25, 30, 35, 22, 18, 8),
+        skills = mapOf(
+            "Sumas" to 85,
+            "Restas" to 70,
+            "Números" to 90,
+            "Lógica" to 60,
+            "Problemas" to 65
+        ),
+        avatar = "🦄"
+    ),
+    Student(
+        id = 2,
+        name = "Carlos",
+        lastName = "Díaz",
+        grade = "2do",
+        classroom = "2do B",
+        pin = "5678",
+        level = 4,
+        stars = 98,
+        accuracy = 72,
+        streak = 3,
+        weekData = listOf(15, 20, 18, 25, 30, 10, 5),
+        skills = mapOf(
+            "Sumas" to 70,
+            "Restas" to 55,
+            "Números" to 75,
+            "Lógica" to 50,
+            "Problemas" to 45
+        ),
+        avatar = "🐉"
+    )
 )
 
 // ─── UI Components ─────────────────────────────────────────────────────────
+@Composable
+fun LoginScreen(
+    onBack: () -> Unit,
+    onLoginSuccess: (Student) -> Unit
+) {
+    var name by remember { mutableStateOf("") }
+    var pin by remember { mutableStateOf("") }
+    var error by remember { mutableStateOf("") }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppColors.Bg)
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .size(140.dp)
+                .background(AppColors.PinkLight, CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("🦎", fontSize = 72.sp)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            "Bienvenido otra vez",
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Bold,
+            color = AppColors.Purple
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = Color.White)
+        ) {
+            Column(
+                modifier = Modifier.padding(20.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                TextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    placeholder = { Text("Nombre") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                TextField(
+                    value = pin,
+                    onValueChange = {
+                        if (it.length <= 4) {
+                            pin = it
+                        }
+                    },
+                    placeholder = { Text("PIN de 4 dígitos") },
+                    visualTransformation = PasswordVisualTransformation(),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                if (error.isNotEmpty()) {
+                    Text(
+                        error,
+                        color = AppColors.Red,
+                        fontSize = 14.sp
+                    )
+                }
+
+                Button(
+                    onClick = {
+                        val foundStudent = MOCK_STUDENTS.find {
+                            it.name.equals(name, ignoreCase = true) && it.pin == pin
+                        }
+                        if (foundStudent != null) {
+                            onLoginSuccess(foundStudent)
+                        } else {
+                            error = "Nombre o PIN incorrecto"
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(64.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = AppColors.Purple
+                    )
+                ) {
+                    Text(
+                        "Entrar",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                OutlinedButton(
+                    onClick = onBack,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Volver")
+                }
+            }
+        }
+    }
+}
 
 @Composable
 fun RadarChart(skills: Map<String, Int>, size: Dp = 160.dp) {
@@ -184,47 +320,126 @@ fun RadarChart(skills: Map<String, Int>, size: Dp = 160.dp) {
     val values = skills.values.toList()
     val n = keys.size
 
-    Canvas(modifier = Modifier.size(size)) {
-        val center = Offset(size.toPx() / 2, size.toPx() / 2)
+    Canvas(
+        modifier = Modifier.size(size)
+    ) {
+
+        val center = Offset(
+            size.toPx() / 2f,
+            size.toPx() / 2f
+        )
+
         val radius = size.toPx() * 0.38f
 
-        // Grid lines
-        listOf(0.25f, 0.5f, 0.75f, 1f).forEach { lvl ->
+        listOf(
+            0.25f,
+            0.5f,
+            0.75f,
+            1f
+        ).forEach { lvl ->
+
             val path = Path()
-            for (i in 0 until n) {
-                val angle = (2 * PI * i) / n - PI / 2
-                val x = center.x + (radius * lvl) * cos(angle).toFloat()
-                val y = center.y + (radius * lvl) * sin(angle).toFloat()
-                if (i == 0) path.moveTo(x, y) else path.lineTo(x, y)
+
+            for(i in 0 until n){
+
+                val angle =
+                    (2 * PI * i) / n - PI / 2
+
+                val x =
+                    center.x +
+                            (radius * lvl) *
+                            cos(angle).toFloat()
+
+                val y =
+                    center.y +
+                            (radius * lvl) *
+                            sin(angle).toFloat()
+
+                if(i == 0)
+                    path.moveTo(x,y)
+                else
+                    path.lineTo(x,y)
             }
+
             path.close()
-            drawPath(path, color = AppColors.Gray200, style = Stroke(width = 1.dp.toPx()))
+
+            drawPath(
+                path = path,
+                color = AppColors.Gray200,
+                style = Stroke(1.dp.toPx())
+            )
         }
 
-        // Axis lines
-        for (i in 0 until n) {
-            val angle = (2 * PI * i) / n - PI / 2
+        for(i in 0 until n){
+
+            val angle =
+                (2 * PI * i)/n - PI/2
+
             drawLine(
                 color = AppColors.Gray200,
                 start = center,
-                end = Offset(center.x + radius * cos(angle).toFloat(), center.y + radius * sin(angle).toFloat()),
+                end = Offset(
+                    center.x +
+                            radius *
+                            cos(angle).toFloat(),
+
+                    center.y +
+                            radius *
+                            sin(angle).toFloat()
+                ),
                 strokeWidth = 1.dp.toPx()
             )
         }
 
-        // Skills Polygon
         val skillPath = Path()
-        for (i in 0 until n) {
-            val angle = (2 * PI * i) / n - PI / 2
-            val r = (values[i] / 100f) * radius
-            val x = center.x + r * cos(angle).toFloat()
-            val y = center.y + r * sin(angle).toFloat()
-            if (i == 0) skillPath.moveTo(x, y) else skillPath.lineTo(x, y)
-            drawCircle(color = AppColors.Purple, radius = 3.dp.toPx(), center = Offset(x, y))
+
+        for(i in 0 until n){
+
+            val angle =
+                (2 * PI * i)/n - PI/2
+
+            val r =
+                (values[i]/100f) *
+                        radius
+
+            val x =
+                center.x +
+                        r *
+                        cos(angle).toFloat()
+
+            val y =
+                center.y +
+                        r *
+                        sin(angle).toFloat()
+
+            if(i==0)
+                skillPath.moveTo(x,y)
+            else
+                skillPath.lineTo(x,y)
+
+            drawCircle(
+                color = AppColors.Purple,
+                radius = 3.dp.toPx(),
+                center = Offset(x,y)
+            )
         }
+
         skillPath.close()
-        drawPath(skillPath, color = AppColors.Purple.copy(alpha = 0.2f))
-        drawPath(skillPath, color = AppColors.Purple, style = Stroke(width = 1.5.dp.toPx()))
+
+        drawPath(
+            path = skillPath,
+            color = AppColors.Purple.copy(
+                alpha = 0.2f
+            )
+        )
+
+        drawPath(
+            path = skillPath,
+            color = AppColors.Purple,
+            style = Stroke(
+                width = 1.5.dp.toPx()
+            )
+        )
     }
 }
 
@@ -274,7 +489,7 @@ fun StreakCalendar(streak: Int) {
     val days = listOf("L", "M", "X", "J", "V", "S", "D")
     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
         days.forEachIndexed { i, d ->
-            val active = i < (streak % 7) || (streak > 0 && i < 7) // Simple logic for demo
+            val active = i < (streak % 7)
             Box(
                 modifier = Modifier
                     .size(28.dp)
@@ -287,8 +502,14 @@ fun StreakCalendar(streak: Int) {
     }
 }
 
-// ─── Main App ──────────────────────────────────────────────────────────────
+@Composable
+fun InfoBox(text: String, bg: Color, fg: Color) {
+    Box(modifier = Modifier.fillMaxWidth().background(bg, RoundedCornerShape(10.dp)).padding(horizontal = 12.dp, vertical = 8.dp)) {
+        Text(text, fontSize = 12.sp, color = fg)
+    }
+}
 
+// ─── Main App ──────────────────────────────────────────────────────────────
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -316,27 +537,56 @@ fun MainApp() {
                     screen = "login"
                 }
             )
-            "login" -> LoginScreen(
-                defaultRole = loginRole,
-                onBack = { screen = "welcome" },
-                onLoggedIn = { role ->
-                    if (role == "docente") screen = "teacher_panel"
-                    else screen = "parents_panel"
+
+            "login" -> {
+                if (loginRole == "docente" || loginRole == "padres") {
+                    AdultLoginScreen(
+                        defaultRole = loginRole,
+                        onBack = { screen = "welcome" },
+                        onLoggedIn = { role ->
+                            screen = if (role == "docente") "teacher_panel" else "parents_panel"
+                        }
+                    )
+                } else {
+                    LoginScreen(
+                        onBack = { screen = "welcome" },
+                        onLoginSuccess = { loggedStudent ->
+                            student = loggedStudent
+                            screen = "menu"
+                        }
+                    )
                 }
-            )
+            }
+
             "create" -> CreateProfileScreen(
-                onCreated = { name, avatar ->
-                    student = student.copy(name = name, avatar = avatar)
-                    screen = "exam"
-                }
+                onCreated = { name, lastName, grade, classroom, avatar, pin ->
+                    val newStudent = Student(
+                        id = MOCK_STUDENTS.size + 1,
+                        name = name,
+                        lastName = lastName,
+                        grade = grade,
+                        classroom = classroom,
+                        pin = pin,
+                        level = 1,
+                        stars = 0,
+                        accuracy = 0,
+                        streak = 0,
+                        weekData = listOf(0, 0, 0, 0, 0, 0, 0),
+                        skills = mapOf(
+                            "Sumas" to 0,
+                            "Restas" to 0,
+                            "Números" to 0,
+                            "Lógica" to 0,
+                            "Problemas" to 0
+                        ),
+                        avatar = avatar
+                    )
+                    MOCK_STUDENTS.add(newStudent)
+                    screen = "welcome"
+                },
+                onBack = { screen = "welcome" }
             )
-            "exam" -> AdaptiveExamScreen(
-                student = student,
-                onFinish = { skills, level ->
-                    student = student.copy(skills = skills, level = if (level == "Avanzado") 6 else 5)
-                    screen = "menu"
-                }
-            )
+
             "menu" -> MainMenuScreen(
                 student = student,
                 onPlay = { op ->
@@ -346,26 +596,67 @@ fun MainApp() {
                 onRewards = { screen = "rewards" },
                 onExam = { screen = "exam" }
             )
+
             "game" -> GameScreen(
                 student = student,
                 operation = gameOp,
-                onScore = { pts -> student = student.copy(stars = (student.stars + pts).coerceAtMost(210)) },
+                onScore = { points ->
+                    val updatedStudent = student.copy(
+                        stars = student.stars + points,
+                        accuracy = ((student.accuracy * student.stars + points) / (student.stars + points)).toInt()
+                    )
+                    val index = MOCK_STUDENTS.indexOfFirst { it.id == student.id }
+                    if (index != -1) {
+                        MOCK_STUDENTS[index] = updatedStudent
+                    }
+                    student = updatedStudent
+                },
                 onBack = { screen = "menu" }
             )
+
             "rewards" -> RewardsScreen(
                 student = student,
                 onBack = { screen = "menu" }
             )
-            "teacher_panel" -> TeacherPanel(onBack = { screen = "welcome" })
-            "parents_panel" -> ParentsPanel(student = student, onBack = { screen = "welcome" })
+
+            "exam" -> AdaptiveExamScreen(
+                student = student,
+                onFinish = { skills, level ->
+                    val updatedStudent = student.copy(
+                        level = when (level) {
+                            "Avanzado" -> 5
+                            "Intermedio" -> 3
+                            else -> 1
+                        },
+                        skills = skills
+                    )
+                    val index = MOCK_STUDENTS.indexOfFirst { it.id == student.id }
+                    if (index != -1) {
+                        MOCK_STUDENTS[index] = updatedStudent
+                    }
+                    student = updatedStudent
+                    screen = "menu"
+                }
+            )
+
+            "teacher_panel" -> TeacherPanel(
+                onBack = { screen = "welcome" }
+            )
+
+            "parents_panel" -> ParentsPanel(
+                student = student,
+                onBack = { screen = "welcome" }
+            )
         }
     }
 }
 
 // ─── Screens ────────────────────────────────────────────────────────────────
-
 @Composable
-fun WelcomeScreen(onCreateProfile: () -> Unit, onLogin: (String?) -> Unit) {
+fun WelcomeScreen(
+    onCreateProfile: () -> Unit,
+    onLogin: (String?) -> Unit
+) {
     Column(
         modifier = Modifier.fillMaxSize().padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -389,17 +680,21 @@ fun WelcomeScreen(onCreateProfile: () -> Unit, onLogin: (String?) -> Unit) {
         Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = Color.White)) {
             Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 Text("¡Bienvenidos a MathIA!", fontSize = 22.sp, fontWeight = FontWeight.ExtraBold)
-                Text("¡Hola! Soy Mateo, tu amigo ajolote.\n¡Vamos a aprender matemáticas juntos!", 
+                Text("¡Hola! Soy Mateo, tu amigo ajolote.\n¡Vamos a aprender matemáticas juntos!",
                     fontSize = 14.sp, color = AppColors.Gray600, textAlign = TextAlign.Center)
             }
         }
 
         Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Button(onClick = onCreateProfile, modifier = Modifier.fillMaxWidth().height(56.dp), colors = ButtonDefaults.buttonColors(containerColor = AppColors.Purple), shape = RoundedCornerShape(12.dp)) {
+            Button(onClick = onCreateProfile, modifier = Modifier.fillMaxWidth().height(56.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = AppColors.Purple),
+                shape = RoundedCornerShape(12.dp)) {
                 Text("+ Crear Nuevo Perfil", fontWeight = FontWeight.Bold)
             }
-            OutlinedButton(onClick = { onLogin(null) }, modifier = Modifier.fillMaxWidth().height(56.dp), shape = RoundedCornerShape(12.dp), border = BorderStroke(1.5.dp, AppColors.Gray200)) {
-                Text("→] Iniciar Sesión", color = AppColors.Gray800)
+            OutlinedButton(onClick = { onLogin(null) }, modifier = Modifier.fillMaxWidth().height(56.dp),
+                shape = RoundedCornerShape(12.dp),
+                border = BorderStroke(1.5.dp, AppColors.Gray200)) {
+                Text("→ Iniciar Sesión", color = AppColors.Gray800)
             }
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                 TextButton(onClick = { onLogin("docente") }) { Text("Panel Docente", color = AppColors.Purple) }
@@ -410,44 +705,133 @@ fun WelcomeScreen(onCreateProfile: () -> Unit, onLogin: (String?) -> Unit) {
     }
 }
 
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun CreateProfileScreen(onCreated: (String, String) -> Unit) {
+fun CreateProfileScreen(
+    onCreated: (String, String, String, String, String, String) -> Unit,
+    onBack: () -> Unit
+) {
     var name by remember { mutableStateOf("") }
-    var age by remember { mutableStateOf(7) }
+    var lastName by remember { mutableStateOf("") }
+    var grade by remember { mutableStateOf("1ro") }
+    var classroom by remember { mutableStateOf("1ro A") }
+    var pin by remember { mutableStateOf("") }
     var avatarIdx by remember { mutableStateOf(0) }
     val avatars = listOf("🦸", "👨‍🚀", "🧙‍♀️", "🦄", "🐉", "🦊", "🐼", "🦁", "🐯", "🐨")
 
-    Column(modifier = Modifier.fillMaxSize().padding(24.dp).verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(20.dp)) {
+    Column(
+        modifier = Modifier.fillMaxSize().padding(24.dp).verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(20.dp)
+    ) {
         Text("Crear Perfil", fontSize = 26.sp, fontWeight = FontWeight.ExtraBold, color = AppColors.Purple)
+
         Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = Color.White)) {
             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Column {
                     Text("¿Cómo te llamas?", fontSize = 13.sp, fontWeight = FontWeight.Bold)
-                    TextField(value = name, onValueChange = { name = it }, placeholder = { Text("Tu nombre...") }, modifier = Modifier.fillMaxWidth().padding(top = 6.dp))
+                    TextField(
+                        value = name,
+                        onValueChange = { name = it },
+                        placeholder = { Text("Tu nombre...") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
+
                 Column {
-                    Text("¿Cuántos años tienes?", fontSize = 13.sp, fontWeight = FontWeight.Bold)
-                    Row(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        listOf(6, 7, 8).forEach { a ->
-                            Button(onClick = { age = a }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(containerColor = if (age == a) AppColors.Pink else AppColors.Gray100)) {
-                                Text("$a años", color = if (age == a) Color.White else AppColors.Gray600)
+                    Text("Apellido", fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                    TextField(
+                        value = lastName,
+                        onValueChange = { lastName = it },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                Column {
+                    Text("Grado", fontWeight = FontWeight.Bold)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        listOf("1ro", "2do", "3ro").forEach { g ->
+                            Button(
+                                onClick = { grade = g },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (grade == g) AppColors.Pink else AppColors.Gray100
+                                )
+                            ) {
+                                Text(g, color = if (grade == g) Color.White else AppColors.Gray600)
                             }
                         }
                     }
                 }
+
+                Column {
+                    Text("Salón", fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                    TextField(
+                        value = classroom,
+                        onValueChange = { classroom = it },
+                        placeholder = { Text("Ej: 1ro A") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
                 Column {
                     Text("Elige tu avatar", fontSize = 13.sp, fontWeight = FontWeight.Bold)
-                    FlowRow(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
                         avatars.forEachIndexed { i, em ->
-                            Box(modifier = Modifier.size(48.dp).clip(RoundedCornerShape(12.dp)).background(if (avatarIdx == i) AppColors.AmberLight else AppColors.Gray100).border(2.dp, if (avatarIdx == i) AppColors.Amber else Color.Transparent, RoundedCornerShape(12.dp)).clickable { avatarIdx = i }, contentAlignment = Alignment.Center) {
+                            Box(
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(if (avatarIdx == i) AppColors.AmberLight else AppColors.Gray100)
+                                    .border(2.dp, if (avatarIdx == i) AppColors.Amber else Color.Transparent, RoundedCornerShape(12.dp))
+                                    .clickable { avatarIdx = i },
+                                contentAlignment = Alignment.Center
+                            ) {
                                 Text(em, fontSize = 24.sp)
                             }
                         }
                     }
                 }
-                Button(onClick = { if (name.isNotBlank()) onCreated(name, avatars[avatarIdx]) }, modifier = Modifier.fillMaxWidth(), enabled = name.isNotBlank()) {
+
+                Column {
+                    Text("Crea un PIN de 4 dígitos", fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                    TextField(
+                        value = pin,
+                        onValueChange = {
+                            if (it.length <= 4) {
+                                pin = it
+                            }
+                        },
+                        placeholder = { Text("1234") },
+                        visualTransformation = PasswordVisualTransformation(),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                Button(
+                    onClick = {
+                        if (name.isNotBlank() && lastName.isNotBlank() && pin.length == 4) {
+                            onCreated(name, lastName, grade, classroom, avatars[avatarIdx], pin)
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = (name.isNotBlank() && lastName.isNotBlank() && pin.length == 4)
+                ) {
                     Text("Continuar →")
+                }
+
+                OutlinedButton(
+                    onClick = onBack,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Volver")
                 }
             }
         }
@@ -466,9 +850,19 @@ fun AdaptiveExamScreen(student: Student, onFinish: (Map<String, Int>, String) ->
         val correct = results.count { it }
         val pct = (correct * 100) / results.size
         val level = if (pct >= 80) "Avanzado" else if (pct >= 50) "Intermedio" else "Básico"
-        val skills = mapOf("Sumas" to (pct + 10).coerceAtMost(100), "Restas" to pct, "Números" to 70, "Lógica" to 55, "Problemas" to 45)
-        
-        Column(modifier = Modifier.fillMaxSize().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        val skills = mapOf(
+            "Sumas" to (pct + 10).coerceAtMost(100),
+            "Restas" to pct,
+            "Números" to 70,
+            "Lógica" to 55,
+            "Problemas" to 45
+        )
+
+        Column(
+            modifier = Modifier.fillMaxSize().padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
             Text("📊 Resultados del Examen", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = AppColors.Purple)
             Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = Color.White)) {
                 Column(modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -491,7 +885,11 @@ fun AdaptiveExamScreen(student: Student, onFinish: (Map<String, Int>, String) ->
             }
         }
     } else {
-        Column(modifier = Modifier.fillMaxSize().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(20.dp)) {
+        Column(
+            modifier = Modifier.fillMaxSize().padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text("Examen Adaptativo", fontWeight = FontWeight.Bold, color = AppColors.Purple)
                 Text("${qIdx + 1} / ${questions.size}", fontSize = 13.sp, color = AppColors.Gray400)
@@ -506,10 +904,15 @@ fun AdaptiveExamScreen(student: Student, onFinish: (Map<String, Int>, String) ->
             val options = (listOf(q.a, q.a + 1, q.a - 1, q.a + 2).distinct().take(4)).shuffled()
             Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 options.forEach { opt ->
-                    Button(onClick = {
-                        results = results + (opt == q.a)
-                        if (qIdx + 1 < questions.size) qIdx++ else done = true
-                    }, modifier = Modifier.fillMaxWidth().height(60.dp), colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = AppColors.Gray800), border = BorderStroke(2.dp, AppColors.Gray200)) {
+                    Button(
+                        onClick = {
+                            results = results + (opt == q.a)
+                            if (qIdx + 1 < questions.size) qIdx++ else done = true
+                        },
+                        modifier = Modifier.fillMaxWidth().height(60.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = AppColors.Gray800),
+                        border = BorderStroke(2.dp, AppColors.Gray200)
+                    ) {
                         Text("$opt", fontSize = 24.sp, fontWeight = FontWeight.Bold)
                     }
                 }
@@ -582,7 +985,8 @@ fun MainMenuScreen(student: Student, onPlay: (String) -> Unit, onRewards: () -> 
             Triple("🎯", "Restas básicas", "Resta"),
             Triple("🧠", "Examen Adaptativo", "Exam")
         )) { (icon, title, op) ->
-            Card(modifier = Modifier.fillMaxWidth().clickable { if (op == "Exam") onExam() else onPlay(op) }, colors = CardDefaults.cardColors(containerColor = Color.White)) {
+            Card(modifier = Modifier.fillMaxWidth().clickable { if (op == "Exam") onExam() else onPlay(op) },
+                colors = CardDefaults.cardColors(containerColor = Color.White)) {
                 Row(modifier = Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
                     Box(modifier = Modifier.size(44.dp).background(AppColors.PurpleLight, RoundedCornerShape(12.dp)), contentAlignment = Alignment.Center) {
                         Text(icon, fontSize = 22.sp)
@@ -608,13 +1012,6 @@ fun MainMenuScreen(student: Student, onPlay: (String) -> Unit, onRewards: () -> 
 }
 
 @Composable
-fun InfoBox(text: String, bg: Color, fg: Color) {
-    Box(modifier = Modifier.fillMaxWidth().background(bg, RoundedCornerShape(10.dp)).padding(horizontal = 12.dp, vertical = 8.dp)) {
-        Text(text, fontSize = 12.sp, color = fg)
-    }
-}
-
-@Composable
 fun GameScreen(student: Student, operation: String, onScore: (Int) -> Unit, onBack: () -> Unit) {
     var n1 by remember { mutableStateOf((1..15).random()) }
     var n2 by remember { mutableStateOf((1..n1).random()) }
@@ -624,7 +1021,11 @@ fun GameScreen(student: Student, operation: String, onScore: (Int) -> Unit, onBa
 
     val correct = if (operation == "Suma") n1 + n2 else n1 - n2
 
-    Column(modifier = Modifier.fillMaxSize().background(Color(0xFFF0F4C3)).padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    Column(
+        modifier = Modifier.fillMaxSize().background(Color(0xFFF0F4C3)).padding(20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back") }
             Text(student.name, fontWeight = FontWeight.Bold)
@@ -720,29 +1121,104 @@ fun RewardsScreen(student: Student, onBack: () -> Unit) {
 }
 
 @Composable
-fun LoginScreen(defaultRole: String, onBack: () -> Unit, onLoggedIn: (String) -> Unit) {
+fun AdultLoginScreen(
+    defaultRole: String,
+    onBack: () -> Unit,
+    onLoggedIn: (String) -> Unit
+) {
     var role by remember { mutableStateOf(defaultRole) }
     var email by remember { mutableStateOf("") }
     var pw by remember { mutableStateOf("") }
+    var error by remember { mutableStateOf("") }
 
-    Column(modifier = Modifier.fillMaxSize().padding(32.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(20.dp)) {
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back") }
-            Text("Iniciar Sesión", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-        }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppColors.Bg)
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = Color.White)
+        ) {
+            Column(
+                modifier = Modifier.padding(20.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Text(
+                    "Ingreso para Adultos",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = AppColors.Purple
+                )
 
-        Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = Color.White)) {
-            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     listOf("docente", "padres").forEach { r ->
-                        Button(onClick = { role = r }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(containerColor = if (role == r) AppColors.Purple else AppColors.Gray100)) {
-                            Text(if (r == "docente") "👩‍🏫 Docente" else "👨‍👩‍👧 Padres", fontSize = 14.sp, color = if (role == r) Color.White else AppColors.Gray600)
+                        Button(
+                            onClick = { role = r },
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (role == r) AppColors.Purple else AppColors.Gray100
+                            )
+                        ) {
+                            Text(
+                                if (r == "docente") "Docente" else "Padres",
+                                color = if (role == r) Color.White else AppColors.Gray600
+                            )
                         }
                     }
                 }
-                TextField(value = email, onValueChange = { email = it }, placeholder = { Text("Correo electrónico") }, modifier = Modifier.fillMaxWidth())
-                TextField(value = pw, onValueChange = { pw = it }, placeholder = { Text("Contraseña") }, modifier = Modifier.fillMaxWidth(), visualTransformation = PasswordVisualTransformation())
-                Button(onClick = { onLoggedIn(role) }, modifier = Modifier.fillMaxWidth()) { Text("Entrar") }
+
+                TextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    placeholder = { Text("Correo") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                TextField(
+                    value = pw,
+                    onValueChange = { pw = it },
+                    placeholder = { Text("Contraseña") },
+                    visualTransformation = PasswordVisualTransformation(),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                if (error.isNotEmpty()) {
+                    Text(error, color = AppColors.Red, fontSize = 14.sp)
+                }
+
+                Button(
+                    onClick = {
+                        when {
+                            role == "docente" && email == "docente@mathia.com" && pw == "123456" -> {
+                                onLoggedIn("docente")
+                            }
+                            role == "padres" && email == "padres@mathia.com" && pw == "123456" -> {
+                                onLoggedIn("padres")
+                            }
+                            else -> {
+                                error = "Credenciales incorrectas"
+                            }
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = AppColors.Purple)
+                ) {
+                    Text("Entrar")
+                }
+
+                OutlinedButton(
+                    onClick = onBack,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Volver")
+                }
             }
         }
     }
@@ -751,11 +1227,16 @@ fun LoginScreen(defaultRole: String, onBack: () -> Unit, onLoggedIn: (String) ->
 @Composable
 fun TeacherPanel(onBack: () -> Unit) {
     var selected by remember { mutableStateOf<Student?>(null) }
-    
+
     if (selected != null) {
-        Column(modifier = Modifier.fillMaxSize().padding(20.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Column(
+            modifier = Modifier.fillMaxSize().padding(20.dp).verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                IconButton(onClick = { selected = null }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back") }
+                IconButton(onClick = { selected = null }) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                }
                 Text(selected!!.name, fontWeight = FontWeight.Bold, fontSize = 18.sp)
             }
             Card(modifier = Modifier.fillMaxWidth()) {
@@ -775,7 +1256,9 @@ fun TeacherPanel(onBack: () -> Unit) {
         LazyColumn(modifier = Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             item {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back") }
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
                     Text("Panel del Docente", fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 }
             }
@@ -794,9 +1277,12 @@ fun TeacherPanel(onBack: () -> Unit) {
                 }
             }
             items(MOCK_STUDENTS) { s ->
-                Card(modifier = Modifier.fillMaxWidth().clickable { selected = s }, colors = CardDefaults.cardColors(containerColor = Color.White)) {
+                Card(modifier = Modifier.fillMaxWidth().clickable { selected = s },
+                    colors = CardDefaults.cardColors(containerColor = Color.White)) {
                     Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Box(modifier = Modifier.size(40.dp).background(AppColors.PurpleLight, CircleShape), contentAlignment = Alignment.Center) { Text("🧑‍🎓") }
+                        Box(modifier = Modifier.size(40.dp).background(AppColors.PurpleLight, CircleShape), contentAlignment = Alignment.Center) {
+                            Text("🧑‍🎓")
+                        }
                         Column(modifier = Modifier.weight(1f)) {
                             Text(s.name, fontWeight = FontWeight.Bold)
                             Text("Nivel ${s.level} • ${s.stars} estrellas", fontSize = 11.sp, color = AppColors.Gray400)
@@ -811,14 +1297,21 @@ fun TeacherPanel(onBack: () -> Unit) {
 
 @Composable
 fun ParentsPanel(student: Student, onBack: () -> Unit) {
-    Column(modifier = Modifier.fillMaxSize().padding(20.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        IconButton(onClick = onBack) { Text("← Volver", fontSize = 16.sp, color = AppColors.Purple) }
+    Column(
+        modifier = Modifier.fillMaxSize().padding(20.dp).verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        IconButton(onClick = onBack) {
+            Text("← Volver", fontSize = 16.sp, color = AppColors.Purple)
+        }
         Text("Panel de Padres", fontSize = 20.sp, fontWeight = FontWeight.ExtraBold)
 
         Box(modifier = Modifier.fillMaxWidth().background(Brush.linearGradient(listOf(AppColors.Purple, AppColors.Pink)), RoundedCornerShape(16.dp)).padding(20.dp)) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Box(modifier = Modifier.size(44.dp).background(Color.White.copy(alpha = 0.2f), CircleShape), contentAlignment = Alignment.Center) { Text("🧑‍🎓", fontSize = 24.sp) }
+                    Box(modifier = Modifier.size(44.dp).background(Color.White.copy(alpha = 0.2f), CircleShape), contentAlignment = Alignment.Center) {
+                        Text("🧑‍🎓", fontSize = 24.sp)
+                    }
                     Column {
                         Text(student.name, fontWeight = FontWeight.Bold, color = Color.White, fontSize = 18.sp)
                         Text("7 años • 2do Grado • Nivel ${student.level}", color = Color.White.copy(alpha = 0.85f), fontSize = 12.sp)

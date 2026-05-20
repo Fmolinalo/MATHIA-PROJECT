@@ -41,6 +41,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    kotlinOptions {
+        jvmTarget = "11"
+    }
 
 
     buildFeatures {
@@ -142,14 +145,15 @@ dependencies {
         "androidx.test.espresso:espresso-core:3.6.1"
     )
 
-    androidTestImplementation(
+    implementation(
         platform(
-            "androidx.compose:compose-bom:2024.06.00"
+            "androidx.compose:compose-bom:2024.02.02"
         )
     )
-
     androidTestImplementation(
-        "androidx.compose.ui:ui-test-junit4"
+        platform(
+            "androidx.compose:compose-bom:2024.02.02"
+        )
     )
 
     debugImplementation(
