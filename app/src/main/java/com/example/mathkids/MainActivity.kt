@@ -1,80 +1,73 @@
 package com.example.mathkids
 
+import android.os.Build
 import android.os.Bundle
+
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.ui.unit.toSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWi
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+
+import androidx.compose.material3.*
+
+import androidx.compose.runtime.*
+
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
+
+import androidx.compose.ui.layout.ContentScale
+
+import androidx.compose.ui.platform.LocalContext
+
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+
+import coil.ImageLoader
+import coil.compose.AsyncImage
+import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
+
 import com.example.mathkids.ui.theme.MathkidsTheme
+
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
-
 // ─── Data Models ───────────────────────────────────────────────────────────
 data class Student(
     val id: Int,
@@ -160,6 +153,8 @@ val REWARDS = listOf(
     Reward(9, "Leyenda MathIA", "🏆", 210, "¡Nivel máximo alcanzado!")
 )
 
+
+
 val MOCK_STUDENTS = mutableListOf(
     Student(
         id = 1,
@@ -205,7 +200,98 @@ val MOCK_STUDENTS = mutableListOf(
     )
 )
 
+
 // ─── UI Components ─────────────────────────────────────────────────────────
+
+@Composable
+fun SelectLoginTypeScreen(
+    onStudent: () -> Unit,
+    onTeacher: () -> Unit,
+    onParent: () -> Unit,
+    onBack: () -> Unit
+) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppColors.Bg)
+            .padding(24.dp),
+
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+
+        Text(
+            "¿Quién va a ingresar?",
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Bold,
+            color = AppColors.Purple
+        )
+
+        Spacer(Modifier.height(30.dp))
+
+        Button(
+            onClick = onStudent,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp),
+
+            colors = ButtonDefaults.buttonColors(
+                containerColor = AppColors.Purple
+            )
+        ) {
+
+            Text("Niño / Estudiante")
+
+        }
+
+        Spacer(Modifier.height(12.dp))
+
+        Button(
+            onClick = onTeacher,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp),
+
+            colors = ButtonDefaults.buttonColors(
+                containerColor = AppColors.Blue
+            )
+        ) {
+
+            Text("Profesor")
+
+        }
+
+        Spacer(Modifier.height(12.dp))
+
+        Button(
+            onClick = onParent,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp),
+
+            colors = ButtonDefaults.buttonColors(
+                containerColor = AppColors.Green
+            )
+        ) {
+
+            Text("Padre / Madre")
+
+        }
+
+        Spacer(Modifier.height(20.dp))
+
+        OutlinedButton(
+            onClick = onBack
+        ) {
+
+            Text("Volver")
+
+        }
+
+    }
+
+}
 @Composable
 fun LoginScreen(
     onBack: () -> Unit,
@@ -214,7 +300,19 @@ fun LoginScreen(
     var name by remember { mutableStateOf("") }
     var pin by remember { mutableStateOf("") }
     var error by remember { mutableStateOf("") }
+    val context = LocalContext.current
 
+    val imageLoader = remember(context) {
+        ImageLoader.Builder(context)
+            .components {
+                if (Build.VERSION.SDK_INT >= 28) {
+                    add(ImageDecoderDecoder.Factory())
+                } else {
+                    add(GifDecoder.Factory())
+                }
+            }
+            .build()
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -225,11 +323,18 @@ fun LoginScreen(
     ) {
         Box(
             modifier = Modifier
-                .size(140.dp)
+                .size(160.dp)
                 .background(AppColors.PinkLight, CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            Text("🦎", fontSize = 72.sp)
+
+            AsyncImage(
+                model = R.drawable.ajolote,
+                imageLoader = imageLoader,
+                contentDescription = "Ajolote",
+                modifier = Modifier.size(120.dp),
+                contentScale = ContentScale.Fit
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -523,135 +628,379 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainApp() {
-    var screen by remember { mutableStateOf("welcome") }
-    var loginRole by remember { mutableStateOf("docente") }
-    var student by remember { mutableStateOf(MOCK_STUDENTS[0]) }
-    var gameOp by remember { mutableStateOf("Suma") }
 
-    Surface(modifier = Modifier.fillMaxSize(), color = AppColors.Bg) {
+    var screen by remember {
+        mutableStateOf("welcome")
+    }
+
+    var loginRole by remember {
+        mutableStateOf("")
+    }
+
+    var student by remember {
+        mutableStateOf(MOCK_STUDENTS[0])
+    }
+
+    var gameOp by remember {
+        mutableStateOf("Suma")
+    }
+
+    fun logout() {
+
+        loginRole = ""
+
+        student = MOCK_STUDENTS[0]
+
+        screen = "welcome"
+
+    }
+
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = AppColors.Bg
+    ) {
+
         when (screen) {
-            "welcome" -> WelcomeScreen(
-                onCreateProfile = { screen = "create" },
-                onLogin = { role ->
-                    loginRole = role ?: "docente"
-                    screen = "login"
-                }
-            )
 
-            "login" -> {
-                if (loginRole == "docente" || loginRole == "padres") {
-                    AdultLoginScreen(
-                        defaultRole = loginRole,
-                        onBack = { screen = "welcome" },
-                        onLoggedIn = { role ->
-                            screen = if (role == "docente") "teacher_panel" else "parents_panel"
-                        }
-                    )
-                } else {
-                    LoginScreen(
-                        onBack = { screen = "welcome" },
-                        onLoginSuccess = { loggedStudent ->
-                            student = loggedStudent
-                            screen = "menu"
-                        }
-                    )
-                }
+            "welcome" -> {
+
+                WelcomeScreen(
+
+                    onCreateProfile = {
+
+                        screen = "create"
+
+                    },
+
+                    onLogin = {
+
+                        screen = "select_login"
+
+                    }
+
+                )
+
             }
 
-            "create" -> CreateProfileScreen(
-                onCreated = { name, lastName, grade, classroom, avatar, pin ->
-                    val newStudent = Student(
-                        id = MOCK_STUDENTS.size + 1,
-                        name = name,
-                        lastName = lastName,
-                        grade = grade,
-                        classroom = classroom,
-                        pin = pin,
-                        level = 1,
-                        stars = 0,
-                        accuracy = 0,
-                        streak = 0,
-                        weekData = listOf(0, 0, 0, 0, 0, 0, 0),
-                        skills = mapOf(
-                            "Sumas" to 0,
-                            "Restas" to 0,
-                            "Números" to 0,
-                            "Lógica" to 0,
-                            "Problemas" to 0
-                        ),
-                        avatar = avatar
-                    )
-                    MOCK_STUDENTS.add(newStudent)
-                    screen = "welcome"
-                },
-                onBack = { screen = "welcome" }
-            )
+            "select_login" -> {
 
-            "menu" -> MainMenuScreen(
-                student = student,
-                onPlay = { op ->
-                    gameOp = op
-                    screen = "game"
-                },
-                onRewards = { screen = "rewards" },
-                onExam = { screen = "exam" }
-            )
+                SelectLoginTypeScreen(
 
-            "game" -> GameScreen(
-                student = student,
-                operation = gameOp,
-                onScore = { points ->
-                    val updatedStudent = student.copy(
-                        stars = student.stars + points,
-                        accuracy = ((student.accuracy * student.stars + points) / (student.stars + points)).toInt()
-                    )
-                    val index = MOCK_STUDENTS.indexOfFirst { it.id == student.id }
-                    if (index != -1) {
-                        MOCK_STUDENTS[index] = updatedStudent
+                    onStudent = {
+
+                        loginRole = "student"
+
+                        screen = "login"
+
+                    },
+
+                    onTeacher = {
+
+                        loginRole = "docente"
+
+                        screen = "login"
+
+                    },
+
+                    onParent = {
+
+                        loginRole = "padres"
+
+                        screen = "login"
+
+                    },
+
+                    onBack = {
+
+                        screen = "welcome"
+
                     }
-                    student = updatedStudent
-                },
-                onBack = { screen = "menu" }
-            )
 
-            "rewards" -> RewardsScreen(
-                student = student,
-                onBack = { screen = "menu" }
-            )
+                )
 
-            "exam" -> AdaptiveExamScreen(
-                student = student,
-                onFinish = { skills, level ->
-                    val updatedStudent = student.copy(
-                        level = when (level) {
-                            "Avanzado" -> 5
-                            "Intermedio" -> 3
-                            else -> 1
+            }
+
+            "login" -> {
+
+                if (
+
+                    loginRole == "docente" ||
+
+                    loginRole == "padres"
+
+                ) {
+
+                    AdultLoginScreen(
+
+                        defaultRole = loginRole,
+
+                        onBack = {
+
+                            screen = "select_login"
+
                         },
-                        skills = skills
+
+                        onLoggedIn = { role ->
+
+                            screen =
+
+                                if (role == "docente")
+
+                                    "teacher_panel"
+
+                                else
+
+                                    "parents_panel"
+
+                        }
+
                     )
-                    val index = MOCK_STUDENTS.indexOfFirst { it.id == student.id }
-                    if (index != -1) {
-                        MOCK_STUDENTS[index] = updatedStudent
-                    }
-                    student = updatedStudent
-                    screen = "menu"
+
                 }
-            )
 
-            "teacher_panel" -> TeacherPanel(
-                onBack = { screen = "welcome" }
-            )
+                else {
 
-            "parents_panel" -> ParentsPanel(
-                student = student,
-                onBack = { screen = "welcome" }
-            )
+                    LoginScreen(
+
+                        onBack = {
+
+                            screen = "select_login"
+
+                        },
+
+                        onLoginSuccess = {
+
+                            student = it
+
+                            screen = "menu"
+
+                        }
+
+                    )
+
+                }
+
+            }
+
+            "create" -> {
+
+                CreateProfileScreen(
+
+                    onCreated = {
+
+                            name,
+                            lastName,
+                            grade,
+                            classroom,
+                            avatar,
+                            pin ->
+
+                        val newStudent = Student(
+
+                            id =
+                                MOCK_STUDENTS.size + 1,
+
+                            name = name,
+
+                            lastName = lastName,
+
+                            grade = grade,
+
+                            classroom = classroom,
+
+                            pin = pin,
+
+                            level = 1,
+
+                            stars = 0,
+
+                            accuracy = 0,
+
+                            streak = 0,
+
+                            weekData =
+                                listOf(
+                                    0,0,0,0,0,0,0
+                                ),
+
+                            skills =
+                                mapOf(
+
+                                    "Sumas" to 0,
+
+                                    "Restas" to 0,
+
+                                    "Números" to 0,
+
+                                    "Lógica" to 0,
+
+                                    "Problemas" to 0
+
+                                ),
+
+                            avatar = avatar
+
+                        )
+
+                        MOCK_STUDENTS.add(
+                            newStudent
+                        )
+
+                        screen = "welcome"
+
+                    },
+
+                    onBack = {
+
+                        screen = "welcome"
+
+                    }
+
+                )
+
+            }
+
+            "menu" -> {
+
+                MainMenuScreen(
+
+                    student = student,
+
+                    onPlay = {
+
+                        gameOp = it
+
+                        screen = "game"
+
+                    },
+
+                    onRewards = {
+
+                        screen = "rewards"
+
+                    },
+
+                    onExam = {
+
+                        screen = "exam"
+
+                    },
+
+                    onLogout = {
+
+                        logout()
+
+                    }
+
+                )
+
+            }
+
+            "game" -> {
+
+                GameScreen(
+
+                    student,
+
+                    gameOp,
+
+                    onScore = {
+
+                        val updated =
+
+                            student.copy(
+
+                                stars =
+                                    student.stars + it
+
+                            )
+
+                        student =
+                            updated
+
+                    },
+
+                    onBack = {
+
+                        screen = "menu"
+
+                    }
+
+                )
+
+            }
+
+            "rewards" -> {
+
+                RewardsScreen(
+
+                    student,
+
+                    onBack = {
+
+                        screen = "menu"
+
+                    }
+
+                )
+
+            }
+
+            "exam" -> {
+
+                AdaptiveExamScreen(
+
+                    student
+
+                ) {
+
+                        _,_
+
+                    ->
+
+                    screen = "menu"
+
+                }
+
+            }
+
+            "teacher_panel" -> {
+
+                TeacherPanel(
+
+                    onBack = {
+
+                        logout()
+
+                    }
+
+                )
+
+            }
+
+            "parents_panel" -> {
+
+                ParentsPanel(
+
+                    student = student,
+
+                    onBack = {
+
+                        logout()
+
+                    }
+
+                )
+
+            }
+
         }
-    }
-}
 
+    }
+
+}
 // ─── Screens ────────────────────────────────────────────────────────────────
+
 @Composable
 fun WelcomeScreen(
     onCreateProfile: () -> Unit,
@@ -662,19 +1011,74 @@ fun WelcomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = Color.White)) {
-            Column(modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("🧮", fontSize = 40.sp)
-                Text("MathIA", fontSize = 30.sp, fontWeight = FontWeight.ExtraBold, color = AppColors.Purple)
-                Text("✨ ¡Aprende mates jugando! ✨", fontSize = 13.sp, color = AppColors.Gray600)
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = Color.White)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+
+                Text(
+                    text = "🧮",
+                    fontSize = 40.sp,
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "MathIA",
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = AppColors.Purple,
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = "¡Aprende mates jugando!",
+                    fontSize = 13.sp,
+                    color = AppColors.Gray600,
+                    textAlign = TextAlign.Center
+                )
             }
         }
 
+        val context = LocalContext.current
+
+        val imageLoader = remember(context) {
+            ImageLoader.Builder(context)
+                .components {
+                    if (Build.VERSION.SDK_INT >= 28) {
+                        add(ImageDecoderDecoder.Factory())
+                    } else {
+                        add(GifDecoder.Factory())
+                    }
+                }
+                .build()
+        }
+
         Box(
-            modifier = Modifier.size(160.dp).background(AppColors.PinkLight, CircleShape),
+            modifier = Modifier
+                .size(160.dp)
+                .background(AppColors.PinkLight, CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            Text("🦎", fontSize = 90.sp)
+
+            AsyncImage(
+                model = R.drawable.ajolote,
+                imageLoader = imageLoader,
+                contentDescription = "Ajolote GIF",
+                modifier = Modifier.size(120.dp),
+                contentScale = ContentScale.Fit
+            )
+
         }
 
         Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = Color.White)) {
@@ -922,95 +1326,518 @@ fun AdaptiveExamScreen(student: Student, onFinish: (Map<String, Int>, String) ->
 }
 
 @Composable
-fun MainMenuScreen(student: Student, onPlay: (String) -> Unit, onRewards: () -> Unit, onExam: () -> Unit) {
-    LazyColumn(modifier = Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+fun MainMenuScreen(
+
+    student: Student,
+
+    onPlay: (String) -> Unit,
+
+    onRewards: () -> Unit,
+
+    onExam: () -> Unit,
+
+    onLogout: () -> Unit
+
+) {
+
+    LazyColumn(
+
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp),
+
+        verticalArrangement =
+            Arrangement.spacedBy(16.dp)
+
+    ) {
+
         item {
-            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Box(modifier = Modifier.size(48.dp).background(AppColors.AmberLight, CircleShape), contentAlignment = Alignment.Center) {
-                        Text(student.avatar, fontSize = 28.sp)
+
+            Row(
+
+                modifier =
+                    Modifier.fillMaxWidth(),
+
+                verticalAlignment =
+                    Alignment.CenterVertically,
+
+                horizontalArrangement =
+                    Arrangement.SpaceBetween
+
+            ) {
+
+                Row(
+
+                    verticalAlignment =
+                        Alignment.CenterVertically,
+
+                    horizontalArrangement =
+                        Arrangement.spacedBy(12.dp)
+
+                ) {
+
+                    Box(
+
+                        modifier = Modifier
+                            .size(48.dp)
+                            .background(
+                                AppColors.AmberLight,
+                                CircleShape
+                            ),
+
+                        contentAlignment =
+                            Alignment.Center
+
+                    ) {
+
+                        Text(
+                            student.avatar,
+                            fontSize = 28.sp
+                        )
+
                     }
+
                     Column {
-                        Text("¡Hola, ${student.name}!", fontWeight = FontWeight.Bold, fontSize = 17.sp)
-                        Text("Nivel ${student.level} • ${student.stars} estrellas", fontSize = 12.sp, color = AppColors.Gray400)
+
+                        Text(
+
+                            "¡Hola, ${student.name}!",
+
+                            fontWeight =
+                                FontWeight.Bold,
+
+                            fontSize = 17.sp
+
+                        )
+
+                        Text(
+
+                            "Nivel ${student.level} • ${student.stars} estrellas",
+
+                            fontSize = 12.sp,
+
+                            color =
+                                AppColors.Gray400
+
+                        )
+
                     }
+
                 }
-                Button(onClick = onRewards, colors = ButtonDefaults.buttonColors(containerColor = AppColors.Amber)) {
-                    Text("🏆 Premios")
+
+                Row {
+
+                    Button(
+
+                        onClick = onRewards,
+
+                        colors =
+                            ButtonDefaults.buttonColors(
+
+                                containerColor =
+                                    AppColors.Amber
+
+                            )
+
+                    ) {
+
+                        Text("Premios")
+
+                    }
+
+                    Spacer(
+                        Modifier.width(8.dp)
+                    )
+
+                    Button(
+
+                        onClick = onLogout,
+
+                        colors =
+                            ButtonDefaults.buttonColors(
+
+                                containerColor =
+                                    AppColors.Red
+
+                            )
+
+                    ) {
+
+                        Text(
+                            "Salir"
+                        )
+
+                    }
+
                 }
+
             }
+
         }
 
         item {
-            Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = Color.White)) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    StarProgress(current = student.stars)
+
+            Card(
+
+                modifier =
+                    Modifier.fillMaxWidth(),
+
+                colors =
+                    CardDefaults.cardColors(
+
+                        containerColor =
+                            Color.White
+
+                    )
+
+            ) {
+
+                Column(
+
+                    modifier =
+                        Modifier.padding(16.dp)
+
+                ) {
+
+                    StarProgress(
+                        current =
+                            student.stars
+                    )
+
                 }
+
             }
+
         }
 
         item {
-            Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = Color.White)) {
-                Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("🔥", fontSize = 28.sp)
+
+            Card(
+
+                modifier =
+                    Modifier.fillMaxWidth(),
+
+                colors =
+                    CardDefaults.cardColors(
+
+                        containerColor =
+                            Color.White
+
+                    )
+
+            ) {
+
+                Row(
+
+                    modifier =
+                        Modifier.padding(16.dp),
+
+                    verticalAlignment =
+                        Alignment.CenterVertically,
+
+                    horizontalArrangement =
+                        Arrangement.spacedBy(12.dp)
+
+                ) {
+
+                    Text(
+                        "🔥",
+                        fontSize = 28.sp
+                    )
+
                     Column {
-                        Text("¡Racha de ${student.streak} días!", fontWeight = FontWeight.Bold, color = AppColors.Amber)
-                        StreakCalendar(streak = student.streak)
+
+                        Text(
+
+                            "¡Racha de ${student.streak} días!",
+
+                            fontWeight =
+                                FontWeight.Bold,
+
+                            color =
+                                AppColors.Amber
+
+                        )
+
+                        StreakCalendar(
+                            streak =
+                                student.streak
+                        )
+
                     }
+
                 }
+
             }
+
         }
 
         item {
-            Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = Color.White)) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("🤖", fontSize = 18.sp)
-                        Text("Análisis de IA", fontWeight = FontWeight.Bold)
-                    }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        InfoBox("✅ Excelente en sumas — mejoraste un 15% esta semana", AppColors.GreenLight, AppColors.Green)
-                        InfoBox("ℹ️ Mejor momento para aprender: 9AM–11AM", AppColors.BlueLight, AppColors.Blue)
-                        InfoBox("⚠️ Área de oportunidad: practicar restas complejas", AppColors.AmberLight, AppColors.Amber)
-                    }
-                }
-            }
-        }
 
-        item { Text("Tus Desafíos", fontWeight = FontWeight.Bold, fontSize = 17.sp) }
+            Card(
 
-        items(listOf(
-            Triple("📈", "Mejorando en sumas", "Suma"),
-            Triple("🎯", "Restas básicas", "Resta"),
-            Triple("🧠", "Examen Adaptativo", "Exam")
-        )) { (icon, title, op) ->
-            Card(modifier = Modifier.fillMaxWidth().clickable { if (op == "Exam") onExam() else onPlay(op) },
-                colors = CardDefaults.cardColors(containerColor = Color.White)) {
-                Row(modifier = Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Box(modifier = Modifier.size(44.dp).background(AppColors.PurpleLight, RoundedCornerShape(12.dp)), contentAlignment = Alignment.Center) {
-                        Text(icon, fontSize = 22.sp)
+                modifier =
+                    Modifier.fillMaxWidth(),
+
+                colors =
+                    CardDefaults.cardColors(
+
+                        containerColor =
+                            Color.White
+
+                    )
+
+            ) {
+
+                Column(
+
+                    modifier =
+                        Modifier.padding(16.dp)
+
+                ) {
+
+                    Text(
+
+                        "🤖 Análisis IA",
+
+                        fontWeight =
+                            FontWeight.Bold
+
+                    )
+
+                    Spacer(
+                        Modifier.height(12.dp)
+                    )
+
+                    Column(
+
+                        verticalArrangement =
+                            Arrangement.spacedBy(8.dp)
+
+                    ) {
+
+                        InfoBox(
+
+                            "Excelente en sumas",
+
+                            AppColors.GreenLight,
+
+                            AppColors.Green
+
+                        )
+
+                        InfoBox(
+
+                            "Practicar restas",
+
+                            AppColors.AmberLight,
+
+                            AppColors.Amber
+
+                        )
+
                     }
-                    Column(modifier = Modifier.padding(start = 14.dp).weight(1f)) {
-                        Text(title, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                        Text("¡Descubre tu nivel!", fontSize = 12.sp, color = AppColors.Gray400)
-                    }
-                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = AppColors.Gray200)
+
                 }
+
             }
+
         }
 
         item {
-            Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = Color.White)) {
-                Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("🗺️ Mapa de Habilidades", fontWeight = FontWeight.Bold)
-                    RadarChart(skills = student.skills)
-                }
-            }
+
+            Text(
+
+                "Tus Desafíos",
+
+                fontWeight =
+                    FontWeight.Bold,
+
+                fontSize = 18.sp
+
+            )
+
         }
+
+        items(
+
+            listOf(
+
+                Triple(
+                    "📈",
+                    "Mejorando sumas",
+                    "Suma"
+                ),
+
+                Triple(
+                    "🎯",
+                    "Restas básicas",
+                    "Resta"
+                ),
+
+                Triple(
+                    "🧠",
+                    "Examen Adaptativo",
+                    "Exam"
+                )
+
+            )
+
+        ) {
+
+                (icon,title,op) ->
+
+            Card(
+
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+
+                        if(op=="Exam"){
+
+                            onExam()
+
+                        }
+
+                        else{
+
+                            onPlay(op)
+
+                        }
+
+                    },
+
+                colors =
+                    CardDefaults.cardColors(
+
+                        containerColor =
+                            Color.White
+
+                    )
+
+            ) {
+
+                Row(
+
+                    modifier =
+                        Modifier.padding(14.dp),
+
+                    verticalAlignment =
+                        Alignment.CenterVertically
+
+                ) {
+
+                    Text(
+
+                        icon,
+
+                        fontSize = 28.sp
+
+                    )
+
+                    Spacer(
+                        Modifier.width(14.dp)
+                    )
+
+                    Column(
+
+                        modifier =
+                            Modifier.weight(1f)
+
+                    ) {
+
+                        Text(
+
+                            title,
+
+                            fontWeight =
+                                FontWeight.Bold
+
+                        )
+
+                        Text(
+
+                            "¡Descubre tu nivel!",
+
+                            color =
+                                AppColors.Gray400,
+
+                            fontSize =
+                                12.sp
+
+                        )
+
+                    }
+
+                    Icon(
+
+                        Icons.AutoMirrored
+                            .Filled
+                            .KeyboardArrowRight,
+
+                        contentDescription =
+                            null
+
+                    )
+
+                }
+
+            }
+
+        }
+
+        item {
+
+            Card(
+
+                modifier =
+                    Modifier.fillMaxWidth(),
+
+                colors =
+                    CardDefaults.cardColors(
+
+                        containerColor =
+                            Color.White
+
+                    )
+
+            ) {
+
+                Column(
+
+                    modifier =
+                        Modifier.padding(16.dp),
+
+                    horizontalAlignment =
+                        Alignment.CenterHorizontally
+
+                ) {
+
+                    Text(
+
+                        "Mapa de habilidades",
+
+                        fontWeight =
+                            FontWeight.Bold
+
+                    )
+
+                    RadarChart(
+
+                        skills =
+                            student.skills
+
+                    )
+
+                }
+
+            }
+
+        }
+
     }
-}
 
+}
 @Composable
 fun GameScreen(student: Student, operation: String, onScore: (Int) -> Unit, onBack: () -> Unit) {
     var n1 by remember { mutableStateOf((1..15).random()) }
