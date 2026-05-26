@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "325445164260",
+    "firebase_url": "https://mathia-4ff49-default-rtdb.firebaseio.com",
+    "project_id": "mathia-4ff49",
+    "storage_bucket": "mathia-4ff49.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:325445164260:android:0f44f86583a17e839820f1",
+        "android_client_info": {
+          "package_name": "com.example.mathia"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVQJl42ZY_xS0KFYJmE9fZSxQHgv3edYA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
