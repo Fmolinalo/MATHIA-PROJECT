@@ -1,4 +1,4 @@
-package com.example.mathkids
+package com.example.mathia
 
 import org.junit.Test
 

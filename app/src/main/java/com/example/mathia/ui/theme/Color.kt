@@ -1,4 +1,4 @@
-package com.example.mathkids.ui.theme
+package com.example.mathia.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

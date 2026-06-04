@@ -1,10 +1,13 @@
 pluginManagement {
 
     repositories {
+
         google()
         mavenCentral()
         gradlePluginPortal()
+
     }
+
 }
 
 dependencyResolutionManagement {
@@ -14,9 +17,12 @@ dependencyResolutionManagement {
     )
 
     repositories {
+
         google()
         mavenCentral()
+
     }
+
 }
 
 rootProject.name = "MATHIA-PROJECT"

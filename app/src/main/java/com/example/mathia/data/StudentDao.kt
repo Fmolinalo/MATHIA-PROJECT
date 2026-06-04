@@ -1,4 +1,4 @@
-package com.example.mathkids.data
+package com.example.mathia.data
 
 import androidx.room.Dao
 import androidx.room.Insert
