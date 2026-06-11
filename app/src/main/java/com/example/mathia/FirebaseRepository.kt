@@ -2,6 +2,8 @@ package com.example.mathia
 
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.tasks.await
 
 class FirebaseRepository {
@@ -105,7 +107,6 @@ class FirebaseRepository {
         }
     }
 
-    // NUEVA FUNCIÓN: Obtener estudiantes por email del padre
     suspend fun obtenerEstudiantesPorEmailPadre(email: String): List<FirebaseStudent> {
         return try {
             val resultado = db.collection("usuarios")
@@ -119,7 +120,6 @@ class FirebaseRepository {
         }
     }
 
-    // NUEVA FUNCIÓN: Actualizar el email del padre en el estudiante
     suspend fun actualizarPadreEmail(pin: String, padreEmail: String): Boolean {
         return try {
             val resultado = db.collection("usuarios")
@@ -189,6 +189,137 @@ class FirebaseRepository {
             null
         }
     }
+
+    // Google Sign-In for parent or teacher with Firebase Auth integration
+    suspend fun loginConGoogle(idToken: String, email: String, rol: String): Pair<Boolean, Boolean> { // (success, isProfileComplete)
+        return try {
+            val auth = FirebaseAuth.getInstance()
+            val credential = GoogleAuthProvider.getCredential(idToken, null)
+            val authResult = auth.signInWithCredential(credential).await()
+            val firebaseUser = authResult.user ?: return Pair(false, false)
+            val uid = firebaseUser.uid
+
+            val docRef = db.collection("usuarios").document(uid)
+            val doc = docRef.get().await()
+            if (doc.exists()) {
+                val isComplete = doc.getBoolean("perfil_completo") ?: false
+                println("✅ Login Google exitoso para uid: $uid. Perfil completo: $isComplete")
+                Pair(true, isComplete)
+            } else {
+                val rolNormalizado = if (rol == "padres") "padre" else "docente"
+                val nuevoUsuario = hashMapOf(
+                    "uid" to uid,
+                    "email" to email,
+                    "rol" to rolNormalizado,
+                    "nombre" to (firebaseUser.displayName ?: email.substringBefore("@")),
+                    "perfil_completo" to false
+                )
+                docRef.set(nuevoUsuario).await()
+                println("✅ Nuevo usuario Google creado para uid: $uid")
+                Pair(true, false)
+            }
+        } catch (e: Exception) {
+            println("❌ Error en loginConGoogle: ${e.message}")
+            e.printStackTrace()
+            Pair(false, false)
+        }
+    }
+
+    suspend fun actualizarPerfilDocente(
+        uid: String,
+        nombre: String,
+        colegio: String,
+        grado: String,
+        seccion: String
+    ): Boolean {
+        return try {
+            db.collection("usuarios")
+                .document(uid)
+                .update(
+                    mapOf(
+                        "nombre" to nombre,
+                        "colegio" to colegio,
+                        "grado" to grado,
+                        "seccion" to seccion,
+                        "perfil_completo" to true
+                    )
+                )
+                .await()
+            println("✅ Perfil de docente actualizado para uid: $uid")
+            true
+        } catch (e: Exception) {
+            println("❌ Error actualizando perfil de docente: ${e.message}")
+            false
+        }
+    }
+
+    suspend fun actualizarCosmeticos(pin: String, avatar: String, theme: String): Boolean {
+        return try {
+            val resultado = db.collection("usuarios")
+                .whereEqualTo("pin", pin.toIntOrNull() ?: return false)
+                .get()
+                .await()
+
+            if (resultado.documents.isNotEmpty()) {
+                resultado.documents.first().reference
+                    .update(
+                        mapOf(
+                            "avatar" to avatar,
+                            "equipped_theme" to theme
+                        )
+                    )
+                    .await()
+                true
+            } else {
+                false
+            }
+        } catch (e: Exception) {
+            println("❌ Error actualizando cosméticos: ${e.message}")
+            false
+        }
+    }
+
+    suspend fun comprarCosmetico(
+        pin: String,
+        nuevoCosmetico: String,
+        esAvatar: Boolean,
+        costo: Int
+    ): Boolean {
+        return try {
+            val resultado = db.collection("usuarios")
+                .whereEqualTo("pin", pin.toIntOrNull() ?: return false)
+                .get()
+                .await()
+
+            if (resultado.documents.isNotEmpty()) {
+                val doc = resultado.documents.first()
+                val estrellasActuales = doc.getLong("estrellas") ?: 0
+                if (estrellasActuales < costo) return false
+
+                val campo = if (esAvatar) "unlocked_avatars" else "unlocked_themes"
+                @Suppress("UNCHECKED_CAST")
+                val listaActual = doc.get(campo) as? List<String> ?: emptyList()
+                val listaActualizada = listaActual.toMutableList().apply {
+                    if (!contains(nuevoCosmetico)) add(nuevoCosmetico)
+                }
+
+                doc.reference
+                    .update(
+                        mapOf(
+                            "estrellas" to (estrellasActuales - costo),
+                            campo to listaActualizada
+                        )
+                    )
+                    .await()
+                true
+            } else {
+                false
+            }
+        } catch (e: Exception) {
+            println("❌ Error comprando cosmético: ${e.message}")
+            false
+        }
+    }
 }
 
 // ============ DATA CLASSES (SOLO UNA VEZ) ============
@@ -210,5 +341,9 @@ data class FirebaseStudent(
     val precision: Double = 0.0,
     val estrellas: Int = 0,
     val pin: Int = 0,
-    val padre_email: String = ""
+    val padre_email: String = "",
+    val avatar: String = "👶",
+    val equipped_theme: String = "Lila",
+    val unlocked_avatars: List<String> = listOf("👶"),
+    val unlocked_themes: List<String> = listOf("Lila")
 )

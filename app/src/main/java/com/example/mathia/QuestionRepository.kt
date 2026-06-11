@@ -29,11 +29,19 @@ class QuestionRepository {
             println("📚 Preguntas encontradas: ${resultado.documents.size}")
 
             val preguntas = resultado.documents.mapNotNull { doc ->
-                val pregunta = doc.toObject(QuestionFirebase::class.java)
+
+                val pregunta: QuestionFirebase? =
+                    doc.toObject(QuestionFirebase::class.java)
+                        ?.copy(id = doc.id)
+
                 if (pregunta != null && pregunta.enunciado.isNotBlank()) {
+
                     println("✅ Pregunta cargada: ${pregunta.enunciado}")
+
                     pregunta
+
                 } else {
+
                     null
                 }
             }
@@ -157,6 +165,7 @@ class QuestionRepository {
 }
 
 data class QuestionFirebase(
+    val id: String = "",
     val correcta: String = "",
     val dificultad: Int = 1,
     val enunciado: String = "",

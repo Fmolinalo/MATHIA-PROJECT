@@ -1,0 +1,280 @@
+package com.example.mathia
+
+import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+
+data class ShopItem(
+    val id: String,
+    val name: String,
+    val visual: String, // Emoji or representation
+    val cost: Int,
+    val isAvatar: Boolean
+)
+
+@Composable
+fun ShopTabContent(
+    student: Student,
+    onUpdateStudent: (Student) -> Unit,
+    onShowAlert: (DuolingoAlert) -> Unit,
+    viewModel: StudentViewModel
+) {
+    val context = LocalContext.current
+    var selectedCategory by remember { mutableIntStateOf(0) } // 0 = Avatars, 1 = Themes
+
+    val avatars = listOf(
+        ShopItem("avatar_dino", "Dinosaurio", "🦖", 30, true),
+        ShopItem("avatar_unicorn", "Unicornio", "🦄", 30, true),
+        ShopItem("avatar_rocket", "Cohete", "🚀", 50, true),
+        ShopItem("avatar_alien", "Alienígena", "👾", 50, true),
+        ShopItem("avatar_wizard", "Mago", "🧙", 80, true),
+        ShopItem("avatar_crown", "Corona Real", "👑", 100, true)
+    )
+
+    val themes = listOf(
+        ShopItem("theme_lila", "Lila Clásico", "💜", 0, false),
+        ShopItem("theme_mint", "Verde Menta", "💚", 40, false),
+        ShopItem("theme_space", "Azul Espacial", "💙", 60, false),
+        ShopItem("theme_sun", "Amarillo Sol", "💛", 80, false),
+        ShopItem("theme_pink", "Rosa Algodón", "💖", 100, false)
+    )
+
+    val currentList = if (selectedCategory == 0) avatars else themes
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        // Balance Header Card
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(containerColor = AppColors.PurpleLight)
+        ) {
+            Row(
+                modifier = Modifier.padding(20.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    Text(
+                        text = "La Tiendita de Mateo 🏪",
+                        fontWeight = FontWeight.Black,
+                        fontSize = 18.sp,
+                        color = AppColors.Purple
+                    )
+                    Text(
+                        text = "¡Usa tus estrellas para personalizar tu perfil!",
+                        fontSize = 12.sp,
+                        color = AppColors.Gray600
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .background(Color.White, RoundedCornerShape(12.dp))
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                ) {
+                    Text(
+                        text = "⭐ ${student.stars}",
+                        fontWeight = FontWeight.Bold,
+                        color = AppColors.Amber,
+                        fontSize = 16.sp
+                    )
+                }
+            }
+        }
+
+        // Category Tab selector
+        TabRow(
+            selectedTabIndex = selectedCategory,
+            containerColor = Color.Transparent,
+            contentColor = AppColors.Purple,
+            divider = {}
+        ) {
+            Tab(
+                selected = selectedCategory == 0,
+                onClick = { selectedCategory = 0 },
+                text = { Text("Avatares 🦸", fontWeight = FontWeight.Bold) }
+            )
+            Tab(
+                selected = selectedCategory == 1,
+                onClick = { selectedCategory = 1 },
+                text = { Text("Temas de Fondo 🎨", fontWeight = FontWeight.Bold) }
+            )
+        }
+
+        // Items Grid
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.weight(1f)
+        ) {
+            items(currentList) { item ->
+                val isUnlocked = if (item.isAvatar) {
+                    student.unlockedAvatars.contains(item.visual) || item.visual == "👶"
+                } else {
+                    student.unlockedThemes.contains(item.name) || item.name == "Lila Clásico"
+                }
+
+                val isEquipped = if (item.isAvatar) {
+                    student.avatar == item.visual
+                } else {
+                    student.equippedTheme == item.name
+                }
+
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    border = BorderStroke(2.dp, if (isEquipped) AppColors.Purple else AppColors.Gray200)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(14.dp)
+                            .fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        // Emoji visual box
+                        Box(
+                            modifier = Modifier
+                                .size(64.dp)
+                                .background(AppColors.Bg, CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(item.visual, fontSize = 36.sp)
+                        }
+
+                        Text(
+                            text = item.name,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp,
+                            textAlign = TextAlign.Center
+                        )
+
+                        if (isEquipped) {
+                            // Equipped badge
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(36.dp)
+                                    .background(AppColors.PurpleLight, RoundedCornerShape(50.dp)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "Puesto",
+                                    color = AppColors.Purple,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp
+                                )
+                            }
+                        } else if (isUnlocked) {
+                            // Equip button
+                            Button(
+                                onClick = {
+                                    val updatedStudent = if (item.isAvatar) {
+                                        student.copy(avatar = item.visual)
+                                    } else {
+                                        student.copy(equippedTheme = item.name)
+                                    }
+                                    viewModel.actualizarCosmeticos(
+                                        pin = student.pin,
+                                        avatar = updatedStudent.avatar,
+                                        theme = updatedStudent.equippedTheme
+                                    ) { success ->
+                                        if (success) {
+                                            onUpdateStudent(updatedStudent)
+                                            Toast.makeText(context, "¡Equipado!", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth().height(36.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = AppColors.Purple),
+                                shape = RoundedCornerShape(50.dp)
+                            ) {
+                                Text("Poner", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                            }
+                        } else {
+                            // Locked - Buy button
+                            val canBuy = student.stars >= item.cost
+                            Button(
+                                onClick = {
+                                    viewModel.comprarCosmetico(
+                                        pin = student.pin,
+                                        nuevoCosmetico = if (item.isAvatar) item.visual else item.name,
+                                        esAvatar = item.isAvatar,
+                                        costo = item.cost
+                                    ) { success ->
+                                        if (success) {
+                                            val updatedUnlockedAvatars = if (item.isAvatar) {
+                                                student.unlockedAvatars + item.visual
+                                            } else student.unlockedAvatars
+
+                                            val updatedUnlockedThemes = if (!item.isAvatar) {
+                                                student.unlockedThemes + item.name
+                                            } else student.unlockedThemes
+
+                                            val updatedStudent = student.copy(
+                                                stars = student.stars - item.cost,
+                                                unlockedAvatars = updatedUnlockedAvatars,
+                                                unlockedThemes = updatedUnlockedThemes
+                                            )
+                                            onUpdateStudent(updatedStudent)
+
+                                            onShowAlert(
+                                                DuolingoAlert(
+                                                    title = "¡Compra Exitosa!",
+                                                    message = "🎉 ¡Felicidades! Has desbloqueado ${item.name}. Ahora puedes ponértelo desde la tiendita.",
+                                                    type = AlertType.SUCCESS,
+                                                    buttonText = "¡Ver mi tienda!"
+                                                )
+                                            )
+                                        } else {
+                                            Toast.makeText(context, "Error en la compra", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                },
+                                enabled = canBuy,
+                                modifier = Modifier.fillMaxWidth().height(36.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = AppColors.Pink,
+                                    disabledContainerColor = AppColors.Gray200
+                                ),
+                                shape = RoundedCornerShape(50.dp)
+                            ) {
+                                Text(
+                                    text = "⭐ ${item.cost}",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp,
+                                    color = if (canBuy) Color.White else AppColors.Gray400
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
