@@ -3,9 +3,9 @@ package com.example.mathia
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
 
-class ResultadoActivity : AppCompatActivity() {
+class ResultadoActivity : ComponentActivity() {
     
     private lateinit var tvResultado: TextView
     private lateinit var tvAnalisisIA: TextView
@@ -138,9 +138,10 @@ class ResultadoActivity : AppCompatActivity() {
 
     private fun configurarBotones() {
         btnReintentar.setOnClickListener {
-            val intent = android.content.Intent(this, ExamenActivity::class.java)
-            intent.putExtra("GRADO", intent.getStringExtra("GRADO") ?: "primero")
-            startActivity(intent)
+            val retryIntent = android.content.Intent(this, ExamenActivity::class.java)
+            retryIntent.putExtra("GRADO", intent.getStringExtra("GRADO") ?: "primero")
+            retryIntent.putExtra("PIN", intent.getStringExtra("PIN") ?: "")
+            startActivity(retryIntent)
             finish()
         }
         

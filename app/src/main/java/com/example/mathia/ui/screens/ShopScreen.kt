@@ -75,7 +75,9 @@ fun ShopTabContent(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Column {
+                Column(
+                    modifier = Modifier.weight(1f).padding(end = 8.dp)
+                ) {
                     Text(
                         text = "La Tiendita de Mateo 🏪",
                         fontWeight = FontWeight.Black,
@@ -88,14 +90,21 @@ fun ShopTabContent(
                         color = AppColors.Gray600
                     )
                 }
-                Box(
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
                     modifier = Modifier
                         .background(Color.White, RoundedCornerShape(12.dp))
+                        .border(1.5.dp, AppColors.Amber.copy(alpha = 0.4f), RoundedCornerShape(12.dp))
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                 ) {
                     Text(
-                        text = "⭐ ${student.stars}",
-                        fontWeight = FontWeight.Bold,
+                        text = "⭐",
+                        fontSize = 16.sp
+                    )
+                    Text(
+                        text = "${student.stars}",
+                        fontWeight = FontWeight.Black,
                         color = AppColors.Amber,
                         fontSize = 16.sp
                     )

@@ -2,7 +2,7 @@ package com.example.mathia
 
 import android.os.Bundle
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
@@ -10,7 +10,7 @@ import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ExamenActivity : AppCompatActivity() {
+class ExamenActivity : ComponentActivity() {
 
     private lateinit var tvPregunta: TextView
     private lateinit var tvProgreso: TextView
@@ -56,7 +56,8 @@ class ExamenActivity : AppCompatActivity() {
         lifecycleScope.launch {
             mostrarCargando(true)
             try {
-                preguntas = repository.cargarPreguntas(gradoSeleccionado)
+                val todasLasPreguntas = repository.cargarPreguntas(gradoSeleccionado)
+                preguntas = todasLasPreguntas.shuffled().take(10)
                 if (preguntas.isNotEmpty()) {
                     mostrarPregunta(0)
                     actualizarProgreso()
@@ -76,7 +77,11 @@ class ExamenActivity : AppCompatActivity() {
         rbOpcionA.text = pregunta.opcionA
         rbOpcionB.text = pregunta.opcionB
         rbOpcionC.text = pregunta.opcionC
-        radioGroup.clearCheck()
+        
+        // Deseleccionar todos manualmente debido a la estructura anidada en CardView
+        rbOpcionA.isChecked = false
+        rbOpcionB.isChecked = false
+        rbOpcionC.isChecked = false
         
         // Restaurar respuesta si ya existía
         if (index < respuestasUsuario.size && respuestasUsuario[index].isNotEmpty()) {
@@ -110,16 +115,33 @@ class ExamenActivity : AppCompatActivity() {
                 calcularYMostrarResultados()
             }
         }
+
+        // Configurar selección mutuamente exclusiva manual
+        rbOpcionA.setOnClickListener { selectOption(rbOpcionA) }
+        rbOpcionB.setOnClickListener { selectOption(rbOpcionB) }
+        rbOpcionC.setOnClickListener { selectOption(rbOpcionC) }
+    }
+
+    private fun selectOption(selected: RadioButton) {
+        rbOpcionA.isChecked = (selected == rbOpcionA)
+        rbOpcionB.isChecked = (selected == rbOpcionB)
+        rbOpcionC.isChecked = (selected == rbOpcionC)
     }
 
     private fun guardarRespuestaActual(): Boolean {
-        val selectedId = radioGroup.checkedRadioButtonId
-        if (selectedId == -1) {
+        // Encontrar manualmente cuál está checked
+        val selectedRadioButton = when {
+            rbOpcionA.isChecked -> rbOpcionA
+            rbOpcionB.isChecked -> rbOpcionB
+            rbOpcionC.isChecked -> rbOpcionC
+            else -> null
+        }
+        
+        if (selectedRadioButton == null) {
             Toast.makeText(this, "⚠️ Debes seleccionar una respuesta", Toast.LENGTH_SHORT).show()
             return false
         }
         
-        val selectedRadioButton = findViewById<RadioButton>(selectedId)
         val respuesta = selectedRadioButton.text.toString()
         
         if (preguntaActual >= respuestasUsuario.size) {
@@ -131,13 +153,44 @@ class ExamenActivity : AppCompatActivity() {
         return true
     }
 
+    private fun obtenerTemaDePregunta(enunciado: String): String {
+        val texto = enunciado.lowercase()
+        return when {
+            texto.contains("×") || texto.contains("*") || texto.contains("multiplica") || 
+            texto.contains("triple") || texto.contains("producto") || texto.contains("veces") -> "Multiplicación"
+            
+            texto.contains("/") || texto.contains("fracción") || texto.contains("mitad") || 
+            texto.contains("tercio") || texto.contains("divid") || texto.contains("partes") -> "Fracciones"
+            
+            texto.contains("-") || texto.contains("rest") || texto.contains("menos") || 
+            texto.contains("queda") || texto.contains("regal") || texto.contains("quitar") || texto.contains("perdió") -> "Restas"
+            
+            texto.contains("+") || texto.contains("sum") || texto.contains("doble") || 
+            texto.contains("total") || texto.contains("más") || texto.contains("agrega") || texto.contains("junt") -> "Sumas"
+            
+            texto.contains("patrón") || texto.contains("serie") || texto.contains("siguiente") || 
+            texto.contains("secuencia") || texto.contains("mayor") || texto.contains("menor") || 
+            texto.contains("conteo") || texto.contains("falta") || texto.contains("orden") || texto.contains("___") -> "Series"
+            
+            else -> "Sumas"
+        }
+    }
+
     private fun calcularYMostrarResultados() {
         val db = FirebaseFirestore.getInstance()
         var puntuacion = 0
         val detalles = mutableListOf<Map<String, String>>()
         
         for (i in preguntas.indices) {
-            val esCorrecta = respuestasUsuario[i] == preguntas[i].correcta
+            val userAns = respuestasUsuario[i].trim()
+            val correctAns = preguntas[i].correcta.trim()
+            
+            // Validación robusta: por coincidencia de texto u opción letra (A, B, C)
+            val esCorrecta = (userAns == correctAns) || 
+                (correctAns.equals("A", ignoreCase = true) && userAns == preguntas[i].opcionA.trim()) ||
+                (correctAns.equals("B", ignoreCase = true) && userAns == preguntas[i].opcionB.trim()) ||
+                (correctAns.equals("C", ignoreCase = true) && userAns == preguntas[i].opcionC.trim())
+                
             if (esCorrecta) puntuacion++
             
             detalles.add(mapOf(
@@ -162,6 +215,34 @@ class ExamenActivity : AppCompatActivity() {
                         val currentIncorrectas = studentDoc.getLong("incorrectas")?.toInt() ?: 0
                         val currentTotal = studentDoc.getLong("total_preguntas")?.toInt() ?: 0
                         
+                        @Suppress("UNCHECKED_CAST")
+                        val currentSkills = studentDoc.get("skills") as? Map<String, Long> ?: emptyMap()
+                        @Suppress("UNCHECKED_CAST")
+                        val currentErrors = studentDoc.get("incorrectas_por_tema") as? Map<String, Long> ?: emptyMap()
+                        
+                        val updatedSkills = currentSkills.toMutableMap()
+                        val updatedErrors = currentErrors.toMutableMap()
+
+                        for (i in preguntas.indices) {
+                            val userAns = respuestasUsuario[i].trim()
+                            val correctAns = preguntas[i].correcta.trim()
+                            val esCorrecta = (userAns == correctAns) || 
+                                (correctAns.equals("A", ignoreCase = true) && userAns == preguntas[i].opcionA.trim()) ||
+                                (correctAns.equals("B", ignoreCase = true) && userAns == preguntas[i].opcionB.trim()) ||
+                                (correctAns.equals("C", ignoreCase = true) && userAns == preguntas[i].opcionC.trim())
+                            
+                            val tema = obtenerTemaDePregunta(preguntas[i].enunciado)
+                            
+                            if (esCorrecta) {
+                                val currentSkillScore = updatedSkills[tema] ?: 0L
+                                val newSkillScore = (currentSkillScore + 5L).coerceAtMost(100L)
+                                updatedSkills[tema] = newSkillScore
+                            } else {
+                                val currentFails = updatedErrors[tema] ?: 0L
+                                updatedErrors[tema] = currentFails + 1L
+                            }
+                        }
+
                         val nextCorrectas = currentCorrectas + puntuacion
                         val nextIncorrectas = currentIncorrectas + (preguntas.size - puntuacion)
                         val nextTotal = currentTotal + preguntas.size
@@ -173,23 +254,33 @@ class ExamenActivity : AppCompatActivity() {
                         val docente = studentDoc.getString("docente_asignado") ?: "Sin asignar"
                         val padre = studentDoc.getString("padre_email") ?: ""
                         
-                        // 1. Actualizar perfil del estudiante
+                        // 1. Actualizar perfil del estudiante (incluyendo skills y fallas por tema)
                         docRef.update(
                             mapOf(
                                 "correctas" to nextCorrectas,
                                 "incorrectas" to nextIncorrectas,
                                 "total_preguntas" to nextTotal,
-                                "precision" to nextPrecision
+                                "precision" to nextPrecision,
+                                "skills" to updatedSkills,
+                                "incorrectas_por_tema" to updatedErrors
                             )
                         ).await()
 
-                        // 2. Guardar historial detallado
+                        // 2. Guardar historial detallado de cada pregunta
                         val fFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                         val hFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
                         val now = Date()
                         
                         for (i in preguntas.indices) {
-                            val esCorrecta = respuestasUsuario[i] == preguntas[i].correcta
+                            val userAns = respuestasUsuario[i].trim()
+                            val correctAns = preguntas[i].correcta.trim()
+                            val esCorrecta = (userAns == correctAns) || 
+                                (correctAns.equals("A", ignoreCase = true) && userAns == preguntas[i].opcionA.trim()) ||
+                                (correctAns.equals("B", ignoreCase = true) && userAns == preguntas[i].opcionB.trim()) ||
+                                (correctAns.equals("C", ignoreCase = true) && userAns == preguntas[i].opcionC.trim())
+                            
+                            val tema = obtenerTemaDePregunta(preguntas[i].enunciado)
+                            
                             val log = hashMapOf(
                                 "estudianteId" to studentPin,
                                 "estudianteNombre" to nombre,
@@ -226,6 +317,7 @@ class ExamenActivity : AppCompatActivity() {
         intent.putExtra("TOTAL", preguntas.size)
         intent.putExtra("PORCENTAJE", porcentaje)
         intent.putExtra("GRADO", gradoSeleccionado)
+        intent.putExtra("PIN", studentPin)
         intent.putExtra("DETALLES", ArrayList(detalles.map { HashMap(it) }))
         startActivity(intent)
         finish()
@@ -239,7 +331,9 @@ class ExamenActivity : AppCompatActivity() {
 
     private fun mostrarCargando(mostrar: Boolean) {
         progressBar.visibility = if (mostrar) android.view.View.VISIBLE else android.view.View.GONE
-        radioGroup.isEnabled = !mostrar
+        rbOpcionA.isEnabled = !mostrar
+        rbOpcionB.isEnabled = !mostrar
+        rbOpcionC.isEnabled = !mostrar
         btnSiguiente.isEnabled = !mostrar
         btnEnviar.isEnabled = !mostrar
     }
