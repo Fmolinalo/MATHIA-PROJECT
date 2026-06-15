@@ -1,4 +1,4 @@
-package com.example.mathia
+package com.example.mathia.ui.screens
 
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
@@ -22,14 +22,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-data class ShopItem(
-    val id: String,
-    val name: String,
-    val visual: String, // Emoji or representation
-    val cost: Int,
-    val isAvatar: Boolean
-)
+import com.example.mathia.AppColors
+import com.example.mathia.StudentViewModel
+import com.example.mathia.model.AlertType
+import com.example.mathia.model.DuolingoAlert
+import com.example.mathia.model.ShopItem
+import com.example.mathia.model.Student
 
 @Composable
 fun ShopTabContent(
@@ -183,12 +181,12 @@ fun ShopTabContent(
                                     .background(AppColors.PurpleLight, RoundedCornerShape(50.dp)),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text(
-                                    text = "Puesto",
-                                    color = AppColors.Purple,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 12.sp
-                                )
+                                  Text(
+                                      text = "Puesto",
+                                      color = AppColors.Purple,
+                                      fontWeight = FontWeight.Bold,
+                                      fontSize = 12.sp
+                                  )
                             }
                         } else if (isUnlocked) {
                             // Equip button

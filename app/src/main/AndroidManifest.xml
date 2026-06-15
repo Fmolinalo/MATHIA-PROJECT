@@ -26,6 +26,16 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ExamenActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Mathkids" />
+
+        <activity
+            android:name=".ResultadoActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Mathkids" />
+
         <service
             android:name=".MathiaMessagingService"
             android:exported="false">

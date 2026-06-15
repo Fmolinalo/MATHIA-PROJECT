@@ -65,6 +65,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.9.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.0")  // ← AÑADIR
     implementation("androidx.activity:activity-compose:1.10.1")
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("androidx.cardview:cardview:1.0.0")
 
     // Compose
     implementation(platform("androidx.compose:compose-bom:2025.05.00"))

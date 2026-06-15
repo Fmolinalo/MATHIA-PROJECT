@@ -24,20 +24,8 @@ import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
-
-enum class AlertType {
-    STREAK,      // Orange theme (🔥)
-    SUCCESS,     // Green theme (⭐)
-    MOTIVATIONAL, // Purple theme (🧠)
-    CHALLENGE    // Pink/Blue theme (🏆)
-}
-
-data class DuolingoAlert(
-    val title: String,
-    val message: String,
-    val type: AlertType,
-    val buttonText: String = "¡Entendido!"
-)
+import com.example.mathia.model.AlertType
+import com.example.mathia.model.DuolingoAlert
 
 private data class AlertTheme(
     val bg: Color,

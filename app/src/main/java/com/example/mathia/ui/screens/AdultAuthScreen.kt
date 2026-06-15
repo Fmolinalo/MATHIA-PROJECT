@@ -1,4 +1,4 @@
-package com.example.mathia
+package com.example.mathia.ui.screens
 
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -12,7 +12,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,16 +20,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mathia.AppColors
+import com.example.mathia.GoogleAuthHelper
+import com.example.mathia.GoogleAuthResult
+import com.example.mathia.StudentViewModel
+import com.example.mathia.model.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdultAuthScreen(
-    rol: String,
+    rol: String, // "docente" or "padres"
     onBack: () -> Unit,
     onLoginSuccess: (String, String, String) -> Unit, // (rol, email, uid)
     viewModel: StudentViewModel
@@ -67,33 +70,38 @@ fun AdultAuthScreen(
     val googleSignInLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        val account = authHelper.parseResult(result.data)
-        if (account != null) {
-            val idToken = account.idToken ?: ""
-            val userEmail = account.email ?: ""
-            if (idToken.isNotEmpty()) {
-                viewModel.loginConGoogle(idToken, userEmail, rol) { success, isComplete ->
-                    isLoading = false
-                    if (success) {
-                        val firebaseUid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
-                        if (rol == "docente" && !isComplete) {
-                            onLoginSuccess("docente_incomplete", userEmail, firebaseUid)
-                        } else if (rol == "padres" && !isComplete) {
-                            onLoginSuccess("padres_incomplete", userEmail, firebaseUid)
+        val accountResult = authHelper.parseResult(result.data)
+        when (accountResult) {
+            is GoogleAuthResult.Success -> {
+                val account = accountResult.account
+                val idToken = account.idToken ?: ""
+                val userEmail = account.email ?: ""
+                if (idToken.isNotEmpty()) {
+                    viewModel.loginConGoogle(idToken, userEmail, rol) { success, isComplete ->
+                        isLoading = false
+                        if (success) {
+                            val firebaseUid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+                            val nextRole = if (rol == "docente") {
+                                if (isComplete) "docente" else "docente_incomplete"
+                            } else {
+                                if (isComplete) "padres" else "padres_incomplete"
+                            }
+                            onLoginSuccess(nextRole, userEmail, firebaseUid)
                         } else {
-                            onLoginSuccess(rol, userEmail, firebaseUid)
+                            Toast.makeText(context, "Error de verificación con Firebase Authentication", Toast.LENGTH_SHORT).show()
                         }
-                    } else {
-                        Toast.makeText(context, "Error de verificación con Firebase", Toast.LENGTH_SHORT).show()
                     }
+                } else {
+                    isLoading = false
+                    Toast.makeText(context, "No se pudo obtener el token de Google", Toast.LENGTH_SHORT).show()
                 }
-            } else {
-                isLoading = false
-                Toast.makeText(context, "No se pudo obtener el token de Google", Toast.LENGTH_SHORT).show()
             }
-        } else {
-            isLoading = false
-            Toast.makeText(context, "Autenticación cancelada", Toast.LENGTH_SHORT).show()
+            is GoogleAuthResult.Error -> {
+                isLoading = false
+                if (accountResult.code != 12501) { // Do not show message if user cancelled
+                    Toast.makeText(context, accountResult.message, Toast.LENGTH_LONG).show()
+                }
+            }
         }
     }
 
@@ -150,7 +158,6 @@ fun AdultAuthScreen(
                 } else {
                     // Common fields
                     if (authMode == 1) {
-                        // Registration: Full Name
                         Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                             Text("Nombre Completo", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = AppColors.Gray600)
                             OutlinedTextField(
@@ -191,7 +198,6 @@ fun AdultAuthScreen(
                     // Registration specific sub-forms
                     if (authMode == 1) {
                         if (rol == "padres") {
-                            // Subform Parents -> Register child
                             Text(
                                 "Registra a tu Hijo/a 👶",
                                 fontWeight = FontWeight.Bold,
@@ -252,7 +258,6 @@ fun AdultAuthScreen(
                                 )
                             }
                         } else {
-                            // Subform Teachers -> Register classroom
                             Text(
                                 "Configura tu Aula 🏫",
                                 fontWeight = FontWeight.Bold,
@@ -315,7 +320,6 @@ fun AdultAuthScreen(
                         }
                     }
 
-                    // Action Button (Email/Password)
                     val isEmailValid = email.contains("@") && password.length >= 6
                     val isRegisterFormValid = isEmailValid && nombre.isNotBlank() && (
                         if (rol == "padres") {
@@ -327,77 +331,166 @@ fun AdultAuthScreen(
 
                     Button(
                         onClick = {
+                            if (StudentViewModel.isDemoMode) {
+                                val expectedRole = if (rol == "padres") "padre" else "docente"
+                                if (authMode == 0) {
+                                    // Iniciar Sesión con Email/Password en Modo Demo
+                                    val uid = if (email == "teacher@mathia.com") "teacher_uid" else (if (email == "parent@mathia.com") "parent_uid" else "mock_user_${email.hashCode()}")
+                                    val existing = StudentViewModel.mockUsuarios[uid] as? AdultoFirebase
+                                    if (existing != null && existing.rol != expectedRole) {
+                                        val displayRole = if (existing.rol == "docente") "Docente" else "Padre"
+                                        Toast.makeText(context, "Esta cuenta está registrada como $displayRole en Modo Demo.", Toast.LENGTH_LONG).show()
+                                    } else {
+                                        if (existing == null) {
+                                            StudentViewModel.mockUsuarios[uid] = AdultoFirebase(
+                                                uid = uid,
+                                                email = email,
+                                                rol = expectedRole,
+                                                nombre = email.substringBefore("@"),
+                                                perfil_completo = true
+                                            )
+                                        }
+                                        onLoginSuccess(rol, email, uid)
+                                    }
+                                } else {
+                                    // Registrar en Modo Demo
+                                    val uid = "mock_user_${email.hashCode()}"
+                                    if (rol == "padres") {
+                                        val parentData = AdultoFirebase(
+                                            uid = uid,
+                                            email = email,
+                                            nombre = nombre,
+                                            rol = "padre",
+                                            perfil_completo = true,
+                                            estudiante_pin = hijoPin.toIntOrNull() ?: 1234
+                                        )
+                                        StudentViewModel.mockUsuarios[uid] = parentData
+
+                                        val childData = FirebaseStudent(
+                                            nombre = hijoNombre,
+                                            grado = hijoGrado,
+                                            seccion = "Sección A",
+                                            edad = 6,
+                                            colegio = hijoColegio,
+                                            docente_asignado = "Sin asignar",
+                                            fecha_creacion = System.currentTimeMillis(),
+                                            nivel_actual = 1,
+                                            pin = hijoPin.toIntOrNull() ?: 1234,
+                                            padre_email = email
+                                        )
+                                        StudentViewModel.mockUsuarios[hijoPin] = childData
+                                        Toast.makeText(context, "¡Registro Demo Exitoso!", Toast.LENGTH_SHORT).show()
+                                        onLoginSuccess(rol, email, uid)
+                                    } else {
+                                        val teacherData = AdultoFirebase(
+                                            uid = uid,
+                                            email = email,
+                                            rol = "docente",
+                                            nombre = nombre,
+                                            colegio = docenteColegio,
+                                            grado = docenteGrado,
+                                            seccion = docenteSeccion,
+                                            perfil_completo = true
+                                        )
+                                        StudentViewModel.mockUsuarios[uid] = teacherData
+                                        Toast.makeText(context, "¡Registro Demo Docente Exitoso!", Toast.LENGTH_SHORT).show()
+                                        onLoginSuccess(rol, email, uid)
+                                    }
+                                }
+                                return@Button
+                            }
+
                             isLoading = true
                             val auth = FirebaseAuth.getInstance()
                             if (authMode == 0) {
-                                // Login
+                                // Iniciar Sesión con Email/Password
                                 auth.signInWithEmailAndPassword(email, password)
                                     .addOnSuccessListener { result ->
                                         val uid = result.user?.uid ?: ""
-                                        // Check if user is complete
                                         val db = FirebaseFirestore.getInstance()
-                                        if (rol == "docente") {
-                                            db.collection("usuarios").document(uid).get()
-                                                .addOnSuccessListener { doc ->
-                                                    isLoading = false
-                                                    val isComplete = doc.getBoolean("perfil_completo") ?: false
-                                                    if (isComplete) onLoginSuccess(rol, email, uid)
-                                                    else onLoginSuccess("docente_incomplete", email, uid)
+                                        db.collection("usuarios").document(uid).get()
+                                            .addOnSuccessListener { doc ->
+                                                isLoading = false
+                                                if (doc.exists()) {
+                                                    val dbRole = doc.getString("rol") ?: ""
+                                                    val expectedRole = if (rol == "padres") "padre" else "docente"
+                                                    if (dbRole != expectedRole) {
+                                                        auth.signOut()
+                                                        val displayRole = if (dbRole == "docente") "Docente" else "Padre"
+                                                        Toast.makeText(context, "Esta cuenta está registrada como $displayRole.", Toast.LENGTH_LONG).show()
+                                                    } else {
+                                                        val isComplete = doc.getBoolean("perfil_completo") ?: false
+                                                        if (isComplete) onLoginSuccess(rol, email, uid)
+                                                        else {
+                                                            val nextRole = if (rol == "docente") "docente_incomplete" else "padres_incomplete"
+                                                            onLoginSuccess(nextRole, email, uid)
+                                                        }
+                                                    }
+                                                } else {
+                                                    val nextRole = if (rol == "docente") "docente_incomplete" else "padres_incomplete"
+                                                    onLoginSuccess(nextRole, email, uid)
                                                 }
-                                                .addOnFailureListener {
-                                                    isLoading = false
-                                                    onLoginSuccess("docente_incomplete", email, uid)
-                                                }
-                                        } else {
-                                            db.collection("adultos").document(email).get()
-                                                .addOnSuccessListener { doc ->
-                                                    isLoading = false
-                                                    val isComplete = doc.getBoolean("perfil_completo") ?: false
-                                                    if (isComplete) onLoginSuccess(rol, email, uid)
-                                                    else onLoginSuccess("padres_incomplete", email, uid)
-                                                }
-                                                .addOnFailureListener {
-                                                    isLoading = false
-                                                    onLoginSuccess("padres_incomplete", email, uid)
-                                                }
-                                        }
+                                            }
+                                            .addOnFailureListener {
+                                                isLoading = false
+                                                val nextRole = if (rol == "docente") "docente_incomplete" else "padres_incomplete"
+                                                onLoginSuccess(nextRole, email, uid)
+                                            }
                                     }
                                     .addOnFailureListener { e ->
                                         isLoading = false
-                                        Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(context, "Error: ${e.message}. \n💡 Prueba activando el 'Modo Demo 🧪' en la pantalla principal si no posees conexión a Firebase.", Toast.LENGTH_LONG).show()
                                     }
                             } else {
-                                // Register
+                                // Registrar con Email/Password
                                 auth.createUserWithEmailAndPassword(email, password)
                                     .addOnSuccessListener { result ->
                                         val uid = result.user?.uid ?: ""
                                         val db = FirebaseFirestore.getInstance()
 
                                         if (rol == "padres") {
-                                            // 1. Create parent doc
+                                            // 1. Create parent profile in 'usuarios' with uid
                                             val parentData = hashMapOf(
+                                                "uid" to uid,
                                                 "email" to email,
                                                 "nombre" to nombre,
-                                                "rol" to "padres",
+                                                "rol" to "padre",
                                                 "perfil_completo" to true,
                                                 "estudiante_pin" to hijoPin.toInt()
                                             )
-                                            db.collection("adultos").document(email).set(parentData)
+                                            db.collection("usuarios").document(uid).set(parentData)
                                                 .addOnSuccessListener {
-                                                    // 2. Create child doc
+                                                    // 2. Create child profile in 'usuarios' with pin as doc id
                                                     val childData = hashMapOf(
                                                         "nombre" to hijoNombre,
                                                         "colegio" to hijoColegio,
                                                         "grado" to hijoGrado,
                                                         "pin" to hijoPin.toInt(),
                                                         "estrellas" to 0,
+                                                        "xp" to 0,
                                                         "precision" to 0.0,
                                                         "nivel_actual" to 1,
                                                         "padre_email" to email,
                                                         "avatar" to "👶",
                                                         "equipped_theme" to "Lila Clásico",
                                                         "unlocked_avatars" to listOf("👶"),
-                                                        "unlocked_themes" to listOf("Lila Clásico")
+                                                        "unlocked_themes" to listOf("Lila Clásico"),
+                                                        "streak" to 0,
+                                                        "total_preguntas" to 0,
+                                                        "correctas" to 0,
+                                                        "incorrectas" to 0,
+                                                        "tiempo_total" to 0L,
+                                                        "tiempo_promedio" to 0.0,
+                                                        "diagnostico_realizado" to false,
+                                                        "skills" to mapOf(
+                                                            "Sumas" to 0,
+                                                            "Restas" to 0,
+                                                            "Multiplicación" to 0,
+                                                            "Fracciones" to 0,
+                                                            "Series" to 0
+                                                        ),
+                                                        "incorrectas_por_tema" to emptyMap<String, Int>(),
+                                                        "recomendaciones" to listOf("¡Realiza el Examen Adaptativo para descubrir tu nivel actual de matemáticas! 🧬")
                                                     )
                                                     db.collection("usuarios").document(hijoPin).set(childData)
                                                         .addOnSuccessListener {
@@ -407,7 +500,7 @@ fun AdultAuthScreen(
                                                         }
                                                 }
                                         } else {
-                                            // Create teacher user doc
+                                            // 1. Create teacher profile in 'usuarios' with uid
                                             val teacherData = hashMapOf(
                                                 "uid" to uid,
                                                 "email" to email,
@@ -428,7 +521,7 @@ fun AdultAuthScreen(
                                     }
                                     .addOnFailureListener { e ->
                                         isLoading = false
-                                        Toast.makeText(context, "Error al registrar: ${e.message}", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(context, "Error al registrar: ${e.message}. \n💡 Prueba activando el 'Modo Demo 🧪' en la pantalla principal si no posees conexión a Firebase.", Toast.LENGTH_LONG).show()
                                     }
                             }
                         },
@@ -462,6 +555,13 @@ fun AdultAuthScreen(
                     // Google Sign-In Button
                     Button(
                         onClick = {
+                            if (StudentViewModel.isDemoMode) {
+                                val mockEmail = if (rol == "docente") "teacher@mathia.com" else "parent@mathia.com"
+                                val mockUid = if (rol == "docente") "teacher_uid" else "parent_uid"
+                                Toast.makeText(context, "Simulación Google Sign-In con: $mockEmail", Toast.LENGTH_SHORT).show()
+                                onLoginSuccess(rol, mockEmail, mockUid)
+                                return@Button
+                            }
                             isLoading = true
                             googleSignInLauncher.launch(authHelper.getSignInIntent())
                         },
