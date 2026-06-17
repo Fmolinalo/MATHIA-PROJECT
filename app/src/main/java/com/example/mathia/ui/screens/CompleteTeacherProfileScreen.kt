@@ -125,7 +125,7 @@ fun CompleteTeacherProfileScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Text(
-                        text = "Completa tu Perfil 👩‍🏫",
+                        text = "Completa tu Perfil",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = AppColors.Purple

@@ -1,6 +1,8 @@
 package com.example.mathia.ui.screens
 
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -19,17 +21,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.ui.platform.LocalContext
+import android.content.Context
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import com.example.mathia.R
 import com.example.mathia.AppColors
 import com.example.mathia.StudentViewModel
-import com.example.mathia.model.DuolingoAlert
+import com.example.mathia.model.MathiaAlert
 import com.example.mathia.model.Student
 import com.example.mathia.ui.components.RadarChart
 import com.example.mathia.ui.components.StarProgress
 import com.example.mathia.ui.components.StreakCalendar
+import com.example.mathia.ui.components.AvatarIcon
 
 // Data class para representar cada actividad del menú infantil
 data class ActivityCard(
-    val icon: String,
+    val icon: androidx.compose.ui.graphics.vector.ImageVector,
     val title: String,
     val subtitle: String,
     val op: String,
@@ -46,25 +56,30 @@ fun MainMenuScreen(
     onLeaderboard: () -> Unit,
     onLogout: () -> Unit,
     onUpdateStudent: (Student) -> Unit,
-    onShowAlert: (DuolingoAlert) -> Unit,
+    onShowAlert: (MathiaAlert) -> Unit,
     onProfile: () -> Unit,
     viewModel: StudentViewModel
 ) {
     var selectedTab by remember { mutableIntStateOf(0) } // 0 = Inicio, 1 = Progreso, 2 = Tienda
 
+    val context = LocalContext.current
+    val sharedPref = remember { context.getSharedPreferences("mathia_prefs", Context.MODE_PRIVATE) }
+    var currentTutor by remember { mutableStateOf(sharedPref.getString("student_tutor", "axolita") ?: "axolita") }
+    var showTutorSelector by remember { mutableStateOf(false) }
+
     val activities = remember {
         listOf(
-            ActivityCard("➕", "Sumas", "¡Suma como un campeón!", "Suma",
+            ActivityCard(Icons.Default.Add, "Sumas", "¡Suma como un campeón!", "Suma",
                 Color(0xFF4FC3F7), Color(0xFF0288D1)),
-            ActivityCard("➖", "Restas", "¡Domina la resta!", "Resta",
+            ActivityCard(Icons.Default.Remove, "Restas", "¡Domina la resta!", "Resta",
                 Color(0xFF81C784), Color(0xFF388E3C)),
-            ActivityCard("✖️", "Multi-\nplicación", "¡Multiplica rápido!", "Multiplicacion",
+            ActivityCard(Icons.Default.Close, "Multi-\nplicación", "¡Multiplica rápido!", "Multiplicacion",
                 Color(0xFFFFB74D), Color(0xFFE65100)),
-            ActivityCard("🍕", "Fracciones", "¡Juega con porciones!", "Fracciones",
+            ActivityCard(Icons.Default.PieChart, "Fracciones", "¡Juega con porciones!", "Fracciones",
                 Color(0xFFBA68C8), Color(0xFF7B1FA2)),
-            ActivityCard("🔢", "Series", "¡Completa el patrón!", "Series",
+            ActivityCard(Icons.Default.LinearScale, "Series", "¡Completa el patrón!", "Series",
                 Color(0xFFFF8A65), Color(0xFFBF360C)),
-            ActivityCard("🧠", "Examen IA", "¡Mide tu nivel!", "Exam",
+            ActivityCard(Icons.Default.Psychology, "Examen IA", "¡Mide tu nivel!", "Exam",
                 Color(0xFF26C6DA), Color(0xFF006064)),
         )
     }
@@ -79,9 +94,10 @@ fun MainMenuScreen(
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
                     icon = {
-                        Text(
-                            "🏠",
-                            fontSize = if (selectedTab == 0) 26.sp else 22.sp
+                        Icon(
+                            imageVector = Icons.Default.Home,
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
                         )
                     },
                     label = {
@@ -101,9 +117,10 @@ fun MainMenuScreen(
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
                     icon = {
-                        Text(
-                            "📊",
-                            fontSize = if (selectedTab == 1) 26.sp else 22.sp
+                        Icon(
+                            imageVector = Icons.Default.Assessment,
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
                         )
                     },
                     label = {
@@ -123,9 +140,10 @@ fun MainMenuScreen(
                     selected = selectedTab == 2,
                     onClick = { selectedTab = 2 },
                     icon = {
-                        Text(
-                            "🏪",
-                            fontSize = if (selectedTab == 2) 26.sp else 22.sp
+                        Icon(
+                            imageVector = Icons.Default.Store,
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
                         )
                     },
                     label = {
@@ -144,7 +162,13 @@ fun MainMenuScreen(
                 NavigationBarItem(
                     selected = false,
                     onClick = onRewards,
-                    icon = { Text("🏆", fontSize = 22.sp) },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.EmojiEvents,
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    },
                     label = { Text("Premios", fontSize = 11.sp) },
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = AppColors.Purple,
@@ -154,7 +178,13 @@ fun MainMenuScreen(
                 NavigationBarItem(
                     selected = false,
                     onClick = onLogout,
-                    icon = { Text("🚪", fontSize = 22.sp) },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.ExitToApp,
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    },
                     label = { Text("Salir", fontSize = 11.sp) },
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = AppColors.Purple,
@@ -184,9 +214,22 @@ fun MainMenuScreen(
                 onExam = onExam,
                 onLeaderboard = onLeaderboard,
                 onProfile = onProfile,
-                paddingValues = paddingValues
+                paddingValues = paddingValues,
+                currentTutor = currentTutor,
+                onShowTutorSelector = { showTutorSelector = true }
             )
         }
+    }
+
+    if (showTutorSelector) {
+        TutorSelectionDialog(
+            currentTutor = currentTutor,
+            onTutorSelected = { tutorKey ->
+                currentTutor = tutorKey
+                sharedPref.edit().putString("student_tutor", tutorKey).apply()
+            },
+            onDismiss = { showTutorSelector = false }
+        )
     }
 }
 
@@ -199,7 +242,9 @@ fun InicioTab(
     onExam: () -> Unit,
     onLeaderboard: () -> Unit,
     onProfile: () -> Unit,
-    paddingValues: PaddingValues
+    paddingValues: PaddingValues,
+    currentTutor: String,
+    onShowTutorSelector: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -216,13 +261,24 @@ fun InicioTab(
         // ─── SECCIÓN DESAFÍOS ────────────────────────────────────────
         item {
             Spacer(Modifier.height(20.dp))
-            Text(
-                text = "🎮  ¡Elige tu Desafío!",
-                fontWeight = FontWeight.ExtraBold,
-                fontSize = 20.sp,
-                color = AppColors.Gray800,
-                modifier = Modifier.padding(horizontal = 20.dp)
-            )
+            Row(
+                modifier = Modifier.padding(horizontal = 20.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.SportsEsports,
+                    contentDescription = null,
+                    tint = AppColors.Purple,
+                    modifier = Modifier.size(24.dp)
+                )
+                Text(
+                    text = "¡Elige tu Desafío!",
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 20.sp,
+                    color = AppColors.Gray800
+                )
+            }
             Spacer(Modifier.height(12.dp))
         }
 
@@ -255,7 +311,12 @@ fun InicioTab(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Text("🏅", fontSize = 40.sp)
+                    Icon(
+                        imageVector = Icons.Default.Leaderboard,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(40.dp)
+                    )
                     Column {
                         Text(
                             "Tabla de Campeones",
@@ -274,9 +335,9 @@ fun InicioTab(
             Spacer(Modifier.height(24.dp))
         }
 
-        // ─── SUGERENCIAS DE MATEO ───────────────────────────────────
+        // ─── SUGERENCIAS DEL TUTOR ───────────────────────────────────
         item {
-            MateoTipsCard(student = student)
+            TutorCornerCard(student = student, currentTutor = currentTutor, onClickTutor = onShowTutorSelector)
             Spacer(Modifier.height(16.dp))
         }
 
@@ -327,11 +388,15 @@ fun StudentHeaderPremium(student: Student, onProfile: () -> Unit) {
                         .clickable { onProfile() },
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(student.avatar, fontSize = 42.sp)
+                    AvatarIcon(
+                        avatarKey = student.avatar,
+                        tint = Color.White,
+                        modifier = Modifier.size(42.dp)
+                    )
                 }
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "¡Hola, ${student.name}! 👋",
+                        text = "¡Hola, ${student.name}!",
                         fontSize = 22.sp,
                         fontWeight = FontWeight.ExtraBold,
                         color = Color.White
@@ -343,8 +408,16 @@ fun StudentHeaderPremium(student: Student, onProfile: () -> Unit) {
                     )
                 }
                 // Estrella y racha
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("🔥", fontSize = 20.sp)
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Whatshot,
+                        contentDescription = null,
+                        tint = AppColors.Amber,
+                        modifier = Modifier.size(20.dp)
+                    )
                     Text(
                         "${student.streak}",
                         fontSize = 14.sp,
@@ -360,13 +433,21 @@ fun StudentHeaderPremium(student: Student, onProfile: () -> Unit) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 listOf(
-                    Triple("⭐", "${student.stars}", "Estrellas"),
-                    Triple("⚡", "${student.xp} XP", "Experiencia"),
-                    Triple("🏅", "Nv. ${student.level}", "Nivel"),
-                    Triple("🎯", "${student.accuracy}%", "Precisión")
+                    Triple(Icons.Default.Star, "${student.stars}", "Estrellas"),
+                    Triple(Icons.Default.ElectricBolt, "${student.xp} XP", "Experiencia"),
+                    Triple(Icons.Default.Leaderboard, "Nv. ${student.level}", "Nivel"),
+                    Triple(Icons.Default.Flag, "${student.accuracy}%", "Precisión")
                 ).forEach { (icon, value, label) ->
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(icon, fontSize = 16.sp)
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(18.dp)
+                        )
                         Text(
                             value,
                             fontWeight = FontWeight.Bold,
@@ -509,10 +590,11 @@ fun ActivityCardItem(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(
-                    activity.icon,
-                    fontSize = 38.sp,
-                    textAlign = TextAlign.Center
+                Icon(
+                    imageVector = activity.icon,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(38.dp)
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
@@ -535,58 +617,121 @@ fun ActivityCardItem(
     }
 }
 
-// ─── SUGERENCIAS DE MATEO ────────────────────────────────────────────────────
+// ─── INTERACTIVE TUTOR CORNER ────────────────────────────────────────────────
 @Composable
-fun MateoTipsCard(student: Student) {
+fun TutorCornerCard(student: Student, currentTutor: String, onClickTutor: () -> Unit) {
+    val tutorInfo = remember(currentTutor) {
+        when (currentTutor) {
+            "prof_axol" -> Triple("Profesor Axol", R.drawable.ajolote_teacher_male, "¡Hola! Analicemos tus metas de hoy.")
+            "prof_axolina" -> Triple("Profesora Axolina", R.drawable.ajolote_teacher_female, "¡Hola, cariño! Vamos a aprender a tu ritmo.")
+            else -> Triple("Axolita", R.drawable.ajolote_student, "¡Hola! ¡Qué chulo verte hoy! ¿Jugamos?")
+        }
+    }
+
+    val tips = remember(student.recomendaciones) {
+        student.recomendaciones.ifEmpty {
+            listOf(
+                "¡Completa desafíos para ganar estrellas y subir de nivel!",
+                "¡Practica todos los días para mantener tu racha!"
+            )
+        }
+    }
+
+    // Customize tip prefix based on tutor tone
+    val speechPrefix = remember(currentTutor) {
+        when (currentTutor) {
+            "prof_axol" -> "Lógica recomendada: "
+            "prof_axolina" -> "Consejo con amor: "
+            else -> "¡Tip rápido! "
+        }
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp),
+            .padding(horizontal = 20.dp)
+            .clickable { onClickTutor() },
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFEEF4FF)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
+        border = BorderStroke(2.dp, AppColors.MathiaGold.copy(alpha = 0.5f))
     ) {
-        Column(modifier = Modifier.padding(18.dp)) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Tutor Character image
+            Box(
+                modifier = Modifier
+                    .size(90.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color.White)
+                    .border(2.dp, AppColors.MathiaNavy.copy(alpha = 0.2f), RoundedCornerShape(16.dp)),
+                contentAlignment = Alignment.Center
             ) {
-                Text("🦎", fontSize = 24.sp)
+                Image(
+                    painter = painterResource(id = tutorInfo.second),
+                    contentDescription = tutorInfo.first,
+                    modifier = Modifier.size(80.dp)
+                )
+            }
+
+            // Speech Bubble & Tips
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    "Consejos de Mateo",
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 16.sp,
-                    color = AppColors.Purple
+                    text = "${tutorInfo.first} (Tutor Guía)",
+                    fontWeight = FontWeight.Black,
+                    fontSize = 15.sp,
+                    color = AppColors.MathiaNavy
                 )
-            }
-            Spacer(Modifier.height(10.dp))
-
-            val tips = student.recomendaciones.ifEmpty {
-                listOf(
-                    "¡Completa desafíos para ganar estrellas y subir de nivel! ⭐",
-                    "¡Practica todos los días para mantener tu racha! 🔥"
+                Text(
+                    text = tutorInfo.third,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = AppColors.MathiaRed,
+                    lineHeight = 14.sp
                 )
-            }
+                Spacer(Modifier.height(6.dp))
 
-            tips.take(3).forEachIndexed { i, tip ->
+                tips.take(2).forEach { tip ->
+                    Row(
+                        modifier = Modifier.padding(vertical = 2.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Lightbulb,
+                            contentDescription = null,
+                            tint = AppColors.MathiaGold,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(Modifier.width(6.dp))
+                        Text(
+                            text = "$speechPrefix$tip",
+                            fontSize = 12.sp,
+                            color = AppColors.Gray700,
+                            lineHeight = 15.sp
+                        )
+                    }
+                }
+                Spacer(Modifier.height(4.dp))
                 Row(
-                    modifier = Modifier
-                        .padding(vertical = 4.dp)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.Top
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        "${i + 1}.",
-                        fontWeight = FontWeight.ExtraBold,
-                        color = AppColors.Purple,
-                        fontSize = 13.sp,
-                        modifier = Modifier.width(20.dp)
+                        text = "Pulsa aquí para cambiar de tutor",
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = AppColors.MathiaTeal
                     )
-                    Text(
-                        text = tip,
-                        fontSize = 13.sp,
-                        color = AppColors.Gray700,
-                        lineHeight = 18.sp
+                    Spacer(Modifier.width(4.dp))
+                    Icon(
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = null,
+                        tint = AppColors.MathiaTeal,
+                        modifier = Modifier.size(12.dp)
                     )
                 }
             }
@@ -609,18 +754,29 @@ fun MisionesCard(student: Student) {
             modifier = Modifier.padding(18.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            Text(
-                "🎯  Misiones de Hoy",
-                fontWeight = FontWeight.ExtraBold,
-                fontSize = 16.sp,
-                color = AppColors.Gray800
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Flag,
+                    contentDescription = null,
+                    tint = AppColors.Purple,
+                    modifier = Modifier.size(20.dp)
+                )
+                Text(
+                    text = "Misiones de Hoy",
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 16.sp,
+                    color = AppColors.Gray800
+                )
+            }
 
             // Misión diaria
             val dailyTarget = 5
             val dailyPct = (student.dailyMissionProgress.toFloat() / dailyTarget).coerceIn(0f, 1f)
             MisionRow(
-                icon = "☀️",
+                icon = Icons.Default.WbSunny,
                 label = "Diaria: Resuelve 5 desafíos",
                 current = student.dailyMissionProgress,
                 target = dailyTarget,
@@ -632,7 +788,7 @@ fun MisionesCard(student: Student) {
             val weeklyTarget = 20
             val weeklyPct = (student.weeklyMissionProgress.toFloat() / weeklyTarget).coerceIn(0f, 1f)
             MisionRow(
-                icon = "🗓️",
+                icon = Icons.Default.CalendarMonth,
                 label = "Semanal: Resuelve 20 desafíos",
                 current = student.weeklyMissionProgress,
                 target = weeklyTarget,
@@ -645,7 +801,7 @@ fun MisionesCard(student: Student) {
 
 @Composable
 fun MisionRow(
-    icon: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
     label: String,
     current: Int,
     target: Int,
@@ -662,7 +818,12 @@ fun MisionRow(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                Text(icon, fontSize = 15.sp)
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = color,
+                    modifier = Modifier.size(18.dp)
+                )
                 Text(label, fontSize = 12.sp, color = AppColors.Gray600)
             }
             Text(
@@ -698,12 +859,23 @@ fun ProgresoTab(student: Student, paddingValues: PaddingValues) {
         item { Spacer(Modifier.height(8.dp)) }
 
         item {
-            Text(
-                "📊  Mi Progreso",
-                fontWeight = FontWeight.ExtraBold,
-                fontSize = 20.sp,
-                color = AppColors.Gray800
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Assessment,
+                    contentDescription = null,
+                    tint = AppColors.Purple,
+                    modifier = Modifier.size(24.dp)
+                )
+                Text(
+                    text = "Mi Progreso",
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 20.sp,
+                    color = AppColors.Gray800
+                )
+            }
         }
 
         // Racha de días
@@ -719,7 +891,12 @@ fun ProgresoTab(student: Student, paddingValues: PaddingValues) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
-                    Text("🔥", fontSize = 40.sp)
+                    Icon(
+                        imageVector = Icons.Default.Whatshot,
+                        contentDescription = null,
+                        tint = AppColors.Amber,
+                        modifier = Modifier.size(40.dp)
+                    )
                     Column {
                         Text(
                             "¡Racha de ${student.streak} días!",
@@ -765,12 +942,23 @@ fun ProgresoTab(student: Student, paddingValues: PaddingValues) {
                     modifier = Modifier.padding(18.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        "🗺️  Mapa de Habilidades",
-                        fontWeight = FontWeight.ExtraBold,
-                        fontSize = 16.sp,
-                        color = AppColors.Gray800
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Explore,
+                            contentDescription = null,
+                            tint = AppColors.Purple,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Text(
+                            text = "Mapa de Habilidades",
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 16.sp,
+                            color = AppColors.Gray800
+                        )
+                    }
                     Spacer(Modifier.height(12.dp))
                     val mapSkills = student.skills.ifEmpty {
                         mapOf(
@@ -801,19 +989,30 @@ fun ProgresoTab(student: Student, paddingValues: PaddingValues) {
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(modifier = Modifier.padding(18.dp)) {
-                    Text(
-                        "📈  Estadísticas Generales",
-                        fontWeight = FontWeight.ExtraBold,
-                        fontSize = 16.sp,
-                        color = AppColors.Gray800
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.TrendingUp,
+                            contentDescription = null,
+                            tint = AppColors.Purple,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Text(
+                            text = "Estadísticas Generales",
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 16.sp,
+                            color = AppColors.Gray800
+                        )
+                    }
                     Spacer(Modifier.height(14.dp))
                     val stats = listOf(
-                        Triple("📝", "Total Preguntas", "${student.totalQuestions}"),
-                        Triple("✅", "Respuestas Correctas", "${student.correctAnswers}"),
-                        Triple("🎯", "Precisión Global", "${student.accuracy}%"),
-                        Triple("📚", "Exámenes Completados", "${student.examsCompleted}"),
-                        Triple("⏱️", "Tiempo Promedio / pregunta", "${student.tiempoPromedio.toInt()}s"),
+                        Triple(Icons.Default.Description, "Total Preguntas", "${student.totalQuestions}"),
+                        Triple(Icons.Default.CheckCircle, "Respuestas Correctas", "${student.correctAnswers}"),
+                        Triple(Icons.Default.MyLocation, "Precisión Global", "${student.accuracy}%"),
+                        Triple(Icons.Default.Book, "Exámenes Completados", "${student.examsCompleted}"),
+                        Triple(Icons.Default.Timer, "Tiempo Promedio / pregunta", "${student.tiempoPromedio.toInt()}s"),
                     )
                     stats.forEach { (icon, label, value) ->
                         Row(
@@ -827,7 +1026,12 @@ fun ProgresoTab(student: Student, paddingValues: PaddingValues) {
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                Text(icon, fontSize = 16.sp)
+                                Icon(
+                                    imageVector = icon,
+                                    contentDescription = null,
+                                    tint = AppColors.Purple,
+                                    modifier = Modifier.size(18.dp)
+                                )
                                 Text(label, fontSize = 13.sp, color = AppColors.Gray600)
                             }
                             Text(
@@ -854,11 +1058,6 @@ fun SkillProgressRow(skill: String, value: Int) {
         value >= 50 -> Color(0xFFFFB300)
         else -> Color(0xFFEF5350)
     }
-    val emoji = when {
-        value >= 80 -> "🟢"
-        value >= 50 -> "🟡"
-        else -> "🔴"
-    }
 
     Row(
         modifier = Modifier
@@ -867,7 +1066,12 @@ fun SkillProgressRow(skill: String, value: Int) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Text(emoji, fontSize = 14.sp)
+        Icon(
+            imageVector = Icons.Default.Circle,
+            contentDescription = null,
+            tint = color,
+            modifier = Modifier.size(10.dp)
+        )
         Text(
             skill,
             fontSize = 13.sp,
@@ -893,3 +1097,4 @@ fun SkillProgressRow(skill: String, value: Int) {
         )
     }
 }
+

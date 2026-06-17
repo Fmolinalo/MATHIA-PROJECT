@@ -1,5 +1,8 @@
 package com.example.mathia.ui.screens
 
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import com.example.mathia.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -66,7 +69,11 @@ fun SelectLoginTypeScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text("🧒", fontSize = 40.sp)
+                Image(
+                    painter = painterResource(id = R.drawable.ajolote_student),
+                    contentDescription = "Estudiante",
+                    modifier = Modifier.size(65.dp)
+                )
                 Column {
                     Text("Niño / Estudiante", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = AppColors.Gray800)
                     Text("¡Juega, gana estrellas y aprende!", fontSize = 12.sp, color = AppColors.Gray600)
@@ -91,7 +98,11 @@ fun SelectLoginTypeScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text("👩‍🏫", fontSize = 40.sp)
+                Image(
+                    painter = painterResource(id = R.drawable.ajolote_role_teacher),
+                    contentDescription = "Docente",
+                    modifier = Modifier.size(65.dp)
+                )
                 Column {
                     Text("Profesor / Docente", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = AppColors.Gray800)
                     Text("Analiza las estadísticas de tu grupo", fontSize = 12.sp, color = AppColors.Gray600)
@@ -116,7 +127,11 @@ fun SelectLoginTypeScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text("👨‍👩‍👧", fontSize = 40.sp)
+                Image(
+                    painter = painterResource(id = R.drawable.ajolote_role_parent),
+                    contentDescription = "Padre",
+                    modifier = Modifier.size(65.dp)
+                )
                 Column {
                     Text("Padre / Madre", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = AppColors.Gray800)
                     Text("Monitorea los avances de tus hijos", fontSize = 12.sp, color = AppColors.Gray600)

@@ -14,6 +14,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Calculate
 import com.example.mathia.AppColors
 import com.example.mathia.StudentViewModel
 import com.example.mathia.model.Student
@@ -42,7 +44,12 @@ fun LoginScreen(
                 .background(AppColors.PinkLight, CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            Text("🧮", fontSize = 50.sp)
+            Icon(
+                imageVector = Icons.Default.Calculate,
+                contentDescription = null,
+                tint = AppColors.Pink,
+                modifier = Modifier.size(50.dp)
+            )
         }
         Spacer(Modifier.height(16.dp))
         Text(

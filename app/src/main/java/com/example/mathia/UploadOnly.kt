@@ -6,7 +6,7 @@ import kotlinx.coroutines.runBlocking
 // Después de ejecutarlo, puedes borrarlo o comentarlo
 
 fun main() = runBlocking {
-    println("🚀 Subiendo 201 ejercicios a Firebase...")
+    println("Subiendo 201 ejercicios a Firebase...")
     UploadExercises.uploadAllExercises()
-    println("✅ ¡Completado!")
+    println("¡Completado!")
 }

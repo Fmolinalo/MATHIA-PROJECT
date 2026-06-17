@@ -6,6 +6,7 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -13,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,6 +26,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
+import android.content.Context
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import com.example.mathia.R
 import com.example.mathia.AppColors
 import com.example.mathia.StudentViewModel
 import com.example.mathia.model.Student
@@ -42,10 +49,32 @@ fun GameScreen(
     onBack: () -> Unit,
     viewModel: StudentViewModel
 ) {
+    val context = LocalContext.current
+    val sharedPref = remember { context.getSharedPreferences("mathia_prefs", Context.MODE_PRIVATE) }
+    val currentTutor = remember { sharedPref.getString("student_tutor", "axolita") ?: "axolita" }
+
+    val tutorImageRes = when (currentTutor) {
+        "prof_axol" -> R.drawable.ajolote_teacher_male
+        "prof_axolina" -> R.drawable.ajolote_teacher_female
+        else -> R.drawable.ajolote_student
+    }
+
+    val tutorName = when (currentTutor) {
+        "prof_axol" -> "El Profesor Axol"
+        "prof_axolina" -> "La Profesora Axolina"
+        else -> "Axolita"
+    }
+
+    val tutorGreeting = when (currentTutor) {
+        "prof_axol" -> "¡Excelente trabajo! Has completado el análisis con éxito."
+        "prof_axolina" -> "¡Qué gran esfuerzo, mi cielo! Estoy muy orgullosa de ti."
+        else -> "¡Increíble! ¡Eres súper veloz resolviendo matemáticas!"
+    }
+
     var questionText by remember { mutableStateOf("") }
     var correctAnswer by remember { mutableIntStateOf(0) }
     var userAnswer by remember { mutableStateOf("") }
-    var msg by remember { mutableStateOf("¡Resuelve el desafío! 🧠") }
+    var msg by remember { mutableStateOf("¡Resuelve el desafío!") }
     var currentStreak by remember { mutableIntStateOf(0) }
     var currentQuestionStart by remember { mutableLongStateOf(System.currentTimeMillis()) }
     var currentTime by remember { mutableLongStateOf(0L) }
@@ -182,27 +211,46 @@ fun GameScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Text(
-                        text = "¡Sesión Completada! 🏆",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = AppColors.Purple
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.EmojiEvents,
+                            contentDescription = null,
+                            tint = AppColors.MathiaGold,
+                            modifier = Modifier.size(28.dp)
+                        )
+                        Text(
+                            text = "¡Sesión Completada!",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = AppColors.Purple
+                        )
+                    }
                     
                     Box(
                         modifier = Modifier
-                            .size(100.dp)
-                            .background(AppColors.PurpleLight, CircleShape),
+                            .size(110.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(Color.White)
+                            .border(2.dp, AppColors.MathiaGold, RoundedCornerShape(16.dp)),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("🦎", fontSize = 54.sp)
+                        Image(
+                            painter = painterResource(id = tutorImageRes),
+                            contentDescription = tutorName,
+                            modifier = Modifier.size(95.dp)
+                        )
                     }
                     
                     Text(
-                        text = "Mateo está saltando de alegría por tu gran práctica.",
+                        text = "$tutorName dice: \"$tutorGreeting\"",
                         textAlign = TextAlign.Center,
-                        color = AppColors.Gray600,
-                        fontSize = 14.sp
+                        fontWeight = FontWeight.Bold,
+                        color = AppColors.MathiaNavy,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(horizontal = 8.dp)
                     )
                     
                     Divider(color = AppColors.PurpleLight, thickness = 1.dp)
@@ -213,11 +261,33 @@ fun GameScreen(
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text("Estrellas", fontSize = 12.sp, color = AppColors.Gray500)
-                            Text("⭐ $totalStarsGained", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = AppColors.Amber)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Star,
+                                    contentDescription = null,
+                                    tint = AppColors.Amber,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Text("$totalStarsGained", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = AppColors.Amber)
+                            }
                         }
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text("XP", fontSize = 12.sp, color = AppColors.Gray500)
-                            Text("⚡ $totalXPGained XP", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = AppColors.Purple)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.ElectricBolt,
+                                    contentDescription = null,
+                                    tint = AppColors.Purple,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Text("$totalXPGained XP", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = AppColors.Purple)
+                            }
                         }
                     }
 
@@ -228,12 +298,34 @@ fun GameScreen(
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text("Precisión", fontSize = 12.sp, color = AppColors.Gray500)
                             val prec = if (questionsAnsweredInSession > 0) (sessionCorrectAnswers * 100) / questionsAnsweredInSession else 0
-                            Text("$prec%", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = AppColors.Green)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Flag,
+                                    contentDescription = null,
+                                    tint = AppColors.Green,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Text("$prec%", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = AppColors.Green)
+                            }
                         }
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text("T. Promedio", fontSize = 12.sp, color = AppColors.Gray500)
                             val avgTime = if (questionsAnsweredInSession > 0) sessionTimeSpent / questionsAnsweredInSession else 0L
-                            Text("${avgTime}s", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = AppColors.Blue)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Timer,
+                                    contentDescription = null,
+                                    tint = AppColors.Blue,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Text("${avgTime}s", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = AppColors.Blue)
+                            }
                         }
                     }
 
@@ -318,7 +410,18 @@ fun GameScreen(
                         Text(student.name, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = AppColors.Gray800)
                         Text("Pregunta: ${questionsAnsweredInSession + 1}/10", fontSize = 12.sp, color = AppColors.Gray500, fontWeight = FontWeight.Bold)
                     }
-                    Text("⭐ ${student.stars + totalStarsGained}", color = AppColors.Purple, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = null,
+                            tint = AppColors.Purple,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Text("${student.stars + totalStarsGained}", color = AppColors.Purple, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    }
                 }
 
                 // Progress Bar
@@ -332,25 +435,47 @@ fun GameScreen(
                     trackColor = AppColors.Gray200
                 )
 
-                Text(
-                    text = "⏱️ Tiempo: ${currentTime}s",
-                    fontSize = 16.sp,
-                    color = headerColor,
-                    fontWeight = FontWeight.Bold
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Timer,
+                        contentDescription = null,
+                        tint = headerColor,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Text(
+                        text = "Tiempo: ${currentTime}s",
+                        fontSize = 16.sp,
+                        color = headerColor,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
 
                 if (currentStreak > 0) {
                     Card(
                         colors = CardDefaults.cardColors(containerColor = AppColors.Amber),
                         shape = RoundedCornerShape(50.dp)
                     ) {
-                        Text(
-                            text = "🔥 Racha: $currentStreak",
+                        Row(
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            fontSize = 12.sp
-                        )
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Whatshot,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Text(
+                                text = "Racha: $currentStreak",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                fontSize = 12.sp
+                            )
+                        }
                     }
                 }
 
@@ -455,7 +580,7 @@ fun GameScreen(
                                                     questionsAnsweredInSession++
                                                     currentStreak++
                                                     
-                                                    msg = "¡Excelente 🎉! +$starsGained ⭐ | +$xpGained XP"
+                                                    msg = "¡Excelente! +$starsGained estrellas | +$xpGained XP"
                                                     
                                                     if (questionsAnsweredInSession >= 10) {
                                                         showSummary = true
@@ -472,7 +597,7 @@ fun GameScreen(
                                                     }
                                                 } else {
                                                     sessionIncorrectAnswers++
-                                                    msg = "¡Casi! Intenta de nuevo 🤔"
+                                                    msg = "¡Casi! Intenta de nuevo"
                                                     currentStreak = 0
                                                     userAnswer = ""
                                                     shakeTrigger = true

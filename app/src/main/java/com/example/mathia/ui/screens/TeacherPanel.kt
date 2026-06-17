@@ -2,6 +2,10 @@ package com.example.mathia.ui.screens
 
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.ui.res.painterResource
+import com.example.mathia.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -13,10 +17,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -179,6 +185,7 @@ fun TeacherPanel(
                 .fillMaxSize()
                 .padding(paddingValues)
                 .background(AppColors.Bg)
+                .statusBarsPadding()
         ) {
             if (isLoading) {
                 CircularProgressIndicator(color = AppColors.Purple, modifier = Modifier.align(Alignment.Center))
@@ -210,7 +217,7 @@ fun TeacherPanel(
                         Text("Volver a Alumnos", fontWeight = FontWeight.Bold, color = AppColors.Purple, fontSize = 16.sp)
                     }
 
-                    // Reusable Duolingo Profile card content (embedded)
+                    // Reusable mathia Profile card content (embedded)
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(24.dp),
@@ -234,7 +241,18 @@ fun TeacherPanel(
                         colors = CardDefaults.cardColors(containerColor = Color.White)
                     ) {
                         Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            Text("📝 Retroalimentaciones / Observaciones", fontWeight = FontWeight.Bold, color = AppColors.Purple, fontSize = 16.sp)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Description,
+                                    contentDescription = null,
+                                    tint = AppColors.Purple,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Text("Retroalimentaciones / Observaciones", fontWeight = FontWeight.Bold, color = AppColors.Purple, fontSize = 16.sp)
+                            }
                             
                             // Textfield to add observation
                             OutlinedTextField(
@@ -311,7 +329,18 @@ fun TeacherPanel(
                         colors = CardDefaults.cardColors(containerColor = Color.White)
                     ) {
                         Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                            Text("🎯 Desempeño por competencia", fontWeight = FontWeight.Bold, color = AppColors.Purple)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Flag,
+                                    contentDescription = null,
+                                    tint = AppColors.Purple,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Text("Desempeño por competencia", fontWeight = FontWeight.Bold, color = AppColors.Purple)
+                            }
                             s.skills.forEach { (skill, value) ->
                                 SkillProgressBar(skill, value)
                             }
@@ -339,7 +368,18 @@ fun TeacherPanel(
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             item {
-                                Text("Dashboard Aula 📊", fontSize = 24.sp, fontWeight = FontWeight.ExtraBold, color = AppColors.Purple)
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Assessment,
+                                        contentDescription = null,
+                                        tint = AppColors.Purple,
+                                        modifier = Modifier.size(28.dp)
+                                    )
+                                    Text("Dashboard Aula", fontSize = 24.sp, fontWeight = FontWeight.ExtraBold, color = AppColors.Purple)
+                                }
                             }
 
                             // General Group Performance Cards
@@ -369,18 +409,51 @@ fun TeacherPanel(
                                             }
                                             Column {
                                                 Text("Total Estrellas", fontSize = 10.sp, color = AppColors.Gray500)
-                                                Text("⭐ $totalStars", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = AppColors.Amber)
+                                                Row(
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                                ) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Star,
+                                                        contentDescription = null,
+                                                        tint = AppColors.Amber,
+                                                        modifier = Modifier.size(16.dp)
+                                                    )
+                                                    Text("$totalStars", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = AppColors.Amber)
+                                                }
                                             }
                                         }
 
                                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                                             Column {
-                                                Text("En Riesgo (🔴)", fontSize = 10.sp, color = AppColors.Gray500)
-                                                Text("$riskCount alumnos", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = AppColors.Red)
+                                                Text("En Riesgo", fontSize = 10.sp, color = AppColors.Gray500)
+                                                Row(
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                                ) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Circle,
+                                                        contentDescription = null,
+                                                        tint = AppColors.Red,
+                                                        modifier = Modifier.size(10.dp)
+                                                    )
+                                                    Text("$riskCount alumnos", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = AppColors.Red)
+                                                }
                                             }
                                             Column {
-                                                Text("Destacados (🟢)", fontSize = 10.sp, color = AppColors.Gray500)
-                                                Text("$superCount alumnos", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = AppColors.Green)
+                                                Text("Destacados", fontSize = 10.sp, color = AppColors.Gray500)
+                                                Row(
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                                ) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Circle,
+                                                        contentDescription = null,
+                                                        tint = AppColors.Green,
+                                                        modifier = Modifier.size(10.dp)
+                                                    )
+                                                    Text("$superCount alumnos", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = AppColors.Green)
+                                                }
                                             }
                                         }
                                     }
@@ -410,7 +483,18 @@ fun TeacherPanel(
                                     colors = CardDefaults.cardColors(containerColor = Color.White)
                                 ) {
                                     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                        Text("🧠 Diagnóstico Pedagógico AI", fontWeight = FontWeight.Bold, color = AppColors.Purple)
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Psychology,
+                                                contentDescription = null,
+                                                tint = AppColors.Purple,
+                                                modifier = Modifier.size(20.dp)
+                                            )
+                                            Text("Diagnóstico Pedagógico AI", fontWeight = FontWeight.Bold, color = AppColors.Purple)
+                                        }
                                         Divider(color = AppColors.PurpleLight)
                                         
                                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -433,7 +517,18 @@ fun TeacherPanel(
                                         horizontalArrangement = Arrangement.SpaceBetween,
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Text("🏆 Tabla de Clasificación", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.EmojiEvents,
+                                                contentDescription = null,
+                                                tint = AppColors.Purple,
+                                                modifier = Modifier.size(22.dp)
+                                            )
+                                            Text("Tabla de Clasificación", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                                        }
                                         Box {
                                             Button(
                                                 onClick = { isRankExpanded = !isRankExpanded },
@@ -464,16 +559,16 @@ fun TeacherPanel(
                                                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                                     Text(
                                                         text = when (index) {
-                                                            0 -> "🥇"
-                                                            1 -> "🥈"
-                                                            2 -> "🥉"
+                                                            0 -> "1º"
+                                                            1 -> "2º"
+                                                            2 -> "3º"
                                                             else -> "#${index + 1}"
                                                         },
                                                         fontWeight = FontWeight.Bold,
                                                         fontSize = 15.sp
                                                     )
                                                     Box(modifier = Modifier.size(32.dp).background(AppColors.PurpleLight, CircleShape), contentAlignment = Alignment.Center) {
-                                                        Text(std.avatar, fontSize = 18.sp)
+                                                        AvatarIcon(avatarKey = std.avatar, modifier = Modifier.size(20.dp), tint = AppColors.Purple)
                                                     }
                                                     Text("${std.name} ${std.lastName}", fontWeight = FontWeight.Bold)
                                                 }
@@ -482,7 +577,7 @@ fun TeacherPanel(
                                                         "XP" -> "${std.xp} XP"
                                                         "Precisión" -> "${std.accuracy}%"
                                                         "Tiempo" -> "${std.tiempoPromedio.toInt()}s"
-                                                        else -> "${std.stars} ⭐"
+                                                        else -> "${std.stars} estrellas"
                                                     },
                                                     fontWeight = FontWeight.Black,
                                                     color = AppColors.Purple
@@ -506,8 +601,19 @@ fun TeacherPanel(
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Text("Mis Alumnos 👩‍🎓", fontSize = 24.sp, fontWeight = FontWeight.ExtraBold, color = AppColors.Purple)
-                                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = AppColors.Purple) }
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.People,
+                                            contentDescription = null,
+                                            tint = AppColors.Purple,
+                                            modifier = Modifier.size(28.dp)
+                                        )
+                                        Text("Mis Alumnos", fontSize = 24.sp, fontWeight = FontWeight.ExtraBold, color = AppColors.Purple)
+                                    }
+                                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ExitToApp, null, tint = AppColors.Purple) }
                                 }
                             }
 
@@ -532,7 +638,12 @@ fun TeacherPanel(
                                         colors = CardDefaults.cardColors(containerColor = Color.White)
                                     ) {
                                         Column(modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                                            Text("🦎", fontSize = 48.sp)
+                                            Icon(
+                                                imageVector = Icons.Default.Face,
+                                                contentDescription = null,
+                                                tint = AppColors.Purple,
+                                                modifier = Modifier.size(48.dp)
+                                            )
                                             Text("No hay alumnos registrados en tu grado y sección.", fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
                                         }
                                     }
@@ -561,7 +672,7 @@ fun TeacherPanel(
                                                 Box(modifier = Modifier.size(12.dp).clip(CircleShape).background(semColor))
                                                 Spacer(Modifier.width(12.dp))
                                                 Box(modifier = Modifier.size(40.dp).background(AppColors.PurpleLight, CircleShape), contentAlignment = Alignment.Center) {
-                                                    Text(alumno.avatar, fontSize = 24.sp)
+                                                    AvatarIcon(avatarKey = alumno.avatar, modifier = Modifier.size(24.dp), tint = AppColors.Purple)
                                                 }
                                                 Spacer(Modifier.width(12.dp))
                                                 Column {
@@ -569,7 +680,18 @@ fun TeacherPanel(
                                                     Text("Precisión: ${alumno.accuracy}% | Nivel ${alumno.level}", fontSize = 12.sp, color = AppColors.Gray500)
                                                 }
                                             }
-                                            Text("⭐ ${alumno.stars}", fontWeight = FontWeight.Bold, color = AppColors.Amber)
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Star,
+                                                    contentDescription = null,
+                                                    tint = AppColors.Amber,
+                                                    modifier = Modifier.size(16.dp)
+                                                )
+                                                Text("${alumno.stars}", fontWeight = FontWeight.Bold, color = AppColors.Amber)
+                                            }
                                         }
                                     }
                                 }
@@ -591,7 +713,18 @@ fun TeacherPanel(
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             item {
-                                Text("Mi Perfil 👩‍🏫", fontSize = 24.sp, fontWeight = FontWeight.ExtraBold, color = AppColors.Purple)
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Person,
+                                        contentDescription = null,
+                                        tint = AppColors.Purple,
+                                        modifier = Modifier.size(28.dp)
+                                    )
+                                    Text("Mi Perfil", fontSize = 24.sp, fontWeight = FontWeight.ExtraBold, color = AppColors.Purple)
+                                }
                             }
 
                             item {
@@ -604,9 +737,13 @@ fun TeacherPanel(
                                         modifier = Modifier.padding(20.dp),
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
-                                        Box(modifier = Modifier.size(80.dp).background(AppColors.PurpleLight, CircleShape), contentAlignment = Alignment.Center) {
-                                            Text("👩‍🏫", fontSize = 44.sp)
-                                        }
+                                         Box(modifier = Modifier.size(90.dp).clip(CircleShape).background(Color.White).border(2.dp, AppColors.MathiaGold, CircleShape), contentAlignment = Alignment.Center) {
+                                             Image(
+                                                 painter = painterResource(id = R.drawable.ajolote_role_teacher),
+                                                 contentDescription = "Docente",
+                                                 modifier = Modifier.size(75.dp)
+                                             )
+                                         }
                                         Spacer(Modifier.height(12.dp))
                                         Text(teacherName, fontWeight = FontWeight.ExtraBold, fontSize = 22.sp, color = AppColors.Purple)
                                         Text("Docente de Primaria", fontSize = 14.sp, color = AppColors.Gray600)
@@ -623,23 +760,36 @@ fun TeacherPanel(
                                     colors = CardDefaults.cardColors(containerColor = Color.White)
                                 ) {
                                     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                                        Text("🏫 Configuración de Aula", fontWeight = FontWeight.Bold, color = AppColors.Purple)
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.School,
+                                                contentDescription = null,
+                                                tint = AppColors.Purple,
+                                                modifier = Modifier.size(20.dp)
+                                            )
+                                            Text("Configuración de Aula", fontWeight = FontWeight.Bold, color = AppColors.Purple)
+                                        }
                                         Divider(color = AppColors.PurpleLight)
-                                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                            Text("Colegio:", color = AppColors.Gray600)
-                                            Text(teacherSchool, fontWeight = FontWeight.Bold)
-                                        }
-                                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                            Text("Grado asignado:", color = AppColors.Gray600)
-                                            Text(teacherGrade, fontWeight = FontWeight.Bold)
-                                        }
-                                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                            Text("Sección asignada:", color = AppColors.Gray600)
-                                            Text(teacherSeccion, fontWeight = FontWeight.Bold)
-                                        }
-                                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                            Text("Cantidad de Alumnos:", color = AppColors.Gray600)
-                                            Text("${alumnosLocales.size}", fontWeight = FontWeight.Bold)
+                                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                                                Text("Colegio:", color = AppColors.Gray600, modifier = Modifier.weight(0.6f))
+                                                Text(teacherSchool, fontWeight = FontWeight.Bold, modifier = Modifier.weight(0.4f), textAlign = TextAlign.End)
+                                            }
+                                            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                                                Text("Grado asignado:", color = AppColors.Gray600, modifier = Modifier.weight(0.6f))
+                                                Text(teacherGrade, fontWeight = FontWeight.Bold, modifier = Modifier.weight(0.4f), textAlign = TextAlign.End)
+                                            }
+                                            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                                                Text("Sección asignada:", color = AppColors.Gray600, modifier = Modifier.weight(0.6f))
+                                                Text(teacherSeccion, fontWeight = FontWeight.Bold, modifier = Modifier.weight(0.4f), textAlign = TextAlign.End)
+                                            }
+                                            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                                                Text("Cantidad de Alumnos:", color = AppColors.Gray600, modifier = Modifier.weight(0.6f))
+                                                Text("${alumnosLocales.size}", fontWeight = FontWeight.Bold, modifier = Modifier.weight(0.4f), textAlign = TextAlign.End)
+                                            }
                                         }
                                     }
                                 }
@@ -648,7 +798,7 @@ fun TeacherPanel(
                             // Classroom dashboard calculations
                             item {
                                 val avgAccuracy = if (alumnosLocales.isNotEmpty()) alumnosLocales.map { it.accuracy }.average().toInt() else 0
-                                val bestStd = alumnosLocales.maxByOrNull { it.stars }?.let { "${it.name} (${it.stars} ⭐)" } ?: "Ninguno"
+                                val bestStd = alumnosLocales.maxByOrNull { it.stars }?.let { "${it.name} (${it.stars} estrellas)" } ?: "Ninguno"
                                 val difficultyStd = alumnosLocales.minByOrNull { it.accuracy }?.let { "${it.name} (${it.accuracy}% prec.)" } ?: "Ninguno"
                                 val diagCount = alumnosLocales.count { it.diagnosticoRealizado }
                                 val totalReviewed = alumnosLocales.sumOf { it.totalQuestions }
@@ -659,28 +809,41 @@ fun TeacherPanel(
                                     colors = CardDefaults.cardColors(containerColor = Color.White)
                                 ) {
                                     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                                        Text("📊 Analíticas del Salón", fontWeight = FontWeight.Bold, color = AppColors.Purple)
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.BarChart,
+                                                contentDescription = null,
+                                                tint = AppColors.Purple,
+                                                modifier = Modifier.size(20.dp)
+                                            )
+                                            Text("Analíticas del Salón", fontWeight = FontWeight.Bold, color = AppColors.Purple)
+                                        }
                                         Divider(color = AppColors.PurpleLight)
                                         
-                                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                            Text("Promedio de Precisión:", color = AppColors.Gray600)
-                                            Text("$avgAccuracy%", fontWeight = FontWeight.Bold, color = AppColors.Green)
-                                        }
-                                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                            Text("Estudiante Líder:", color = AppColors.Gray600)
-                                            Text(bestStd, fontWeight = FontWeight.Bold, color = AppColors.Purple)
-                                        }
-                                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                            Text("Mayor Dificultad Académica:", color = AppColors.Gray600)
-                                            Text(difficultyStd, fontWeight = FontWeight.Bold, color = AppColors.Red)
-                                        }
-                                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                            Text("Diagnósticos Realizados:", color = AppColors.Gray600)
-                                            Text("$diagCount", fontWeight = FontWeight.Bold)
-                                        }
-                                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                            Text("Preguntas Corregidas (Total):", color = AppColors.Gray600)
-                                            Text("$totalReviewed", fontWeight = FontWeight.Bold)
+                                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                                                Text("Promedio de Precisión:", color = AppColors.Gray600, modifier = Modifier.weight(0.6f))
+                                                Text("$avgAccuracy%", fontWeight = FontWeight.Bold, color = AppColors.Green, modifier = Modifier.weight(0.4f), textAlign = TextAlign.End)
+                                            }
+                                            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                                                Text("Estudiante Líder:", color = AppColors.Gray600, modifier = Modifier.weight(0.6f))
+                                                Text(bestStd, fontWeight = FontWeight.Bold, color = AppColors.Purple, modifier = Modifier.weight(0.4f), textAlign = TextAlign.End)
+                                            }
+                                            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                                                Text("Mayor Dificultad Académica:", color = AppColors.Gray600, modifier = Modifier.weight(0.6f))
+                                                Text(difficultyStd, fontWeight = FontWeight.Bold, color = AppColors.Red, modifier = Modifier.weight(0.4f), textAlign = TextAlign.End)
+                                            }
+                                            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                                                Text("Diagnósticos Realizados:", color = AppColors.Gray600, modifier = Modifier.weight(0.6f))
+                                                Text("$diagCount", fontWeight = FontWeight.Bold, modifier = Modifier.weight(0.4f), textAlign = TextAlign.End)
+                                            }
+                                            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                                                Text("Preguntas Corregidas (Total):", color = AppColors.Gray600, modifier = Modifier.weight(0.6f))
+                                                Text("$totalReviewed", fontWeight = FontWeight.Bold, modifier = Modifier.weight(0.4f), textAlign = TextAlign.End)
+                                            }
                                         }
                                     }
                                 }
@@ -694,7 +857,18 @@ fun TeacherPanel(
                                     colors = CardDefaults.cardColors(containerColor = Color.White)
                                 ) {
                                     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                                        Text("🔔 Alertas y Notificaciones Recientes", fontWeight = FontWeight.Bold, color = AppColors.Purple)
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Notifications,
+                                                contentDescription = null,
+                                                tint = AppColors.Purple,
+                                                modifier = Modifier.size(20.dp)
+                                            )
+                                            Text("Alertas y Notificaciones Recientes", fontWeight = FontWeight.Bold, color = AppColors.Purple)
+                                        }
                                         Divider(color = AppColors.PurpleLight)
                                         
                                         if (notifications.isEmpty()) {
@@ -736,3 +910,4 @@ fun TeacherPanel(
         }
     }
 }
+

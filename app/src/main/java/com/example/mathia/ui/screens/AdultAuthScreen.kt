@@ -126,7 +126,7 @@ fun AdultAuthScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
-                    text = if (rol == "docente") "Acceso Docente 👩‍🏫" else "Acceso Padres 👨‍👩‍👧",
+                    text = if (rol == "docente") "Acceso Docente" else "Acceso Padres",
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
                     color = AppColors.Purple
@@ -199,7 +199,7 @@ fun AdultAuthScreen(
                     if (authMode == 1) {
                         if (rol == "padres") {
                             Text(
-                                "Registra a tu Hijo/a 👶",
+                                "Registra a tu Hijo/a",
                                 fontWeight = FontWeight.Bold,
                                 color = AppColors.Purple,
                                 fontSize = 14.sp,
@@ -259,7 +259,7 @@ fun AdultAuthScreen(
                             }
                         } else {
                             Text(
-                                "Configura tu Aula 🏫",
+                                "Configura tu Aula",
                                 fontWeight = FontWeight.Bold,
                                 color = AppColors.Purple,
                                 fontSize = 14.sp,
@@ -439,7 +439,7 @@ fun AdultAuthScreen(
                                     }
                                     .addOnFailureListener { e ->
                                         isLoading = false
-                                        Toast.makeText(context, "Error: ${e.message}. \n💡 Prueba activando el 'Modo Demo 🧪' en la pantalla principal si no posees conexión a Firebase.", Toast.LENGTH_LONG).show()
+                                        Toast.makeText(context, "Error: ${e.message}. \nPrueba activando el 'Modo Demo' en la pantalla principal si no posees conexión a Firebase.", Toast.LENGTH_LONG).show()
                                     }
                             } else {
                                 // Registrar con Email/Password
@@ -471,9 +471,9 @@ fun AdultAuthScreen(
                                                         "precision" to 0.0,
                                                         "nivel_actual" to 1,
                                                         "padre_email" to email,
-                                                        "avatar" to "👶",
+                                                        "avatar" to "default",
                                                         "equipped_theme" to "Lila Clásico",
-                                                        "unlocked_avatars" to listOf("👶"),
+                                                        "unlocked_avatars" to listOf("default"),
                                                         "unlocked_themes" to listOf("Lila Clásico"),
                                                         "streak" to 0,
                                                         "total_preguntas" to 0,
@@ -490,7 +490,7 @@ fun AdultAuthScreen(
                                                             "Series" to 0
                                                         ),
                                                         "incorrectas_por_tema" to emptyMap<String, Int>(),
-                                                        "recomendaciones" to listOf("¡Realiza el Examen Adaptativo para descubrir tu nivel actual de matemáticas! 🧬")
+                                                        "recomendaciones" to listOf("¡Realiza el Examen Adaptativo para descubrir tu nivel actual de matemáticas!")
                                                     )
                                                     db.collection("usuarios").document(hijoPin).set(childData)
                                                         .addOnSuccessListener {
@@ -521,7 +521,7 @@ fun AdultAuthScreen(
                                     }
                                     .addOnFailureListener { e ->
                                         isLoading = false
-                                        Toast.makeText(context, "Error al registrar: ${e.message}. \n💡 Prueba activando el 'Modo Demo 🧪' en la pantalla principal si no posees conexión a Firebase.", Toast.LENGTH_LONG).show()
+                                        Toast.makeText(context, "Error al registrar: ${e.message}. \nPrueba activando el 'Modo Demo' en la pantalla principal si no posees conexión a Firebase.", Toast.LENGTH_LONG).show()
                                     }
                             }
                         },

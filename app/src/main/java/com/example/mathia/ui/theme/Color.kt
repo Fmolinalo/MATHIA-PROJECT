@@ -9,3 +9,10 @@ val Pink80 = Color(0xFFEFB8C8)
 val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
+
+// Mathia Custom Palette
+val MathiaRed = Color(0xFFD9303E)
+val MathiaBurgundy = Color(0xFF732231)
+val MathiaNavy = Color(0xFF231640)
+val MathiaTeal = Color(0xFF11594C)
+val MathiaGold = Color(0xFFD9C771)

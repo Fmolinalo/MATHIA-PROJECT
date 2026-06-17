@@ -1,4 +1,4 @@
-package com.example.mathia
+﻿package com.example.mathia
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
@@ -184,7 +184,7 @@ class SeedDataRepository {
         val streak: Int = 0
     )
 
-    private val avatars = listOf("👧", "🧒", "👧🏻", "🧑")
+    private val avatars = listOf("default", "superhero", "rocket", "wizard")
 
     private val alumnos = padresRaw.mapIndexed { index, raw ->
         val numStr = String.format("%02d", index + 1)
@@ -228,21 +228,21 @@ class SeedDataRepository {
             val resultado = crearUsuarioAuth(docente.email, docente.nombre)
             when {
                 resultado == null -> {
-                    onProgress("⚠️ ${docente.email} ya existía en Auth")
+                    onProgress("️ ${docente.email} ya existía en Auth")
                     yaExistian++
                     val uid = obtenerUidExistente(docente.email)
                     if (uid != null) {
                         guardarAdultoFirestore(uid, docente)
-                        onProgress("✅ Perfil Firestore de ${docente.nombre} actualizado")
+                        onProgress("Perfil Firestore de ${docente.nombre} actualizado")
                     }
                 }
                 resultado.isNotEmpty() -> {
                     guardarAdultoFirestore(resultado, docente)
-                    onProgress("✅ Docente ${docente.nombre} creado")
+                    onProgress("Docente ${docente.nombre} creado")
                     creados++
-                    resumen.appendLine("👨‍🏫 ${docente.nombre} → ${docente.email}")
+                    resumen.appendLine("‍${docente.nombre} → ${docente.email}")
                 }
-                else -> { errores++; onProgress("❌ Error creando ${docente.email}") }
+                else -> { errores++; onProgress("Error creando ${docente.email}") }
             }
         }
 
@@ -253,17 +253,17 @@ class SeedDataRepository {
             when {
                 resultado == null -> {
                     yaExistian++
-                    onProgress("⚠️ ${padre.email} ya existía, actualizando perfil...")
+                    onProgress("️ ${padre.email} ya existía, actualizando perfil...")
                     val uid = obtenerUidExistente(padre.email)
                     if (uid != null) guardarAdultoFirestore(uid, padre)
                 }
                 resultado.isNotEmpty() -> {
                     guardarAdultoFirestore(resultado, padre)
-                    onProgress("✅ Padre ${padre.nombre} creado")
+                    onProgress("Padre ${padre.nombre} creado")
                     creados++
-                    resumen.appendLine("👪 ${padre.nombre} → ${padre.email}")
+                    resumen.appendLine("${padre.nombre} → ${padre.email}")
                 }
-                else -> { errores++; onProgress("❌ Error creando ${padre.email}") }
+                else -> { errores++; onProgress("Error creando ${padre.email}") }
             }
         }
 
@@ -272,21 +272,21 @@ class SeedDataRepository {
         for (alumno in alumnos) {
             try {
                 guardarAlumnoFirestore(alumno)
-                onProgress("✅ Alumno ${alumno.nombre} (PIN: ${alumno.pin}) creado")
+                onProgress("Alumno ${alumno.nombre} (PIN: ${alumno.pin}) creado")
                 creados++
-                resumen.appendLine("🧒 ${alumno.nombre} → PIN ${alumno.pin} (padre: ${alumno.padreEmail})")
+                resumen.appendLine("${alumno.nombre} → PIN ${alumno.pin} (padre: ${alumno.padreEmail})")
             } catch (e: Exception) {
                 errores++
-                onProgress("❌ Error creando alumno ${alumno.nombre}: ${e.message}")
+                onProgress("Error creando alumno ${alumno.nombre}: ${e.message}")
             }
         }
 
         onProgress("¡Configuración completada!")
 
         val resumenFinal = """
-            ✅ Usuarios procesados: ${creados + yaExistian}
-            ⚠️ Ya existían: $yaExistian
-            ❌ Con errores: $errores
+            Usuarios procesados: ${creados + yaExistian}
+            ️ Ya existían: $yaExistian
+            Con errores: $errores
             
             $resumen
         """.trimIndent()
@@ -329,7 +329,7 @@ class SeedDataRepository {
                     if (errMsg.contains("EMAIL_EXISTS")) null else ""
                 }
             } catch (e: Exception) {
-                println("❌ Error en REST Auth: ${e.message}")
+                println("Error en REST Auth: ${e.message}")
                 ""
             }
         }
@@ -406,7 +406,7 @@ class SeedDataRepository {
             "padre_email" to alumno.padreEmail,
             "avatar" to alumno.avatar,
             "equipped_theme" to "Lila Clásico",
-            "unlocked_avatars" to listOf("👶", alumno.avatar),
+            "unlocked_avatars" to listOf("default", alumno.avatar),
             "unlocked_themes" to listOf("Lila Clásico"),
             "streak" to alumno.streak,
             "rol" to "estudiante",
@@ -427,8 +427,8 @@ class SeedDataRepository {
             ),
             "incorrectas_por_tema" to emptyMap<String, Int>(),
             "recomendaciones" to listOf(
-                "¡Realiza el Examen Adaptativo para descubrir tu nivel actual! 🧬",
-                "¡Practica Sumas todos los días para mejorar tu velocidad! ⚡"
+                "¡Realiza el Examen Adaptativo para descubrir tu nivel actual!",
+                "¡Practica Sumas todos los días para mejorar tu velocidad!"
             )
         )
         db.collection("usuarios").document(alumno.pin).set(doc).await()

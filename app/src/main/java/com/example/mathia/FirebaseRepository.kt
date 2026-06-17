@@ -1,4 +1,4 @@
-package com.example.mathia
+﻿package com.example.mathia
 
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
@@ -23,9 +23,9 @@ class FirebaseRepository {
                 .setPersistenceEnabled(true)
                 .build()
             db.firestoreSettings = settings
-            println("✅ Firestore local cache enabled successfully.")
+            println("Firestore local cache enabled successfully.")
         } catch (e: Exception) {
-            println("⚠️ Error setting Firestore settings: ${e.message}")
+            println("️ Error setting Firestore settings: ${e.message}")
         }
     }
 
@@ -41,7 +41,7 @@ class FirebaseRepository {
             if (resultado.documents.isEmpty()) return null
             resultado.documents.first().toObject(FirebaseStudent::class.java)
         } catch (e: Exception) {
-            println("❌ Error obteniendo alumno por PIN: ${e.message}")
+            println("Error obteniendo alumno por PIN: ${e.message}")
             null
         }
     }
@@ -52,10 +52,10 @@ class FirebaseRepository {
                 .document(pin)
                 .set(alumno)
                 .await()
-            println("✅ Alumno creado con PIN: $pin")
+            println("Alumno creado con PIN: $pin")
             true
         } catch (e: Exception) {
-            println("❌ Error creando alumno: ${e.message}")
+            println("Error creando alumno: ${e.message}")
             false
         }
     }
@@ -68,7 +68,7 @@ class FirebaseRepository {
                 .await()
             resultado.documents.mapNotNull { it.toObject(FirebaseStudent::class.java) }
         } catch (e: Exception) {
-            println("❌ Error obteniendo todos los alumnos: ${e.message}")
+            println("Error obteniendo todos los alumnos: ${e.message}")
             emptyList()
         }
     }
@@ -81,7 +81,7 @@ class FirebaseRepository {
                 .await()
             resultado.documents.mapNotNull { it.toObject(FirebaseStudent::class.java) }
         } catch (e: Exception) {
-            println("❌ Error obteniendo estudiantes por email padre: ${e.message}")
+            println("Error obteniendo estudiantes por email padre: ${e.message}")
             emptyList()
         }
     }
@@ -139,7 +139,7 @@ class FirebaseRepository {
                 return Pair(newStreak, updatedAsistencia)
             }
         } catch (e: Exception) {
-            println("❌ Error registrando asistencia y racha: ${e.message}")
+            println("Error registrando asistencia y racha: ${e.message}")
         }
         return Pair(0, emptyList())
     }
@@ -168,10 +168,10 @@ class FirebaseRepository {
                 )
 
                 doc.reference.update(updateMap).await()
-                println("✅ Estrellas y XP actualizadas: estrellas=$newEstrellas, xp=$newXP, nivel=$newLevel")
+                println("Estrellas y XP actualizadas: estrellas=$newEstrellas, xp=$newXP, nivel=$newLevel")
             }
         } catch (e: Exception) {
-            println("❌ Error actualizando estrellas y XP: ${e.message}")
+            println("Error actualizando estrellas y XP: ${e.message}")
         }
     }
 
@@ -224,7 +224,7 @@ class FirebaseRepository {
                 ).await()
             }
         } catch (e: Exception) {
-            println("❌ Error actualizando habilidades y errores: ${e.message}")
+            println("Error actualizando habilidades y errores: ${e.message}")
         }
     }
 
@@ -248,7 +248,7 @@ class FirebaseRepository {
                 ).await()
             }
         } catch (e: Exception) {
-            println("❌ Error actualizando misiones: ${e.message}")
+            println("Error actualizando misiones: ${e.message}")
         }
     }
 
@@ -265,7 +265,7 @@ class FirebaseRepository {
                     .await()
             }
         } catch (e: Exception) {
-            println("❌ Error guardando recomendaciones: ${e.message}")
+            println("Error guardando recomendaciones: ${e.message}")
         }
     }
 
@@ -310,7 +310,7 @@ class FirebaseRepository {
                 ).await()
             }
         } catch (e: Exception) {
-            println("❌ Error en guardarDiagnostico: ${e.message}")
+            println("Error en guardarDiagnostico: ${e.message}")
         }
     }
 
@@ -349,7 +349,7 @@ class FirebaseRepository {
                 false
             }
         } catch (e: Exception) {
-            println("❌ Error comprando cosmético: ${e.message}")
+            println("Error comprando cosmético: ${e.message}")
             false
         }
     }
@@ -373,7 +373,7 @@ class FirebaseRepository {
                 false
             }
         } catch (e: Exception) {
-            println("❌ Error actualizando cosméticos: ${e.message}")
+            println("Error actualizando cosméticos: ${e.message}")
             false
         }
     }
@@ -394,7 +394,7 @@ class FirebaseRepository {
                 val dbRole = doc.getString("rol") ?: ""
                 val expectedRole = if (rol == "padres" || rol == "padre") "padre" else "docente"
                 if (dbRole != expectedRole) {
-                    println("❌ Error: Conflicto de roles. Esperado: $expectedRole, Encontrado: $dbRole")
+                    println("Error: Conflicto de roles. Esperado: $expectedRole, Encontrado: $dbRole")
                     return Pair(false, false)
                 }
                 val isComplete = doc.getBoolean("perfil_completo") ?: false
@@ -412,7 +412,7 @@ class FirebaseRepository {
                 Pair(true, false)
             }
         } catch (e: Exception) {
-            println("❌ Error en loginConGoogle: ${e.message}")
+            println("Error en loginConGoogle: ${e.message}")
             e.printStackTrace()
             Pair(false, false)
         }
@@ -440,7 +440,7 @@ class FirebaseRepository {
                 .await()
             true
         } catch (e: Exception) {
-            println("❌ Error actualizando perfil docente: ${e.message}")
+            println("Error actualizando perfil docente: ${e.message}")
             false
         }
     }
@@ -458,7 +458,7 @@ class FirebaseRepository {
             docRef.set(finalRes).await()
             true
         } catch (e: Exception) {
-            println("❌ Error en registrarRespuestaHistorial: ${e.message}")
+            println("Error en registrarRespuestaHistorial: ${e.message}")
             false
         }
     }
@@ -473,7 +473,7 @@ class FirebaseRepository {
                 .await()
             resultado.documents.mapNotNull { it.toObject(RespuestaHistorial::class.java) }
         } catch (e: Exception) {
-            println("❌ Error en obtenerHistorialRespuestas: ${e.message}")
+            println("Error en obtenerHistorialRespuestas: ${e.message}")
             emptyList()
         }
     }
@@ -486,7 +486,7 @@ class FirebaseRepository {
             docRef.set(finalReporte).await()
             true
         } catch (e: Exception) {
-            println("❌ Error en guardarReporteSesion: ${e.message}")
+            println("Error en guardarReporteSesion: ${e.message}")
             false
         }
     }
@@ -500,7 +500,7 @@ class FirebaseRepository {
                 .await()
             resultado.documents.mapNotNull { it.toObject(ReporteSesion::class.java) }
         } catch (e: Exception) {
-            println("❌ Error en obtenerReportesSesionPorDocente: ${e.message}")
+            println("Error en obtenerReportesSesionPorDocente: ${e.message}")
             emptyList()
         }
     }
@@ -514,7 +514,7 @@ class FirebaseRepository {
                 .await()
             resultado.documents.mapNotNull { it.toObject(ReporteSesion::class.java) }
         } catch (e: Exception) {
-            println("❌ Error en obtenerReportesSesionPorPadre: ${e.message}")
+            println("Error en obtenerReportesSesionPorPadre: ${e.message}")
             emptyList()
         }
     }
@@ -529,7 +529,7 @@ class FirebaseRepository {
             docRef.set(finalObs).await()
             true
         } catch (e: Exception) {
-            println("❌ Error en guardarObservacion: ${e.message}")
+            println("Error en guardarObservacion: ${e.message}")
             false
         }
     }
@@ -544,7 +544,7 @@ class FirebaseRepository {
                 .await()
             resultado.documents.mapNotNull { it.toObject(Observacion::class.java) }
         } catch (e: Exception) {
-            println("❌ Error en obtenerObservaciones: ${e.message}")
+            println("Error en obtenerObservaciones: ${e.message}")
             emptyList()
         }
     }
@@ -559,7 +559,7 @@ class FirebaseRepository {
             docRef.set(finalNot).await()
             true
         } catch (e: Exception) {
-            println("❌ Error en guardarNotificacion: ${e.message}")
+            println("Error en guardarNotificacion: ${e.message}")
             false
         }
     }
@@ -574,7 +574,7 @@ class FirebaseRepository {
                 .await()
             resultado.documents.mapNotNull { it.toObject(NotificacionFirebase::class.java) }
         } catch (e: Exception) {
-            println("❌ Error en obtenerNotificaciones: ${e.message}")
+            println("Error en obtenerNotificaciones: ${e.message}")
             emptyList()
         }
     }
@@ -588,7 +588,7 @@ class FirebaseRepository {
                 null
             }
         } catch (e: Exception) {
-            println("❌ Error en obtenerAdultoPorUid: ${e.message}")
+            println("Error en obtenerAdultoPorUid: ${e.message}")
             null
         }
     }
@@ -604,7 +604,7 @@ class FirebaseRepository {
             ).await()
             true
         } catch (e: Exception) {
-            println("❌ Error en actualizarPerfilPadre: ${e.message}")
+            println("Error en actualizarPerfilPadre: ${e.message}")
             false
         }
     }

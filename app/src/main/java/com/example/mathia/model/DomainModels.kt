@@ -8,7 +8,7 @@ enum class AlertType {
     CHALLENGE    // Pink/Blue theme (🏆)
 }
 
-data class DuolingoAlert(
+data class MathiaAlert(
     val title: String,
     val message: String,
     val type: AlertType,
@@ -202,4 +202,5 @@ data class NotificacionFirebase(
     val read: Boolean = false,
     val tipo: String = "" // "alumno", "docente", "padre"
 )
+
 

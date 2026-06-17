@@ -8,25 +8,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color // IMPORTANTE: Agregamos el import de Color
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = MathiaNavy,
+    secondary = MathiaTeal,
+    tertiary = MathiaRed
 )
 
 // 1. MODIFICAMOS EL ESQUEMA CLARO
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40,
+    primary = MathiaNavy,
+    secondary = MathiaTeal,
+    tertiary = MathiaRed,
 
-    // Descomentamos y forzamos el texto a Negro Puro
     background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),
     onPrimary = Color.White,
     onSecondary = Color.White,
     onTertiary = Color.White,
-    onBackground = Color.Black, // <-- Texto general en negro
-    onSurface = Color.Black     // <-- Texto sobre tarjetas en negro
+    onBackground = MathiaNavy, // <-- Texto general en color navy oscuro de la paleta
+    onSurface = MathiaNavy     // <-- Texto sobre tarjetas en color navy oscuro de la paleta
 )
 
 @Composable

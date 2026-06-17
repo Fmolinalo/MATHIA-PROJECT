@@ -49,9 +49,9 @@ class StudentViewModel : ViewModel() {
                 xp = 90,
                 pin = 1234,
                 padre_email = "parent@mathia.com",
-                avatar = "👧",
+                avatar = "default",
                 equipped_theme = "Lila Clásico",
-                unlocked_avatars = listOf("👶", "👧"),
+                unlocked_avatars = listOf("default"),
                 unlocked_themes = listOf("Lila Clásico", "Verde Menta"),
                 streak = 3,
                 daily_mission_progress = 3,
@@ -66,9 +66,9 @@ class StudentViewModel : ViewModel() {
                 incorrectas_por_tema = mapOf("Fracciones" to 5, "Multiplicación" to 3),
                 asistencia = listOf("2026-06-12", "2026-06-13", "2026-06-14", "2026-06-15"),
                 recomendaciones = listOf(
-                    "¡Increíble precisión del 85%! 🎯",
-                    "Te sugiero practicar un poco más de Fracciones para dominarlo por completo. 🧩",
-                    "¡Llevas una súper racha de 3 días practicando! 🔥"
+                    "¡Increíble precisión del 85%!",
+                    "Te sugiero practicar un poco más de Fracciones para dominarlo por completo.",
+                    "¡Llevas una súper racha de 3 días practicando!"
                 )
             )
 
@@ -137,7 +137,7 @@ class StudentViewModel : ViewModel() {
             mockNotificaciones.add(
                 NotificacionFirebase(
                     id = "not1",
-                    titulo = "Sofía completó una práctica 🎯",
+                    titulo = "Sofía completó una práctica",
                     cuerpo = "Sofía Pacheco resolvió 10 preguntas con un 90% de precisión.",
                     timestamp = System.currentTimeMillis(),
                     read = false
@@ -377,7 +377,7 @@ class StudentViewModel : ViewModel() {
             val seccion = alumno["seccion"] as? String ?: ""
             val edad = alumno["edad"] as? Int ?: 6
             val colegio = alumno["colegio"] as? String ?: ""
-            val avatar = alumno["avatar"] as? String ?: "👶"
+            val avatar = alumno["avatar"] as? String ?: "default"
             val email = alumno["padre_email"] as? String ?: ""
 
             val nuevo = FirebaseStudent(
@@ -562,7 +562,7 @@ class StudentViewModel : ViewModel() {
             mockNotificaciones.add(
                 NotificacionFirebase(
                     id = "not_${System.currentTimeMillis()}",
-                    titulo = "Examen completado 🧠",
+                    titulo = "Examen completado",
                     cuerpo = "¡Puntaje: $correctas respuestas correctas | Precisión: $precision%!",
                     timestamp = System.currentTimeMillis(),
                     read = false
@@ -575,7 +575,7 @@ class StudentViewModel : ViewModel() {
             .add(
                 hashMapOf(
                     "studentPin" to pin,
-                    "title" to "Examen completado 🧠",
+                    "title" to "Examen completado",
                     "body" to "¡Puntaje: $correctas respuestas correctas | Precisión: $precision%!",
                     "timestamp" to System.currentTimeMillis(),
                     "read" to false,
@@ -589,7 +589,7 @@ class StudentViewModel : ViewModel() {
             mockNotificaciones.add(
                 NotificacionFirebase(
                     id = "not_${System.currentTimeMillis()}",
-                    titulo = "Nuevo progreso disponible 📊",
+                    titulo = "Nuevo progreso disponible",
                     cuerpo = "$nombreAlumno completó un examen con un $precision% de precisión.",
                     timestamp = System.currentTimeMillis(),
                     read = false
@@ -602,7 +602,7 @@ class StudentViewModel : ViewModel() {
             .add(
                 hashMapOf(
                     "studentPin" to pin,
-                    "title" to "Nuevo progreso disponible 📊",
+                    "title" to "Nuevo progreso disponible",
                     "body" to "$nombreAlumno completó un examen con un $precision% de precisión.",
                     "timestamp" to System.currentTimeMillis(),
                     "read" to false,
@@ -616,7 +616,7 @@ class StudentViewModel : ViewModel() {
             mockNotificaciones.add(
                 NotificacionFirebase(
                     id = "not_${System.currentTimeMillis()}",
-                    titulo = "Evaluación completada en clase 📝",
+                    titulo = "Evaluación completada en clase",
                     cuerpo = "$nombreAlumno terminó su examen con $precision%.",
                     timestamp = System.currentTimeMillis(),
                     read = false
@@ -629,7 +629,7 @@ class StudentViewModel : ViewModel() {
             .add(
                 hashMapOf(
                     "studentPin" to pin,
-                    "title" to "Evaluación completada en clase 📝",
+                    "title" to "Evaluación completada en clase",
                     "body" to "$nombreAlumno terminó su examen con $precision%.",
                     "timestamp" to System.currentTimeMillis(),
                     "read" to false,
@@ -643,7 +643,7 @@ class StudentViewModel : ViewModel() {
             mockNotificaciones.add(
                 NotificacionFirebase(
                     id = "not_${System.currentTimeMillis()}",
-                    titulo = "Examen pendiente ⏰",
+                    titulo = "Examen pendiente",
                     cuerpo = "Aún no has completado tu examen adaptativo. ¡Inténtalo hoy!",
                     timestamp = System.currentTimeMillis(),
                     read = false
@@ -656,7 +656,7 @@ class StudentViewModel : ViewModel() {
             .add(
                 hashMapOf(
                     "studentPin" to pin,
-                    "title" to "Examen pendiente ⏰",
+                    "title" to "Examen pendiente",
                     "body" to "Aún no has completado tu examen adaptativo. ¡Inténtalo hoy!",
                     "timestamp" to System.currentTimeMillis(),
                     "read" to false,

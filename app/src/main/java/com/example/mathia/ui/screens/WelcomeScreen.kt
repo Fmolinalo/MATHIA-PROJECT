@@ -4,7 +4,12 @@ import android.os.Build
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Science
+import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -86,11 +91,17 @@ fun WelcomeScreen(onCreateProfile: () -> Unit, onLogin: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            Icon(
+                imageVector = Icons.Default.Science,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp),
+                tint = if (demoChecked) AppColors.Green else AppColors.Gray600
+            )
             Text(
-                text = "Demo 🧪",
+                text = "Demo Mode",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
-                color = if (demoChecked) AppColors.SageGreen else AppColors.Gray600
+                color = if (demoChecked) AppColors.Green else AppColors.Gray600
             )
             Switch(
                 checked = demoChecked,
@@ -99,8 +110,8 @@ fun WelcomeScreen(onCreateProfile: () -> Unit, onLogin: () -> Unit) {
                     StudentViewModel.isDemoMode = checked
                 },
                 colors = SwitchDefaults.colors(
-                    checkedThumbColor = AppColors.SageGreen,
-                    checkedTrackColor = AppColors.SageGreen.copy(alpha = 0.5f),
+                    checkedThumbColor = AppColors.Green,
+                    checkedTrackColor = AppColors.Green.copy(alpha = 0.5f),
                     uncheckedThumbColor = AppColors.Gray400,
                     uncheckedTrackColor = AppColors.Gray200
                 )
@@ -147,14 +158,14 @@ fun WelcomeScreen(onCreateProfile: () -> Unit, onLogin: () -> Unit) {
                         .padding(vertical = 20.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("🧮", fontSize = 40.sp)
-                    Spacer(Modifier.height(8.dp))
-                    Text(
-                        "MathIA",
-                        fontSize = 30.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = AppColors.Purple
+                    Image(
+                        painter = painterResource(id = R.drawable.mathia_logo),
+                        contentDescription = "MathIA Logo",
+                        modifier = Modifier
+                            .fillMaxWidth(0.8f)
+                            .height(95.dp)
                     )
+                    Spacer(Modifier.height(4.dp))
                     Text(
                         "¡Aprende mates jugando!",
                         fontSize = 13.sp,
@@ -170,9 +181,8 @@ fun WelcomeScreen(onCreateProfile: () -> Unit, onLogin: () -> Unit) {
                     .background(AppColors.PinkLight, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
-                AsyncImage(
-                    model = R.drawable.ajolote,
-                    imageLoader = imageLoader,
+                Image(
+                    painter = painterResource(id = R.drawable.ajolote_student),
                     contentDescription = "Mateo el Ajolote",
                     modifier = Modifier
                         .size(115.dp)
@@ -220,12 +230,23 @@ fun WelcomeScreen(onCreateProfile: () -> Unit, onLogin: () -> Unit) {
                     shape = RoundedCornerShape(50.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = AppColors.Purple)
                 ) {
-                    Text(
-                        "¡Comenzar! 🚀",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        color = Color.White
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PlayArrow,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Text(
+                            "Comenzar",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            color = Color.White
+                        )
+                    }
                 }
 
             }

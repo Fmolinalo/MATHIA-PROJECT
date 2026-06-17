@@ -11,6 +11,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Assessment
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -124,7 +127,20 @@ fun TeacherHistoryScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Historial de Respuestas 📜", fontWeight = FontWeight.Bold, color = AppColors.Purple) },
+                title = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.History,
+                            contentDescription = null,
+                            tint = AppColors.Purple,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Text("Historial de Respuestas", fontWeight = FontWeight.Bold, color = AppColors.Purple)
+                    }
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = AppColors.Purple)
@@ -160,7 +176,18 @@ fun TeacherHistoryScreen(
                     colors = CardDefaults.cardColors(containerColor = Color.White)
                 ) {
                     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("📈 Resumen de Desempeño Escolar", fontWeight = FontWeight.Bold, color = AppColors.Purple)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Assessment,
+                                contentDescription = null,
+                                tint = AppColors.Purple,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Text("Resumen de Desempeño Escolar", fontWeight = FontWeight.Bold, color = AppColors.Purple)
+                        }
                         Divider(color = AppColors.PurpleLight)
                         
                         Row(
@@ -316,7 +343,12 @@ fun TeacherHistoryScreen(
                                                 modifier = Modifier.size(24.dp).background(AppColors.PurpleLight, CircleShape),
                                                 contentAlignment = Alignment.Center
                                             ) {
-                                                Text("👶", fontSize = 14.sp)
+                                                Icon(
+                                                    imageVector = Icons.Default.Face,
+                                                    contentDescription = null,
+                                                    tint = AppColors.Purple,
+                                                    modifier = Modifier.size(16.dp)
+                                                )
                                             }
                                             Text(log.estudianteNombre, fontWeight = FontWeight.Bold, fontSize = 14.sp)
                                         }

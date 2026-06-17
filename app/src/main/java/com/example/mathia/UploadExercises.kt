@@ -1,4 +1,4 @@
-package com.example.mathia
+﻿package com.example.mathia
 
 import android.content.Context
 import android.widget.Toast
@@ -16,7 +16,7 @@ object UploadExercises {
 
     private val ejerciciosPrimero = listOf(
         // CONJUNTO A: Números y conteo hasta 20 (A-001 a A-012)
-        mapOf("id" to "A-001", "enunciado" to "¿Cuántos pollitos hay? 🐥🐥🐥🐥🐥🐥", "correcta" to "6", "opcionA" to "4", "opcionB" to "5", "opcionC" to "6", "dificultad" to 1, "explicacion" to "Cuenta uno por uno cada pollito. Total: 6."),
+        mapOf("id" to "A-001", "enunciado" to "¿Cuántos pollitos hay? ● ● ● ● ● ●", "correcta" to "6", "opcionA" to "4", "opcionB" to "5", "opcionC" to "6", "dificultad" to 1, "explicacion" to "Cuenta uno por uno cada círculo. Total: 6."),
         mapOf("id" to "A-002", "enunciado" to "Escribe el número que falta: 3, 5, 7, ___, 11", "correcta" to "9", "opcionA" to "8", "opcionB" to "9", "opcionC" to "10", "dificultad" to 1, "explicacion" to "Suma de 2 en 2: 3→5→7→9→11."),
         mapOf("id" to "A-003", "enunciado" to "¿Qué número es mayor: 12 ó 17?", "correcta" to "17", "opcionA" to "12", "opcionB" to "17", "opcionC" to "Son iguales", "dificultad" to 1, "explicacion" to "17 tiene más unidades que 12."),
         mapOf("id" to "A-004", "enunciado" to "En una fila, Lucía es la quinta. ¿Qué número de lugar ocupa?", "correcta" to "5", "opcionA" to "3", "opcionB" to "4", "opcionC" to "5", "dificultad" to 1, "explicacion" to "Quinto = 5° lugar."),
@@ -85,7 +85,7 @@ object UploadExercises {
         mapOf("id" to "F-001", "enunciado" to "Patrón: ○△○△○___", "correcta" to "△", "opcionA" to "○", "opcionB" to "△", "opcionC" to "□", "dificultad" to 1, "explicacion" to "Alterna ○ y △. Después de ○ viene △."),
         mapOf("id" to "F-002", "enunciado" to "2, 4, 6, 8, ___", "correcta" to "10", "opcionA" to "9", "opcionB" to "10", "opcionC" to "11", "dificultad" to 1, "explicacion" to "Suma 2 cada vez."),
         mapOf("id" to "F-003", "enunciado" to "¿En qué grupo van: pelota, naranja, globo, moneda?", "correcta" to "Círculos", "opcionA" to "Triángulos", "opcionB" to "Cuadrados", "opcionC" to "Círculos", "dificultad" to 1, "explicacion" to "Todos tienen forma redondeada."),
-        mapOf("id" to "F-004", "enunciado" to "Pictograma: 🐕🐕🐕=3 perros, 🐈🐈=2 gatos. ¿Qué animal hay más?", "correcta" to "Perros", "opcionA" to "Perros", "opcionB" to "Gatos", "opcionC" to "Igual", "dificultad" to 1, "explicacion" to "3 > 2."),
+        mapOf("id" to "F-004", "enunciado" to "Pictograma: Perros = 3, Gatos = 2. ¿Qué animal hay más?", "correcta" to "Perros", "opcionA" to "Perros", "opcionB" to "Gatos", "opcionC" to "Igual", "dificultad" to 1, "explicacion" to "3 > 2."),
         mapOf("id" to "F-005", "enunciado" to "Patrón: ○○△○○△___", "correcta" to "○", "opcionA" to "○", "opcionB" to "△", "opcionC" to "□", "dificultad" to 2, "explicacion" to "Patrón AAB: ○○△. Después de △ vuelve a empezar con ○."),
         mapOf("id" to "F-006", "enunciado" to "1, 3, 6, 10, ___ (suma 2, 3, 4, ...)", "correcta" to "15", "opcionA" to "13", "opcionB" to "14", "opcionC" to "15", "dificultad" to 2, "explicacion" to "Diferencias: +2, +3, +4, +5. 10+5=15."),
         mapOf("id" to "F-007", "enunciado" to "En una encuesta: 5 niños prefieren fútbol, 3 básquet, 7 voley. ¿Cuál es el deporte más popular?", "correcta" to "Voley", "opcionA" to "Fútbol", "opcionB" to "Básquet", "opcionC" to "Voley", "dificultad" to 2, "explicacion" to "7 > 5 > 3."),
@@ -272,11 +272,11 @@ object UploadExercises {
     // ============================================
 
     suspend fun uploadAllExercises() {
-        println("🚀 Iniciando carga de ejercicios a Firebase...")
+        println("Iniciando carga de ejercicios a Firebase...")
         println("==========================================")
 
         // Subir ejercicios de PRIMERO
-        println("📚 Subiendo ejercicios de PRIMERO de primaria (${ejerciciosPrimero.size} ejercicios)...")
+        println("Subiendo ejercicios de PRIMERO de primaria (${ejerciciosPrimero.size} ejercicios)...")
         for (ej in ejerciciosPrimero) {
             val id = ej["id"] as String
             val grado = "primero"
@@ -287,15 +287,15 @@ object UploadExercises {
                     .document(id)
                     .set(ej)
                     .await()
-                println("✅ Subido: $grado/$id - ${ej["enunciado"]}")
+                println("Subido: $grado/$id - ${ej["enunciado"]}")
             } catch (e: Exception) {
-                println("❌ Error subiendo $grado/$id: ${e.message}")
+                println("Error subiendo $grado/$id: ${e.message}")
             }
         }
-        println("✅ PRIMERO completado: ${ejerciciosPrimero.size} ejercicios")
+        println("PRIMERO completado: ${ejerciciosPrimero.size} ejercicios")
 
         // Subir ejercicios de SEGUNDO
-        println("\n📚 Subiendo ejercicios de SEGUNDO de primaria (${ejerciciosSegundo.size} ejercicios)...")
+        println("\nSubiendo ejercicios de SEGUNDO de primaria (${ejerciciosSegundo.size} ejercicios)...")
         for (ej in ejerciciosSegundo) {
             val id = ej["id"] as String
             val grado = "segundo"
@@ -306,15 +306,15 @@ object UploadExercises {
                     .document(id)
                     .set(ej)
                     .await()
-                println("✅ Subido: $grado/$id - ${ej["enunciado"]}")
+                println("Subido: $grado/$id - ${ej["enunciado"]}")
             } catch (e: Exception) {
-                println("❌ Error subiendo $grado/$id: ${e.message}")
+                println("Error subiendo $grado/$id: ${e.message}")
             }
         }
-        println("✅ SEGUNDO completado: ${ejerciciosSegundo.size} ejercicios")
+        println("SEGUNDO completado: ${ejerciciosSegundo.size} ejercicios")
 
         // Subir ejercicios de TERCERO
-        println("\n📚 Subiendo ejercicios de TERCERO de primaria (${ejerciciosTercero.size} ejercicios)...")
+        println("\nSubiendo ejercicios de TERCERO de primaria (${ejerciciosTercero.size} ejercicios)...")
         for (ej in ejerciciosTercero) {
             val id = ej["id"] as String
             val grado = "tercero"
@@ -325,16 +325,16 @@ object UploadExercises {
                     .document(id)
                     .set(ej)
                     .await()
-                println("✅ Subido: $grado/$id - ${ej["enunciado"]}")
+                println("Subido: $grado/$id - ${ej["enunciado"]}")
             } catch (e: Exception) {
-                println("❌ Error subiendo $grado/$id: ${e.message}")
+                println("Error subiendo $grado/$id: ${e.message}")
             }
         }
-        println("✅ TERCERO completado: ${ejerciciosTercero.size} ejercicios")
+        println("TERCERO completado: ${ejerciciosTercero.size} ejercicios")
 
         println("\n==========================================")
-        println("🎉 ¡CARGA COMPLETADA!")
-        println("📊 Total ejercicios subidos: ${ejerciciosPrimero.size + ejerciciosSegundo.size + ejerciciosTercero.size}")
+        println("¡CARGA COMPLETADA!")
+        println("Total ejercicios subidos: ${ejerciciosPrimero.size + ejerciciosSegundo.size + ejerciciosTercero.size}")
         println("   - Primero: ${ejerciciosPrimero.size}")
         println("   - Segundo: ${ejerciciosSegundo.size}")
         println("   - Tercero: ${ejerciciosTercero.size}")

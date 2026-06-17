@@ -9,6 +9,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.MilitaryTech
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,6 +26,7 @@ import com.example.mathia.AppColors
 import com.example.mathia.StudentViewModel
 import com.example.mathia.model.FirebaseStudent
 import com.example.mathia.model.Student
+import com.example.mathia.ui.components.AvatarIcon
 
 @Composable
 fun LeaderboardScreen(
@@ -35,7 +39,6 @@ fun LeaderboardScreen(
 
     LaunchedEffect(Unit) {
         viewModel.obtenerTodosAlumnos { list ->
-            // Filter by student's grade for local competitiveness and sort by stars
             leaderboardList = list.filter { it.grado == currentStudent.grade }
                 .sortedByDescending { it.estrellas }
             isLoading = false
@@ -52,13 +55,20 @@ fun LeaderboardScreen(
         // Header
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             IconButton(onClick = onBack) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver", tint = AppColors.Purple)
             }
+            Icon(
+                imageVector = Icons.Default.EmojiEvents,
+                contentDescription = null,
+                tint = AppColors.Purple,
+                modifier = Modifier.size(24.dp)
+            )
             Text(
-                text = "🏆 Tabla de Campeones",
+                text = "Tabla de Campeones",
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Black,
                 color = AppColors.Purple
@@ -84,19 +94,19 @@ fun LeaderboardScreen(
                 ) {
                     // 2nd Place (Left)
                     if (top3.size > 1) {
-                        PodiumColumn(student = top3[1], place = 2, height = 90.dp, emoji = "🥈", color = Color(0xFFC0C0C0))
+                        PodiumColumn(student = top3[1], place = 2, height = 90.dp, color = Color(0xFFC0C0C0))
                     } else {
                         Spacer(modifier = Modifier.width(90.dp))
                     }
 
                     // 1st Place (Center)
                     if (top3.isNotEmpty()) {
-                        PodiumColumn(student = top3[0], place = 1, height = 120.dp, emoji = "🥇", color = AppColors.Amber)
+                        PodiumColumn(student = top3[0], place = 1, height = 120.dp, color = AppColors.Amber)
                     }
 
                     // 3rd Place (Right)
                     if (top3.size > 2) {
-                        PodiumColumn(student = top3[2], place = 3, height = 70.dp, emoji = "🥉", color = Color(0xFFCD7F32))
+                        PodiumColumn(student = top3[2], place = 3, height = 70.dp, color = Color(0xFFCD7F32))
                     } else {
                         Spacer(modifier = Modifier.width(90.dp))
                     }
@@ -157,7 +167,7 @@ fun LeaderboardScreen(
                                             .background(Color.White, CircleShape),
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        Text(student.avatar, fontSize = 20.sp)
+                                        AvatarIcon(student.avatar, modifier = Modifier.size(24.dp), tint = AppColors.Purple)
                                     }
                                     Spacer(modifier = Modifier.width(12.dp))
                                     Column {
@@ -173,12 +183,23 @@ fun LeaderboardScreen(
                                         )
                                     }
                                 }
-                                Text(
-                                    text = "⭐ ${student.estrellas}",
-                                    fontWeight = FontWeight.Black,
-                                    color = AppColors.Amber,
-                                    fontSize = 15.sp
-                                )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Star,
+                                        contentDescription = null,
+                                        tint = AppColors.Amber,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Text(
+                                        text = "${student.estrellas}",
+                                        fontWeight = FontWeight.Black,
+                                        color = AppColors.Amber,
+                                        fontSize = 15.sp
+                                    )
+                                }
                             }
                         }
                     }
@@ -193,7 +214,6 @@ fun PodiumColumn(
     student: FirebaseStudent,
     place: Int,
     height: androidx.compose.ui.unit.Dp,
-    emoji: String,
     color: Color
 ) {
     Column(
@@ -201,7 +221,7 @@ fun PodiumColumn(
         verticalArrangement = Arrangement.Bottom,
         modifier = Modifier.width(95.dp)
     ) {
-        Text(student.avatar, fontSize = 32.sp)
+        AvatarIcon(student.avatar, modifier = Modifier.size(36.dp), tint = AppColors.Purple)
         Text(
             text = student.nombre.split(" ").firstOrNull() ?: "",
             fontSize = 12.sp,
@@ -209,12 +229,23 @@ fun PodiumColumn(
             color = AppColors.Gray800,
             textAlign = TextAlign.Center
         )
-        Text(
-            text = "⭐ ${student.estrellas}",
-            fontSize = 11.sp,
-            color = AppColors.Gray600,
-            fontWeight = FontWeight.Bold
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(2.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Star,
+                contentDescription = null,
+                tint = AppColors.Amber,
+                modifier = Modifier.size(12.dp)
+            )
+            Text(
+                text = "${student.estrellas}",
+                fontSize = 11.sp,
+                color = AppColors.Gray600,
+                fontWeight = FontWeight.Bold
+            )
+        }
         Spacer(modifier = Modifier.height(4.dp))
         Box(
             modifier = Modifier
@@ -225,9 +256,16 @@ fun PodiumColumn(
             contentAlignment = Alignment.Center
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    text = emoji,
-                    fontSize = 24.sp
+                val placeIcon = when (place) {
+                    1 -> Icons.Default.EmojiEvents
+                    2 -> Icons.Default.MilitaryTech
+                    else -> Icons.Default.Star
+                }
+                Icon(
+                    imageVector = placeIcon,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(24.dp)
                 )
                 Text(
                     text = "${place}°",

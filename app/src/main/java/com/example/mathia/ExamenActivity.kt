@@ -138,7 +138,7 @@ class ExamenActivity : ComponentActivity() {
         }
         
         if (selectedRadioButton == null) {
-            Toast.makeText(this, "⚠️ Debes seleccionar una respuesta", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Debes seleccionar una respuesta", Toast.LENGTH_SHORT).show()
             return false
         }
         
@@ -307,7 +307,7 @@ class ExamenActivity : ComponentActivity() {
                         }
                     }
                 } catch (e: Exception) {
-                    println("❌ Error guardando resultados de examen en Firestore: ${e.message}")
+                    println("Error guardando resultados de examen en Firestore: ${e.message}")
                 }
             }
         }

@@ -21,6 +21,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mathia.AppColors
+import com.example.mathia.ui.components.AvatarIcon
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -41,7 +42,7 @@ fun CreateProfileScreen(
     var isSeccionExpanded by remember { mutableStateOf(false) }
     var isEdadExpanded by remember { mutableStateOf(false) }
 
-    val avatars = listOf("🦸", "🚀", "🧙", "🦄", "🐉", "🦊", "🐼", "🦁", "🐯", "🐨")
+    val avatars = listOf("superhero", "rocket", "wizard", "unicorn", "dragon", "fox", "panda", "lion", "tiger", "koala")
     val grades = listOf("1ro de Primaria", "2do de Primaria", "3ro de Primaria", "4to de Primaria", "5to de Primaria", "6to de Primaria")
     val secciones = listOf("Sección A", "Sección B", "Sección C", "Sección D", "Sección E")
     val edades = (5..15).toList()
@@ -55,7 +56,7 @@ fun CreateProfileScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        Text("Crear Perfil Estudiante 🧒", fontSize = 26.sp, fontWeight = FontWeight.ExtraBold, color = AppColors.Purple)
+        Text("Crear Perfil Estudiante", fontSize = 26.sp, fontWeight = FontWeight.ExtraBold, color = AppColors.Purple)
         
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -197,7 +198,7 @@ fun CreateProfileScreen(
                                     .clickable { avatarIdx = i },
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text(em, fontSize = 24.sp)
+                                AvatarIcon(avatarKey = em, modifier = Modifier.size(32.dp), tint = AppColors.Purple)
                             }
                         }
                     }

@@ -2,6 +2,10 @@ package com.example.mathia.ui.screens
 
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.ui.res.painterResource
+import com.example.mathia.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -13,11 +17,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -181,6 +187,7 @@ fun ParentsPanel(
                 .fillMaxSize()
                 .padding(paddingValues)
                 .background(AppColors.Bg)
+                .statusBarsPadding()
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -191,17 +198,34 @@ fun ParentsPanel(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = when (tabState) {
-                        0 -> "Panel de Padres 👨‍👩‍👧"
-                        1 -> "Reportes de Sesiones 📝"
-                        2 -> "Observaciones del Maestro 🏫"
-                        else -> "Mi Cuenta de Tutor 👨‍👩‍👧"
-                    },
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = AppColors.Purple
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    val tabIcon = when (tabState) {
+                        0 -> Icons.Default.Home
+                        1 -> Icons.Default.Info
+                        2 -> Icons.Default.List
+                        else -> Icons.Default.Person
+                    }
+                    Icon(
+                        imageVector = tabIcon,
+                        contentDescription = null,
+                        tint = AppColors.Purple,
+                        modifier = Modifier.size(28.dp)
+                    )
+                    Text(
+                        text = when (tabState) {
+                            0 -> "Panel de Padres"
+                            1 -> "Reportes"
+                            2 -> "Observaciones"
+                            else -> "Mi Cuenta de Tutor"
+                        },
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = AppColors.Purple
+                    )
+                }
                 IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = AppColors.Purple) }
             }
 
@@ -225,11 +249,25 @@ fun ParentsPanel(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(
-                                    text = selectedChild?.let { "${it.avatar} ${it.name} ${it.lastName}" } ?: "Seleccionar Hijo",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 15.sp
-                                )
+                                if (selectedChild != null) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        AvatarIcon(avatarKey = selectedChild!!.avatar, modifier = Modifier.size(24.dp), tint = AppColors.Purple)
+                                        Text(
+                                            text = "${selectedChild!!.name} ${selectedChild!!.lastName}",
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 15.sp
+                                        )
+                                    }
+                                } else {
+                                    Text(
+                                        text = "Seleccionar Hijo",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 15.sp
+                                    )
+                                }
                                 Icon(Icons.Default.ArrowDropDown, null)
                             }
                         }
@@ -244,7 +282,15 @@ fun ParentsPanel(
                                 val firstName = parts.firstOrNull() ?: child.nombre
                                 val lastName = parts.drop(1).joinToString(" ")
                                 DropdownMenuItem(
-                                    text = { Text("${child.avatar} ${child.nombre} (${child.grado} - ${child.seccion})") },
+                                    text = {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+                                            AvatarIcon(avatarKey = child.avatar, modifier = Modifier.size(20.dp), tint = AppColors.Purple)
+                                            Text("${child.nombre} (${child.grado} - ${child.seccion})")
+                                        }
+                                    },
                                     onClick = {
                                         selectedChild = Student(
                                             id = child.pin,
@@ -309,7 +355,12 @@ fun ParentsPanel(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
-                                Text("👶", fontSize = 48.sp)
+                                Icon(
+                                    imageVector = Icons.Default.Face,
+                                    contentDescription = null,
+                                    tint = AppColors.Purple,
+                                    modifier = Modifier.size(48.dp)
+                                )
                                 Text("No tienes hijos registrados", fontWeight = FontWeight.Bold, color = AppColors.Purple)
                                 Text("Por favor, pulsa el botón inferior para registrar a tu hijo en MathIA.", fontSize = 14.sp, color = AppColors.Gray600, textAlign = TextAlign.Center)
                             }
@@ -325,9 +376,9 @@ fun ParentsPanel(
                                         else -> AppColors.Red
                                     }
                                     val semText = when {
-                                        s.accuracy >= 80 -> "Desempeño Alto 🟢"
-                                        s.accuracy >= 50 -> "Desempeño Medio 🟡"
-                                        else -> "Requiere Reforzamiento 🔴"
+                                        s.accuracy >= 80 -> "Desempeño Alto"
+                                        s.accuracy >= 50 -> "Desempeño Medio"
+                                        else -> "Requiere Reforzamiento"
                                     }
 
                                     Column(
@@ -347,7 +398,18 @@ fun ParentsPanel(
                                                 horizontalArrangement = Arrangement.SpaceBetween
                                             ) {
                                                 Text("Estatus Académico:", fontWeight = FontWeight.Bold, color = AppColors.Gray800)
-                                                Text(semText, fontWeight = FontWeight.Black, color = semColor)
+                                                Row(
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                                ) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Circle,
+                                                        contentDescription = null,
+                                                        tint = semColor,
+                                                        modifier = Modifier.size(12.dp)
+                                                    )
+                                                    Text(semText, fontWeight = FontWeight.Black, color = semColor)
+                                                }
                                             }
                                         }
 
@@ -358,21 +420,54 @@ fun ParentsPanel(
                                             colors = CardDefaults.cardColors(containerColor = Color.White)
                                         ) {
                                             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                                                Text("📊 Métricas de ${s.name}", fontWeight = FontWeight.Bold, color = AppColors.Purple)
-                                                Divider(color = AppColors.PurpleLight)
-                                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                                    Text("Estrellas Recolectadas:", color = AppColors.Gray600)
-                                                    Text("⭐ ${s.stars}", fontWeight = FontWeight.Bold, color = AppColors.Amber)
+                                                Row(
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                                ) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.BarChart,
+                                                        contentDescription = null,
+                                                        tint = AppColors.Purple,
+                                                        modifier = Modifier.size(20.dp)
+                                                    )
+                                                    Text("Métricas de ${s.name}", fontWeight = FontWeight.Bold, color = AppColors.Purple)
                                                 }
-                                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                                                Divider(color = AppColors.PurpleLight)
+                                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                                                    Text("Estrellas Recolectadas:", color = AppColors.Gray600)
+                                                    Row(
+                                                        verticalAlignment = Alignment.CenterVertically,
+                                                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                                    ) {
+                                                        Icon(
+                                                            imageVector = Icons.Default.Star,
+                                                            contentDescription = null,
+                                                            tint = AppColors.Amber,
+                                                            modifier = Modifier.size(16.dp)
+                                                        )
+                                                        Text("${s.stars}", fontWeight = FontWeight.Bold, color = AppColors.Amber)
+                                                    }
+                                                }
+                                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                                                     Text("Precisión General:", color = AppColors.Gray600)
                                                     Text("${s.accuracy}%", fontWeight = FontWeight.Bold, color = AppColors.Green)
                                                 }
-                                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                                                     Text("Racha de Práctica:", color = AppColors.Gray600)
-                                                    Text("🔥 ${s.streak} días", fontWeight = FontWeight.Bold, color = AppColors.Pink)
+                                                    Row(
+                                                        verticalAlignment = Alignment.CenterVertically,
+                                                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                                    ) {
+                                                        Icon(
+                                                            imageVector = Icons.Default.Whatshot,
+                                                            contentDescription = null,
+                                                            tint = AppColors.Pink,
+                                                            modifier = Modifier.size(16.dp)
+                                                        )
+                                                        Text("${s.streak} días", fontWeight = FontWeight.Bold, color = AppColors.Pink)
+                                                    }
                                                 }
-                                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                                                     Text("Nivel Alcanzado:", color = AppColors.Gray600)
                                                     Text("Nivel ${s.level}", fontWeight = FontWeight.Bold, color = AppColors.Purple)
                                                 }
@@ -387,7 +482,18 @@ fun ParentsPanel(
                                             border = BorderStroke(1.dp, AppColors.Purple.copy(alpha = 0.2f))
                                         ) {
                                             Column(modifier = Modifier.padding(16.dp)) {
-                                                Text("💡 Consejos Pedagógicos para Casa", fontWeight = FontWeight.Bold, color = AppColors.Purple)
+                                                Row(
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                                ) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Lightbulb,
+                                                        contentDescription = null,
+                                                        tint = AppColors.Purple,
+                                                        modifier = Modifier.size(20.dp)
+                                                    )
+                                                    Text("Consejos Pedagógicos para Casa", fontWeight = FontWeight.Bold, color = AppColors.Purple)
+                                                }
                                                 Spacer(modifier = Modifier.height(8.dp))
                                                 if (s.recomendaciones.isEmpty()) {
                                                     Text("Mateo está analizando las estadísticas de tu hijo. ¡Continúen practicando!", fontSize = 12.sp, color = AppColors.Gray600)
@@ -406,7 +512,18 @@ fun ParentsPanel(
                                             colors = CardDefaults.cardColors(containerColor = Color.White)
                                         ) {
                                             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                                Text("🎯 Desglose por Competencia", fontWeight = FontWeight.Bold, color = AppColors.Purple)
+                                                Row(
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                                ) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Flag,
+                                                        contentDescription = null,
+                                                        tint = AppColors.Purple,
+                                                        modifier = Modifier.size(20.dp)
+                                                    )
+                                                    Text("Desglose por Competencia", fontWeight = FontWeight.Bold, color = AppColors.Purple)
+                                                }
                                                 s.skills.forEach { (skill, value) ->
                                                     SkillProgressBar(skill, value)
                                                 }
@@ -424,7 +541,19 @@ fun ParentsPanel(
                                                 horizontalAlignment = Alignment.CenterHorizontally,
                                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                                             ) {
-                                                Text("📈 Evolución de Ejercicios Diarios", fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.Start))
+                                                Row(
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                                    modifier = Modifier.align(Alignment.Start)
+                                                ) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.TrendingUp,
+                                                        contentDescription = null,
+                                                        tint = AppColors.Purple,
+                                                        modifier = Modifier.size(20.dp)
+                                                    )
+                                                    Text("Evolución de Ejercicios Diarios", fontWeight = FontWeight.Bold)
+                                                }
                                                 MiniBarChart(data = s.weekData, color = AppColors.Purple)
                                                 Text("Últimos 7 días activos", fontSize = 11.sp, color = AppColors.Gray500)
                                             }
@@ -463,7 +592,18 @@ fun ParentsPanel(
                                                             horizontalArrangement = Arrangement.SpaceBetween,
                                                             verticalAlignment = Alignment.CenterVertically
                                                         ) {
-                                                            Text("Sesión de ${report.tipo} 📝", fontWeight = FontWeight.Bold, color = AppColors.Purple, fontSize = 15.sp)
+                                                            Row(
+                                                                verticalAlignment = Alignment.CenterVertically,
+                                                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                                            ) {
+                                                                Icon(
+                                                                    imageVector = Icons.Default.Description,
+                                                                    contentDescription = null,
+                                                                    tint = AppColors.Purple,
+                                                                    modifier = Modifier.size(18.dp)
+                                                                )
+                                                                Text("Sesión de ${report.tipo}", fontWeight = FontWeight.Bold, color = AppColors.Purple, fontSize = 15.sp)
+                                                            }
                                                             Text(report.fecha, fontSize = 11.sp, color = AppColors.Gray500)
                                                         }
                                                         Divider(color = AppColors.Gray100)
@@ -576,9 +716,13 @@ fun ParentsPanel(
                                                 modifier = Modifier.padding(20.dp),
                                                 horizontalAlignment = Alignment.CenterHorizontally
                                             ) {
-                                                Box(modifier = Modifier.size(80.dp).background(AppColors.PurpleLight, CircleShape), contentAlignment = Alignment.Center) {
-                                                    Text("👨‍👩‍👧", fontSize = 44.sp)
-                                                }
+                                                 Box(modifier = Modifier.size(90.dp).clip(CircleShape).background(Color.White).border(2.dp, AppColors.MathiaGold, CircleShape), contentAlignment = Alignment.Center) {
+                                                     Image(
+                                                         painter = painterResource(id = R.drawable.ajolote_role_parent),
+                                                         contentDescription = "Padre",
+                                                         modifier = Modifier.size(75.dp)
+                                                     )
+                                                 }
                                                 Spacer(Modifier.height(12.dp))
                                                 Text(parentName.ifEmpty { "Padre de Familia" }, fontWeight = FontWeight.ExtraBold, fontSize = 22.sp, color = AppColors.Purple)
                                                 Text(parentEmail, fontSize = 14.sp, color = AppColors.Gray500)
@@ -594,20 +738,30 @@ fun ParentsPanel(
                                             colors = CardDefaults.cardColors(containerColor = Color.White)
                                         ) {
                                             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                                                Text("🧒 Hijos Registrados", fontWeight = FontWeight.Bold, color = AppColors.Purple)
+                                                Row(
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                                ) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.People,
+                                                        contentDescription = null,
+                                                        tint = AppColors.Purple,
+                                                        modifier = Modifier.size(20.dp)
+                                                    )
+                                                    Text("Hijos Registrados", fontWeight = FontWeight.Bold, color = AppColors.Purple)
+                                                }
                                                 Divider(color = AppColors.PurpleLight)
                                                 
                                                 children.forEach { child ->
                                                     Row(
                                                         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                                                        horizontalArrangement = Arrangement.SpaceBetween,
                                                         verticalAlignment = Alignment.CenterVertically
                                                     ) {
-                                                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                                            Text(child.avatar, fontSize = 20.sp)
+                                                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.weight(1f)) {
+                                                            AvatarIcon(avatarKey = child.avatar, modifier = Modifier.size(24.dp), tint = AppColors.Purple)
                                                             Text(child.nombre, fontWeight = FontWeight.Bold)
                                                         }
-                                                        Text("PIN: ${child.pin}", color = AppColors.Gray500, fontSize = 13.sp)
+                                                        Text("PIN: ${child.pin}", color = AppColors.Gray500, fontSize = 13.sp, textAlign = TextAlign.End)
                                                     }
                                                 }
                                             }
@@ -622,7 +776,18 @@ fun ParentsPanel(
                                             colors = CardDefaults.cardColors(containerColor = Color.White)
                                         ) {
                                             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                                                Text("🔔 Historial de Notificaciones Escolares", fontWeight = FontWeight.Bold, color = AppColors.Purple)
+                                                Row(
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                                ) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Notifications,
+                                                        contentDescription = null,
+                                                        tint = AppColors.Purple,
+                                                        modifier = Modifier.size(20.dp)
+                                                    )
+                                                    Text("Historial de Notificaciones Escolares", fontWeight = FontWeight.Bold, color = AppColors.Purple)
+                                                }
                                                 Divider(color = AppColors.PurpleLight)
                                                 
                                                 if (notifications.isEmpty()) {

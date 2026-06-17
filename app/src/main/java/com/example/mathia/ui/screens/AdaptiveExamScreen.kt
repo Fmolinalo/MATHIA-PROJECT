@@ -14,6 +14,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Psychology
+import androidx.compose.material.icons.filled.EmojiEvents
 import com.example.mathia.AppColors
 import com.example.mathia.QuestionFirebase
 import com.example.mathia.QuestionRepository
@@ -82,7 +85,18 @@ fun AdaptiveExamScreen(
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Text("Examen Adaptativo 🧠", fontWeight = FontWeight.Bold, color = AppColors.Purple, fontSize = 18.sp)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Psychology,
+                        contentDescription = null,
+                        tint = AppColors.Purple,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Text("Examen Adaptativo", fontWeight = FontWeight.Bold, color = AppColors.Purple, fontSize = 18.sp)
+                }
                 Text("${qIdx + 1}/${questions.size}", fontSize = 14.sp, color = AppColors.Gray600, fontWeight = FontWeight.Bold)
             }
             LinearProgressIndicator(
@@ -196,7 +210,18 @@ fun AdaptiveExamScreen(
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
                 Column(modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Text("¡Examen Completado! 🏆", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = AppColors.Purple)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.EmojiEvents,
+                            contentDescription = null,
+                            tint = AppColors.Amber,
+                            modifier = Modifier.size(28.dp)
+                        )
+                        Text("¡Examen Completado!", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = AppColors.Purple)
+                    }
                     
                     Divider(color = AppColors.PurpleLight, thickness = 1.dp)
 

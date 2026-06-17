@@ -44,25 +44,24 @@ import kotlinx.coroutines.tasks.await
 // ─── App Colors ───────────────────────────────────────────────────────────
 object AppColors {
     // New palette colors
-    val SageGreen = Color(0xFF95C19E)
-    val SlateBlue = Color(0xFF7EA4C4)
-    val PastelPink = Color(0xFFF3B0C3)
-    val CreamBg = Color(0xFFFDFBF7)
-    val WarmBeige = Color(0xFFF5ECE1)
-    val DarkBrown = Color(0xFF3C282B)
+    val MathiaRed = Color(0xFFD9303E)
+    val MathiaBurgundy = Color(0xFF732231)
+    val MathiaNavy = Color(0xFF231640)
+    val MathiaTeal = Color(0xFF11594C)
+    val MathiaGold = Color(0xFFD9C771)
 
     // Mapping existing color names to avoid compilation errors and re-theme dynamically
-    val Purple = SlateBlue
-    val PurpleLight = WarmBeige
-    val Pink = PastelPink
-    val PinkLight = Color(0xFFFDE8ED)
-    val Green = SageGreen
-    val GreenLight = Color(0xFFE8F5E9)
-    val Amber = Color(0xFFFFD93D)
-    val AmberLight = Color(0xFFFEF3C7)
-    val Blue = SlateBlue
-    val Red = Color(0xFFEF4444)
-    val Bg = CreamBg
+    val Purple = MathiaNavy
+    val PurpleLight = Color(0xFFF5ECE1) // WarmBeige
+    val Pink = MathiaRed
+    val PinkLight = Color(0xFFFFF0F5)
+    val Green = MathiaTeal
+    val GreenLight = Color(0xFFE6F9EC)
+    val Amber = MathiaGold
+    val AmberLight = Color(0xFFFFFCE6)
+    val Blue = MathiaNavy
+    val Red = MathiaRed
+    val Bg = Color(0xFFFDFBF7)
     val White = Color(0xFFFFFFFF)
     
     // Grays mapped to warmer tones
@@ -72,7 +71,7 @@ object AppColors {
     val Gray500 = Color(0xFF8F7E6D)
     val Gray600 = Color(0xFF6E5F50)
     val Gray700 = Color(0xFF4E3F31)
-    val Gray800 = DarkBrown
+    val Gray800 = MathiaNavy
 }
 
 // ─── MainActivity ──────────────────────────────────────────────────────────
@@ -122,7 +121,7 @@ fun MainApp() {
     var gameOp by remember { mutableStateOf("Suma") }
     var parentEmail by remember { mutableStateOf("") }
     var loggedInUid by remember { mutableStateOf("") }
-    var activeAlert by remember { mutableStateOf<DuolingoAlert?>(null) }
+    var activeAlert by remember { mutableStateOf<MathiaAlert?>(null) }
     val viewModel = remember { StudentViewModel() }
 
     val scope = rememberCoroutineScope()
@@ -344,9 +343,9 @@ fun MainApp() {
                         // Save PIN for session persistence
                         sharedPref.edit().putString("student_pin", loggedInStudent.pin).apply()
                         
-                        activeAlert = DuolingoAlert(
+                        activeAlert = MathiaAlert(
                             title = "¡Bienvenido!",
-                            message = "🦎 ¡Hola, ${loggedInStudent.name}! Mateo te da la bienvenida. ¿Listo para entrenar tu mente matemática hoy?",
+                            message = "¡Hola, ${loggedInStudent.name}! Mateo te da la bienvenida. ¿Listo para entrenar tu mente matemática hoy?",
                             type = AlertType.MOTIVATIONAL,
                             buttonText = "¡Empezar!"
                         )
@@ -373,7 +372,7 @@ fun MainApp() {
                             "padre_email" to parentEmail,
                             "avatar" to avatar,
                             "equipped_theme" to "Lila Clásico",
-                            "unlocked_avatars" to listOf("👶", avatar),
+                            "unlocked_avatars" to listOf("default", avatar),
                             "unlocked_themes" to listOf("Lila Clásico"),
                             "streak" to 0,
                             "total_preguntas" to 0,
@@ -390,7 +389,7 @@ fun MainApp() {
                                 "Series" to 0
                             ),
                             "incorrectas_por_tema" to emptyMap<String, Int>(),
-                            "recomendaciones" to listOf("¡Realiza el Examen Adaptativo para descubrir tu nivel actual de matemáticas! 🧬")
+                            "recomendaciones" to listOf("¡Realiza el Examen Adaptativo para descubrir tu nivel actual de matemáticas!")
                         )
                         viewModel.crearAlumno(alumnoFirebase, pin) { success ->
                             if (success) {
@@ -431,16 +430,16 @@ fun MainApp() {
                             student = s.copy(stars = nextStars, xp = nextXP, level = nextLevel)
 
                             activeAlert = if (leveledUp) {
-                                DuolingoAlert(
-                                    title = "¡Súper Nivel UP! 🎉",
-                                    message = "🦎 ¡Guau! Alcanzaste el Nivel $nextLevel. Mateo te ha regalado un Cofre Sorpresa. ¡Ábrelo en la tienda!",
+                                MathiaAlert(
+                                    title = "¡Súper Nivel UP!",
+                                    message = "¡Guau! Alcanzaste el Nivel $nextLevel. Mateo te ha regalado un Cofre Sorpresa. ¡Ábrelo en la tienda!",
                                     type = AlertType.CHALLENGE,
                                     buttonText = "¡Genial!"
                                 )
                             } else {
-                                DuolingoAlert(
+                                MathiaAlert(
                                     title = "¡Excelente!",
-                                    message = "⭐ ¡Ganaste $stars estrellas y $xp XP! Mateo está brincando de alegría. ¡Sigue así!",
+                                    message = "¡Ganaste $stars estrellas y $xp XP! Mateo está brincando de alegría. ¡Sigue así!",
                                     type = AlertType.SUCCESS,
                                     buttonText = "¡De acuerdo!"
                                 )
@@ -490,7 +489,7 @@ fun MainApp() {
 
             // Alert Dialog Overlay
             activeAlert?.let { alert ->
-                DuolingoAlertDialog(
+                MathiaAlertDialog(
                     alert = alert,
                     onDismiss = { activeAlert = null }
                 )
@@ -556,3 +555,4 @@ fun LoadingScreen() {
         CircularProgressIndicator(color = AppColors.Purple)
     }
 }
+

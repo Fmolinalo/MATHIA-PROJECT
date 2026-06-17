@@ -17,6 +17,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.Canvas
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import com.example.mathia.AppColors
 import kotlin.math.PI
 import kotlin.math.cos
@@ -26,8 +28,23 @@ import kotlin.math.sin
 fun StarProgress(current: Int, max: Int = 210) {
     val pct = (current.toFloat() / max).coerceIn(0f, 1f)
     Column(modifier = Modifier.fillMaxWidth()) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("⭐ $current / $max estrellas", fontSize = 12.sp, color = AppColors.Gray600)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Star,
+                    contentDescription = null,
+                    tint = AppColors.Amber,
+                    modifier = Modifier.size(16.dp)
+                )
+                Text("$current / $max estrellas", fontSize = 12.sp, color = AppColors.Gray600)
+            }
             Text("${(pct * 100).toInt()}%", fontSize = 12.sp, color = AppColors.Purple, fontWeight = FontWeight.Bold)
         }
         Spacer(Modifier.height(4.dp))

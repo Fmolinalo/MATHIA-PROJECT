@@ -33,6 +33,21 @@ import com.example.mathia.AppColors
 import com.example.mathia.model.Student
 import com.example.mathia.ui.components.MiniBarChart
 import com.example.mathia.ui.components.SkillProgressBar
+import com.example.mathia.ui.components.AvatarIcon
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Speed
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Whatshot
+import androidx.compose.material.icons.filled.Psychology
+import androidx.compose.material.icons.filled.ShoppingBag
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.School
+import androidx.compose.material.icons.filled.TrendingUp
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Assessment
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Lightbulb
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -48,12 +63,12 @@ fun StudentProfileScreen(
 
     // Dynamic Achievements
     val achievements = listOf(
-        Badge("Primeros Pasos 👣", "¡Resuelve tu primera pregunta de práctica!", student.totalQuestions > 0),
-        Badge("Velocidad Absoluta ⚡", "Tiempo promedio menor a 7s por respuesta.", student.tiempoPromedio > 0.0 && student.tiempoPromedio < 7.0),
-        Badge("Precisión Divina 🎯", "Alcanza un 85% de precisión general.", student.accuracy >= 85),
-        Badge("Práctica Imparable 🔥", "Consigue una racha de 3 días de práctica.", student.streak >= 3),
-        Badge("Diagnóstico de Mateo 🧬", "Completa la prueba de nivel adaptativa.", student.diagnosticoRealizado),
-        Badge("Coleccionista 🛍️", "Desbloquea al menos 2 avatares en la tienda.", student.unlockedAvatars.size >= 2)
+        Badge("Primeros Pasos", "¡Resuelve tu primera pregunta de práctica!", Icons.Default.PlayArrow, student.totalQuestions > 0),
+        Badge("Velocidad Absoluta", "Tiempo promedio menor a 7s por respuesta.", Icons.Default.Speed, student.tiempoPromedio > 0.0 && student.tiempoPromedio < 7.0),
+        Badge("Precisión Divina", "Alcanza un 85% de precisión general.", Icons.Default.Star, student.accuracy >= 85),
+        Badge("Práctica Imparable", "Consigue una racha de 3 días de práctica.", Icons.Default.Whatshot, student.streak >= 3),
+        Badge("Diagnóstico de Mateo", "Completa la prueba de nivel adaptativa.", Icons.Default.Psychology, student.diagnosticoRealizado),
+        Badge("Coleccionista", "Desbloquea al menos 2 avatares en la tienda.", Icons.Default.ShoppingBag, student.unlockedAvatars.size >= 2)
     )
 
     // Render study calendar for current month (June 2026)
@@ -78,7 +93,7 @@ fun StudentProfileScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Perfil de Estudiante 🧒", fontWeight = FontWeight.Bold, color = AppColors.Purple) },
+                title = { Text("Perfil de Estudiante", fontWeight = FontWeight.Bold, color = AppColors.Purple) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = AppColors.Purple)
@@ -86,7 +101,7 @@ fun StudentProfileScreen(
                 },
                 actions = {
                     IconButton(onClick = {
-                        val shareText = "¡Mira mi progreso en MathIA! 🦎\nNivel: ${student.level}\nEstrellas: ${student.stars} ⭐\nPrecisión: ${student.accuracy}% 🎯\n¡Únete a entrenar con Mateo el Ajolote!"
+                        val shareText = "¡Mira mi progreso en MathIA!\nNivel: ${student.level}\nEstrellas: ${student.stars}\nPrecisión: ${student.accuracy}%\n¡Únete a entrenar con Mateo el Ajolote!"
                         clipboardManager.setText(AnnotatedString(shareText))
                         Toast.makeText(context, "¡Progreso copiado al portapapeles! Listo para compartir.", Toast.LENGTH_SHORT).show()
                     }) {
@@ -123,7 +138,7 @@ fun StudentProfileScreen(
                             .background(AppColors.PurpleLight, CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(student.avatar, fontSize = 48.sp)
+                        AvatarIcon(student.avatar, modifier = Modifier.size(54.dp), tint = AppColors.Purple)
                     }
                     Spacer(Modifier.height(12.dp))
                     
@@ -150,13 +165,24 @@ fun StudentProfileScreen(
                     }
 
                     if (student.colegio.isNotEmpty()) {
-                        Text(
-                            text = "🏫 Colegio: ${student.colegio}",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = AppColors.Gray500,
-                            modifier = Modifier.padding(top = 4.dp)
-                        )
+                        Spacer(Modifier.height(4.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.School,
+                                contentDescription = null,
+                                tint = AppColors.Gray500,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Text(
+                                text = "Colegio: ${student.colegio}",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = AppColors.Gray500
+                            )
+                        }
                     }
                 }
             }
@@ -168,7 +194,18 @@ fun StudentProfileScreen(
                 colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
                 Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("🎮 Nivel y Experiencia", fontWeight = FontWeight.Bold, color = AppColors.Purple, fontSize = 16.sp)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.TrendingUp,
+                            contentDescription = null,
+                            tint = AppColors.Purple,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Text("Nivel y Experiencia", fontWeight = FontWeight.Bold, color = AppColors.Purple, fontSize = 16.sp)
+                    }
                     
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -188,7 +225,12 @@ fun StudentProfileScreen(
                                 .background(AppColors.PurpleLight, CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("🏆", fontSize = 24.sp)
+                            Icon(
+                                imageVector = Icons.Default.EmojiEvents,
+                                contentDescription = null,
+                                tint = AppColors.Purple,
+                                modifier = Modifier.size(24.dp)
+                            )
                         }
                     }
                     
@@ -210,11 +252,23 @@ fun StudentProfileScreen(
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("⭐ Estrellas", fontSize = 11.sp, color = AppColors.Gray500)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Icon(Icons.Default.Star, null, tint = AppColors.Amber, modifier = Modifier.size(14.dp))
+                                Text("Estrellas", fontSize = 11.sp, color = AppColors.Gray500)
+                            }
                             Text("${student.stars}", fontWeight = FontWeight.Black, fontSize = 18.sp, color = AppColors.Amber)
                         }
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("🔥 Racha de Estudio", fontSize = 11.sp, color = AppColors.Gray500)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Icon(Icons.Default.Whatshot, null, tint = AppColors.Pink, modifier = Modifier.size(14.dp))
+                                Text("Racha de Estudio", fontSize = 11.sp, color = AppColors.Gray500)
+                            }
                             Text("${student.streak} días", fontWeight = FontWeight.Black, fontSize = 18.sp, color = AppColors.Pink)
                         }
                     }
@@ -228,7 +282,13 @@ fun StudentProfileScreen(
                 colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
                 Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("📊 Estadísticas de Aprendizaje", fontWeight = FontWeight.Bold, color = AppColors.Purple, fontSize = 16.sp)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(Icons.Default.Assessment, null, tint = AppColors.Purple, modifier = Modifier.size(20.dp))
+                        Text("Estadísticas de Aprendizaje", fontWeight = FontWeight.Bold, color = AppColors.Purple, fontSize = 16.sp)
+                    }
                     
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                         Column {
@@ -274,7 +334,13 @@ fun StudentProfileScreen(
                 colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
                 Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text("🎯 Precisión por Competencia", fontWeight = FontWeight.Bold, color = AppColors.Purple, fontSize = 16.sp)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(Icons.Default.Star, null, tint = AppColors.Purple, modifier = Modifier.size(20.dp))
+                        Text("Precisión por Competencia", fontWeight = FontWeight.Bold, color = AppColors.Purple, fontSize = 16.sp)
+                    }
                     student.skills.forEach { (skill, score) ->
                         SkillProgressBar(skill = skill, value = score)
                     }
@@ -291,13 +357,19 @@ fun StudentProfileScreen(
                     modifier = Modifier.padding(20.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        text = "📅 Calendario de Estudio (Junio 2026)",
-                        fontWeight = FontWeight.Bold,
-                        color = AppColors.Purple,
-                        fontSize = 16.sp,
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.align(Alignment.Start)
-                    )
+                    ) {
+                        Icon(Icons.Default.CalendarMonth, null, tint = AppColors.Purple, modifier = Modifier.size(20.dp))
+                        Text(
+                            text = "Calendario de Estudio (Junio 2026)",
+                            fontWeight = FontWeight.Bold,
+                            color = AppColors.Purple,
+                            fontSize = 16.sp
+                        )
+                    }
                     Spacer(modifier = Modifier.height(16.dp))
                     
                     // Day of week labels
@@ -371,7 +443,13 @@ fun StudentProfileScreen(
                 colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
                 Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("🏆 Logros e Insignias (Estilo Duolingo)", fontWeight = FontWeight.Bold, color = AppColors.Purple, fontSize = 16.sp)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(Icons.Default.EmojiEvents, null, tint = AppColors.Purple, modifier = Modifier.size(20.dp))
+                        Text("Logros e Insignias", fontWeight = FontWeight.Bold, color = AppColors.Purple, fontSize = 16.sp)
+                    }
                     
                     achievements.forEach { badge ->
                         Row(
@@ -390,9 +468,11 @@ fun StudentProfileScreen(
                                     ),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text(
-                                    text = if (badge.isUnlocked) "🏅" else "🔒",
-                                    fontSize = 26.sp
+                                Icon(
+                                    imageVector = if (badge.isUnlocked) badge.icon else Icons.Default.Lock,
+                                    contentDescription = null,
+                                    tint = if (badge.isUnlocked) AppColors.Amber else AppColors.Gray400,
+                                    modifier = Modifier.size(28.dp)
                                 )
                             }
                             Column(modifier = Modifier.weight(1f)) {
@@ -421,7 +501,13 @@ fun StudentProfileScreen(
                 border = BorderStroke(1.5.dp, AppColors.Purple.copy(alpha = 0.2f))
             ) {
                 Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text("💡 Consejos de Estudio de Mateo", fontWeight = FontWeight.Bold, color = AppColors.Purple, fontSize = 16.sp)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(Icons.Default.Lightbulb, null, tint = AppColors.Purple, modifier = Modifier.size(20.dp))
+                        Text("Consejos de Estudio de Mateo", fontWeight = FontWeight.Bold, color = AppColors.Purple, fontSize = 16.sp)
+                    }
                     if (student.recomendaciones.isEmpty()) {
                         Text("Mateo está revisando tus estadísticas. ¡Sigue practicando para recibir sugerencias!", fontSize = 13.sp, color = AppColors.Gray600)
                     } else {
@@ -443,7 +529,14 @@ fun StudentProfileScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Text("📈 Desempeño Semanal", fontWeight = FontWeight.Bold, color = AppColors.Purple, modifier = Modifier.align(Alignment.Start))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.align(Alignment.Start)
+                    ) {
+                        Icon(Icons.Default.Assessment, null, tint = AppColors.Purple, modifier = Modifier.size(20.dp))
+                        Text("Desempeño Semanal", fontWeight = FontWeight.Bold, color = AppColors.Purple)
+                    }
                     MiniBarChart(data = student.weekData, color = AppColors.Purple)
                     Text("Evolución de los últimos 7 días practicados", fontSize = 11.sp, color = AppColors.Gray500)
                 }
@@ -455,5 +548,7 @@ fun StudentProfileScreen(
 data class Badge(
     val name: String,
     val description: String,
+    val icon: ImageVector,
     val isUnlocked: Boolean
 )
+

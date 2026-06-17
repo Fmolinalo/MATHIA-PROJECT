@@ -127,7 +127,7 @@ fun CompleteParentProfileScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Text(
-                        text = "Información del Padre 👨‍👩‍👧",
+                        text = "Información del Padre",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = AppColors.Purple
@@ -150,7 +150,7 @@ fun CompleteParentProfileScreen(
                         Divider(color = AppColors.PurpleLight, thickness = 1.dp, modifier = Modifier.padding(vertical = 8.dp))
 
                         Text(
-                            text = "Registra a tu Hijo/a 🧒",
+                            text = "Registra a tu Hijo/a",
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             color = AppColors.Purple,
@@ -268,9 +268,9 @@ fun CompleteParentProfileScreen(
                                     "precision" to 0.0,
                                     "nivel_actual" to 1,
                                     "padre_email" to email,
-                                    "avatar" to "👶",
+                                    "avatar" to "default",
                                     "equipped_theme" to "Lila Clásico",
-                                    "unlocked_avatars" to listOf("👶"),
+                                    "unlocked_avatars" to listOf("default"),
                                     "unlocked_themes" to listOf("Lila Clásico"),
                                     "streak" to 0,
                                     "total_preguntas" to 0,
@@ -287,7 +287,7 @@ fun CompleteParentProfileScreen(
                                         "Series" to 0
                                     ),
                                     "incorrectas_por_tema" to emptyMap<String, Int>(),
-                                    "recomendaciones" to listOf("¡Realiza el Examen Adaptativo para descubrir tu nivel actual de matemáticas! 🧬")
+                                    "recomendaciones" to listOf("¡Realiza el Examen Adaptativo para descubrir tu nivel actual de matemáticas!")
                                 )
 
                                 // Save parent doc

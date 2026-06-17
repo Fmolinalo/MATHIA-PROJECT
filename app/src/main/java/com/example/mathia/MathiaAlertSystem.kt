@@ -15,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import android.content.Context
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -25,7 +27,9 @@ import coil.compose.rememberAsyncImagePainter
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import com.example.mathia.model.AlertType
-import com.example.mathia.model.DuolingoAlert
+import com.example.mathia.model.MathiaAlert
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 
 private data class AlertTheme(
     val bg: Color,
@@ -33,15 +37,22 @@ private data class AlertTheme(
     val btnBg: Color,
     val btnShadow: Color,
     val btnText: Color,
-    val emoji: String
+    val icon: androidx.compose.ui.graphics.vector.ImageVector
 )
 
 @Composable
-fun DuolingoAlertDialog(
-    alert: DuolingoAlert,
+fun MathiaAlertDialog(
+    alert: MathiaAlert,
     onDismiss: () -> Unit
 ) {
     val context = LocalContext.current
+    val sharedPref = remember { context.getSharedPreferences("mathia_prefs", Context.MODE_PRIVATE) }
+    val currentTutor = remember { sharedPref.getString("student_tutor", "axolita") ?: "axolita" }
+    val tutorImageRes = when (currentTutor) {
+        "prof_axol" -> R.drawable.ajolote_teacher_male
+        "prof_axolina" -> R.drawable.ajolote_teacher_female
+        else -> R.drawable.ajolote_student
+    }
 
     // Determine colors based on alert type using type-safe AlertTheme
     val theme = when (alert.type) {
@@ -51,7 +62,7 @@ fun DuolingoAlertDialog(
             btnBg = Color(0xFFFF8000),
             btnShadow = Color(0xFFCC6600),
             btnText = Color.White,
-            emoji = "🔥"
+            icon = Icons.Default.Whatshot
         )
         AlertType.SUCCESS -> AlertTheme(
             bg = Color(0xFFE6F9EC),
@@ -59,7 +70,7 @@ fun DuolingoAlertDialog(
             btnBg = Color(0xFF4CAF50),
             btnShadow = Color(0xFF388E3C),
             btnText = Color.White,
-            emoji = "⭐"
+            icon = Icons.Default.Star
         )
         AlertType.MOTIVATIONAL -> AlertTheme(
             bg = Color(0xFFF2E6FF),
@@ -67,7 +78,7 @@ fun DuolingoAlertDialog(
             btnBg = Color(0xFF7C3AED),
             btnShadow = Color(0xFF5B21B6),
             btnText = Color.White,
-            emoji = "✨"
+            icon = Icons.Default.AutoAwesome
         )
         AlertType.CHALLENGE -> AlertTheme(
             bg = Color(0xFFFFF0F5),
@@ -75,7 +86,7 @@ fun DuolingoAlertDialog(
             btnBg = Color(0xFFFF5252),
             btnShadow = Color(0xFFD32F2F),
             btnText = Color.White,
-            emoji = "⚡"
+            icon = Icons.Default.ElectricBolt
         )
     }
 
@@ -102,12 +113,17 @@ fun DuolingoAlertDialog(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
-                // Title Banner with Emoji
+                // Title Banner with Icon
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text(theme.emoji, fontSize = 24.sp)
+                    Icon(
+                        imageVector = theme.icon,
+                        contentDescription = null,
+                        tint = theme.btnBg,
+                        modifier = Modifier.size(24.dp)
+                    )
                     Text(
                         text = alert.title.uppercase(),
                         fontSize = 18.sp,
@@ -141,13 +157,10 @@ fun DuolingoAlertDialog(
                         )
                     }
 
-                    // Mateo GIF representation
+                    // Tutor image representation
                     Image(
-                        painter = rememberAsyncImagePainter(
-                            model = R.drawable.ajolote,
-                            imageLoader = imageLoader
-                        ),
-                        contentDescription = "Mateo el Ajolote",
+                        painter = painterResource(id = tutorImageRes),
+                        contentDescription = "Tutor Guía",
                         modifier = Modifier
                             .size(140.dp)
                             .clip(RoundedCornerShape(20.dp))
@@ -156,7 +169,7 @@ fun DuolingoAlertDialog(
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                // 3D Styled Chunky Button (Duolingo style)
+                // 3D Styled Chunky Button (mathia style)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -185,3 +198,4 @@ fun DuolingoAlertDialog(
         }
     }
 }
+

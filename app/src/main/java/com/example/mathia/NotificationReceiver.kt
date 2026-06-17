@@ -40,10 +40,10 @@ class NotificationReceiver : BroadcastReceiver() {
 
         // Select a random message to make it feel dynamic
         val titles = listOf(
-            "🔥 ¡Tu racha corre peligro!",
-            "🦎 Mateo te está esperando...",
-            "🏪 ¡Nuevos artículos en la tiendita!",
-            "🧠 ¡Entrenamiento matemático del día!"
+            "¡Tu racha corre peligro!",
+            "Mateo te está esperando...",
+            "¡Nuevos artículos en la tiendita!",
+            "¡Entrenamiento matemático del día!"
         )
         val messages = listOf(
             "Entra a MathIA y completa tu práctica diaria para no perder tu racha.",

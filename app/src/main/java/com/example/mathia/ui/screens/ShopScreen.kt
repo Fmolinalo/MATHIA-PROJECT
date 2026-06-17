@@ -22,18 +22,33 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Store
+import androidx.compose.material.icons.filled.Star
 import com.example.mathia.AppColors
 import com.example.mathia.StudentViewModel
 import com.example.mathia.model.AlertType
-import com.example.mathia.model.DuolingoAlert
+import com.example.mathia.model.MathiaAlert
 import com.example.mathia.model.ShopItem
 import com.example.mathia.model.Student
+import com.example.mathia.ui.components.AvatarIcon
+
+fun getThemeColor(visual: String): Color {
+    return when (visual) {
+        "💜" -> Color(0xFFD0BCFF)
+        "💚" -> Color(0xFFA5D6A7)
+        "💙" -> Color(0xFF90CAF9)
+        "💛" -> Color(0xFFFFE082)
+        "💖" -> Color(0xFFF48FB1)
+        else -> Color(0xFF231640) // Navy default
+    }
+}
 
 @Composable
 fun ShopTabContent(
     student: Student,
     onUpdateStudent: (Student) -> Unit,
-    onShowAlert: (DuolingoAlert) -> Unit,
+    onShowAlert: (MathiaAlert) -> Unit,
     viewModel: StudentViewModel
 ) {
     val context = LocalContext.current
@@ -78,12 +93,23 @@ fun ShopTabContent(
                 Column(
                     modifier = Modifier.weight(1f).padding(end = 8.dp)
                 ) {
-                    Text(
-                        text = "La Tiendita de Mateo 🏪",
-                        fontWeight = FontWeight.Black,
-                        fontSize = 18.sp,
-                        color = AppColors.Purple
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Store,
+                            contentDescription = null,
+                            tint = AppColors.Purple,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Text(
+                            text = "La Tiendita de Mateo",
+                            fontWeight = FontWeight.Black,
+                            fontSize = 18.sp,
+                            color = AppColors.Purple
+                        )
+                    }
                     Text(
                         text = "¡Usa tus estrellas para personalizar tu perfil!",
                         fontSize = 12.sp,
@@ -98,9 +124,11 @@ fun ShopTabContent(
                         .border(1.5.dp, AppColors.Amber.copy(alpha = 0.4f), RoundedCornerShape(12.dp))
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                 ) {
-                    Text(
-                        text = "⭐",
-                        fontSize = 16.sp
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = null,
+                        tint = AppColors.Amber,
+                        modifier = Modifier.size(16.dp)
                     )
                     Text(
                         text = "${student.stars}",
@@ -122,12 +150,12 @@ fun ShopTabContent(
             Tab(
                 selected = selectedCategory == 0,
                 onClick = { selectedCategory = 0 },
-                text = { Text("Avatares 🦸", fontWeight = FontWeight.Bold) }
+                text = { Text("Avatares", fontWeight = FontWeight.Bold) }
             )
             Tab(
                 selected = selectedCategory == 1,
                 onClick = { selectedCategory = 1 },
-                text = { Text("Temas de Fondo 🎨", fontWeight = FontWeight.Bold) }
+                text = { Text("Temas de Fondo", fontWeight = FontWeight.Bold) }
             )
         }
 
@@ -164,14 +192,23 @@ fun ShopTabContent(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        // Emoji visual box
+                        // Visual box
                         Box(
                             modifier = Modifier
                                 .size(64.dp)
                                 .background(AppColors.Bg, CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(item.visual, fontSize = 36.sp)
+                            if (item.isAvatar) {
+                                AvatarIcon(avatarKey = item.visual, modifier = Modifier.size(36.dp), tint = AppColors.Purple)
+                            } else {
+                                Box(
+                                    modifier = Modifier
+                                        .size(36.dp)
+                                        .background(getThemeColor(item.visual), CircleShape)
+                                        .border(1.dp, Color.LightGray, CircleShape)
+                                )
+                            }
                         }
 
                         Text(
@@ -251,9 +288,9 @@ fun ShopTabContent(
                                             onUpdateStudent(updatedStudent)
 
                                             onShowAlert(
-                                                DuolingoAlert(
+                                                MathiaAlert(
                                                     title = "¡Compra Exitosa!",
-                                                    message = "🎉 ¡Felicidades! Has desbloqueado ${item.name}. Ahora puedes ponértelo desde la tiendita.",
+                                                    message = "¡Felicidades! Has desbloqueado ${item.name}. Ahora puedes ponértelo desde la tiendita.",
                                                     type = AlertType.SUCCESS,
                                                     buttonText = "¡Ver mi tienda!"
                                                 )
@@ -271,12 +308,23 @@ fun ShopTabContent(
                                 ),
                                 shape = RoundedCornerShape(50.dp)
                             ) {
-                                Text(
-                                    text = "⭐ ${item.cost}",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 12.sp,
-                                    color = if (canBuy) Color.White else AppColors.Gray400
-                                )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Star,
+                                        contentDescription = null,
+                                        tint = if (canBuy) Color.White else AppColors.Gray400,
+                                        modifier = Modifier.size(14.dp)
+                                    )
+                                    Text(
+                                        text = "${item.cost}",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 12.sp,
+                                        color = if (canBuy) Color.White else AppColors.Gray400
+                                    )
+                                }
                             }
                         }
                     }
@@ -285,3 +333,4 @@ fun ShopTabContent(
         }
     }
 }
+

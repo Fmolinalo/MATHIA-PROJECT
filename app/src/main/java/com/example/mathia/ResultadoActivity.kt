@@ -49,7 +49,7 @@ class ResultadoActivity : ComponentActivity() {
             Calificación: $puntuacion / $total
             Porcentaje: $porcentaje%
             
-            ${if (porcentaje >= 60) "✅ APROBADO" else "❌ NO APROBADO"}
+            ${if (porcentaje >= 60) "APROBADO" else "NO APROBADO"}
         """.trimIndent()
     }
 
@@ -62,29 +62,29 @@ class ResultadoActivity : ComponentActivity() {
         val detalles = intent.getSerializableExtra("DETALLES") as? ArrayList<HashMap<String, String>>
         
         // Análisis detallado por IA
-        var analisis = "🤖 ANÁLISIS INTELIGENTE\n\n"
+        var analisis = "ANÁLISIS INTELIGENTE\n\n"
         
         if (detalles != null) {
             val correctas = detalles.filter { it["esCorrecta"] == "true" }
             val incorrectas = detalles.filter { it["esCorrecta"] == "false" }
             
-            analisis += "📊 Estadísticas:\n"
+            analisis += "Estadísticas:\n"
             analisis += "• Respuestas correctas: ${correctas.size}\n"
             analisis += "• Respuestas incorrectas: ${incorrectas.size}\n\n"
             
             if (incorrectas.isNotEmpty()) {
-                analisis += "❌ Temas con dificultades:\n"
+                analisis += "Temas con dificultades:\n"
                 incorrectas.forEachIndexed { index, incorrecta ->
                     analisis += "${index + 1}. ${incorrecta["pregunta"]}\n"
                     if (incorrecta["explicacion"]?.isNotBlank() == true) {
-                        analisis += "   💡 ${incorrecta["explicacion"]}\n"
+                        analisis += "   ${incorrecta["explicacion"]}\n"
                     }
                 }
                 analisis += "\n"
             }
         }
         
-        analisis += "🎯 Nivel de dominio:\n"
+        analisis += "Nivel de dominio:\n"
         when {
             porcentaje >= 90 -> analisis += "• Dominio completo del grado $grado\n• Preparado para nivel superior\n"
             porcentaje >= 70 -> analisis += "• Buen dominio del grado $grado\n• Reforzar conceptos específicos\n"
@@ -95,25 +95,25 @@ class ResultadoActivity : ComponentActivity() {
         tvAnalisisIA.text = analisis
         
         // Recomendaciones personalizadas
-        var recomendaciones = "📚 RECOMENDACIONES IA\n\n"
+        var recomendaciones = "RECOMENDACIONES IA\n\n"
         
         when {
             porcentaje >= 90 -> {
-                recomendaciones += "✅ ¡Felicidades! Has demostrado un excelente dominio.\n\n"
+                recomendaciones += "¡Felicidades! Has demostrado un excelente dominio.\n\n"
                 recomendaciones += "Próximos pasos:\n"
                 recomendaciones += "• Avanza al siguiente grado académico\n"
                 recomendaciones += "• Practica problemas más complejos\n"
                 recomendaciones += "• Ayuda a tus compañeros que lo necesiten\n"
             }
             porcentaje >= 70 -> {
-                recomendaciones += "📈 ¡Buen trabajo! Estás en el camino correcto.\n\n"
+                recomendaciones += "¡Buen trabajo! Estás en el camino correcto.\n\n"
                 recomendaciones += "Para mejorar:\n"
                 recomendaciones += "• Repasa los temas donde fallaste\n"
                 recomendaciones += "• Practica 15 minutos diarios\n"
                 recomendaciones += "• Toma este examen nuevamente en 3 días\n"
             }
             porcentaje >= 50 -> {
-                recomendaciones += "💪 ¡Sigue esforzándote! La práctica hace al maestro.\n\n"
+                recomendaciones += "¡Sigue esforzándote! La práctica hace al maestro.\n\n"
                 recomendaciones += "Plan de mejora:\n"
                 recomendaciones += "• Estudia los conceptos básicos del grado $grado\n"
                 recomendaciones += "• Realiza ejercicios similares a los del examen\n"
@@ -121,7 +121,7 @@ class ResultadoActivity : ComponentActivity() {
                 recomendaciones += "• Repite este examen después de estudiar\n"
             }
             else -> {
-                recomendaciones += "⚠️ Necesitas reforzar los fundamentos.\n\n"
+                recomendaciones += "Necesitas reforzar los fundamentos.\n\n"
                 recomendaciones += "Plan de acción urgente:\n"
                 recomendaciones += "• Comienza desde conceptos más básicos\n"
                 recomendaciones += "• Dedica al menos 30 minutos diarios al estudio\n"
@@ -131,7 +131,7 @@ class ResultadoActivity : ComponentActivity() {
             }
         }
         
-        recomendaciones += "\n💡 La inteligencia artificial recomienda: La constancia es más importante que la intensidad. ¡Continúa practicando!"
+        recomendaciones += "\nLa inteligencia artificial recomienda: La constancia es más importante que la intensidad. ¡Continúa practicando!"
         
         tvRecomendaciones.text = recomendaciones
     }
