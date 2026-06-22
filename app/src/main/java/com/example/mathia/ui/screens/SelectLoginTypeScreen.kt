@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mathia.AppColors
+import com.example.mathia.ui.theme.Purple2Dinamico
 
 @Composable
 fun SelectLoginTypeScreen(
@@ -29,7 +30,7 @@ fun SelectLoginTypeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(AppColors.Bg)
+            .background(MaterialTheme.colorScheme.background)
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)
@@ -40,7 +41,7 @@ fun SelectLoginTypeScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = onBack) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver", tint = AppColors.Purple)
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver", tint = Purple2Dinamico)
             }
         }
 
@@ -48,7 +49,7 @@ fun SelectLoginTypeScreen(
             text = "¿Quién va a ingresar?",
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
-            color = AppColors.Purple
+            color = Purple2Dinamico
         )
         Spacer(Modifier.height(16.dp))
 
@@ -70,7 +71,7 @@ fun SelectLoginTypeScreen(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.ajolote_student),
+                    painter = painterResource(id = R.drawable.ajolote_estudiante),
                     contentDescription = "Estudiante",
                     modifier = Modifier.size(65.dp)
                 )
@@ -99,7 +100,7 @@ fun SelectLoginTypeScreen(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.ajolote_role_teacher),
+                    painter = painterResource(id = R.drawable.ajolote_docente),
                     contentDescription = "Docente",
                     modifier = Modifier.size(65.dp)
                 )
@@ -128,7 +129,7 @@ fun SelectLoginTypeScreen(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.ajolote_role_parent),
+                    painter = painterResource(id = R.drawable.ajolote_padre),
                     contentDescription = "Padre",
                     modifier = Modifier.size(65.dp)
                 )

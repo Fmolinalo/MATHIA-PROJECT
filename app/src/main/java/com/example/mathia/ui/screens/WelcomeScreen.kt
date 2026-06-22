@@ -79,7 +79,7 @@ fun WelcomeScreen(onCreateProfile: () -> Unit, onLogin: () -> Unit) {
     var setupLog by remember { mutableStateOf(mutableListOf<String>()) }
     var setupResult by remember { mutableStateOf("") }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         var demoChecked by remember { mutableStateOf(StudentViewModel.isDemoMode) }
 
         // ── Switch Modo Demo (top right) ────────────────────────────────────
@@ -149,7 +149,7 @@ fun WelcomeScreen(onCreateProfile: () -> Unit, onLogin: () -> Unit) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(
@@ -194,7 +194,7 @@ fun WelcomeScreen(onCreateProfile: () -> Unit, onLogin: () -> Unit) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(

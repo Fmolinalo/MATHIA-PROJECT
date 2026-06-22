@@ -1,5 +1,6 @@
 package com.example.mathia.ui.screens
 
+import android.provider.CalendarContract
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -32,6 +33,9 @@ import com.example.mathia.model.MathiaAlert
 import com.example.mathia.model.ShopItem
 import com.example.mathia.model.Student
 import com.example.mathia.ui.components.AvatarIcon
+import com.example.mathia.ui.theme.GrayDinamico
+import com.example.mathia.ui.theme.Purple2Dinamico
+import com.example.mathia.ui.theme.PurpleDinamico
 
 fun getThemeColor(visual: String): Color {
     return when (visual) {
@@ -83,7 +87,7 @@ fun ShopTabContent(
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = AppColors.PurpleLight)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
             Row(
                 modifier = Modifier.padding(20.dp),
@@ -100,14 +104,14 @@ fun ShopTabContent(
                         Icon(
                             imageVector = Icons.Default.Store,
                             contentDescription = null,
-                            tint = AppColors.Purple,
+                            tint = Purple2Dinamico,
                             modifier = Modifier.size(24.dp)
                         )
                         Text(
                             text = "La Tiendita de Mateo",
                             fontWeight = FontWeight.Black,
                             fontSize = 18.sp,
-                            color = AppColors.Purple
+                            color = Purple2Dinamico
                         )
                     }
                     Text(
@@ -144,7 +148,7 @@ fun ShopTabContent(
         TabRow(
             selectedTabIndex = selectedCategory,
             containerColor = Color.Transparent,
-            contentColor = AppColors.Purple,
+            contentColor = Purple2Dinamico,
             divider = {}
         ) {
             Tab(
@@ -182,8 +186,8 @@ fun ShopTabContent(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    border = BorderStroke(2.dp, if (isEquipped) AppColors.Purple else AppColors.Gray200)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    border = BorderStroke(2.dp, if (isEquipped) Purple2Dinamico else GrayDinamico)
                 ) {
                     Column(
                         modifier = Modifier
@@ -200,13 +204,13 @@ fun ShopTabContent(
                             contentAlignment = Alignment.Center
                         ) {
                             if (item.isAvatar) {
-                                AvatarIcon(avatarKey = item.visual, modifier = Modifier.size(36.dp), tint = AppColors.Purple)
+                                AvatarIcon(avatarKey = item.visual, modifier = Modifier.size(36.dp), tint = PurpleDinamico)
                             } else {
                                 Box(
                                     modifier = Modifier
                                         .size(36.dp)
                                         .background(getThemeColor(item.visual), CircleShape)
-                                        .border(1.dp, Color.LightGray, CircleShape)
+                                        .border(1.dp, GrayDinamico, CircleShape)
                                 )
                             }
                         }
@@ -224,12 +228,12 @@ fun ShopTabContent(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(36.dp)
-                                    .background(AppColors.PurpleLight, RoundedCornerShape(50.dp)),
+                                    .background(Purple2Dinamico, RoundedCornerShape(50.dp)),
                                 contentAlignment = Alignment.Center
                             ) {
                                   Text(
                                       text = "Puesto",
-                                      color = AppColors.Purple,
+                                      color = GrayDinamico,
                                       fontWeight = FontWeight.Bold,
                                       fontSize = 12.sp
                                   )
@@ -255,7 +259,7 @@ fun ShopTabContent(
                                     }
                                 },
                                 modifier = Modifier.fillMaxWidth().height(36.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = AppColors.Purple),
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surface),
                                 shape = RoundedCornerShape(50.dp)
                             ) {
                                 Text("Poner", fontWeight = FontWeight.Bold, fontSize = 12.sp)
@@ -304,7 +308,7 @@ fun ShopTabContent(
                                 modifier = Modifier.fillMaxWidth().height(36.dp),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = AppColors.Pink,
-                                    disabledContainerColor = AppColors.Gray200
+                                    disabledContainerColor = GrayDinamico
                                 ),
                                 shape = RoundedCornerShape(50.dp)
                             ) {

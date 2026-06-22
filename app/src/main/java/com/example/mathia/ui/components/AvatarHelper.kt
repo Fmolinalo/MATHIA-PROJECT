@@ -1,5 +1,6 @@
 package com.example.mathia.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -8,7 +9,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.mathia.R
 
 object AvatarHelper {
     fun getAvatarIcon(avatarKey: String): ImageVector {
@@ -36,17 +39,57 @@ object AvatarHelper {
         return Icons.Default.Palette
     }
 }
-
 @Composable
 fun AvatarIcon(
     avatarKey: String,
     modifier: Modifier = Modifier,
     tint: Color = Color.Unspecified
 ) {
-    Icon(
-        imageVector = AvatarHelper.getAvatarIcon(avatarKey),
-        contentDescription = "Avatar",
-        tint = tint,
-        modifier = modifier
-    )
+    // El "Semáforo": Evaluamos qué avatar nos están pidiendo
+    when (avatarKey) {
+        "🦖", "dino", "avatar_dino" -> {
+            Image(
+                painter = painterResource(id = R.drawable.dinosaurio),
+                contentDescription = "Dinosaurio",
+                modifier = modifier
+            )
+        }
+        "👾", "alien", "avatar_alien" -> {
+            Image(
+                painter = painterResource(id = R.drawable.alienigena),
+                contentDescription = "Alienígena",
+                modifier = modifier
+            )
+        }
+        "🦄", "unicorn", "avatar_unicorn" -> {
+            Image(
+                painter = painterResource(id = R.drawable.unicornio),
+                contentDescription = "Unicornio",
+                modifier = modifier
+            )
+        }
+        "🧙", "wizard", "avatar_wizard" -> {
+            Image(
+                painter = painterResource(id = R.drawable.mago),
+                contentDescription = "Mago",
+                modifier = modifier
+            )
+        }
+        "👑", "crown", "avatar_crown" -> {
+            Image(
+                painter = painterResource(id = R.drawable.corona),
+                contentDescription = "Corona Real",
+                modifier = modifier
+            )
+        }
+        else -> {
+            // Si no es ninguno de los 5 especiales, vuelve al comportamiento clásico
+            Icon(
+                imageVector = AvatarHelper.getAvatarIcon(avatarKey),
+                contentDescription = "Avatar",
+                tint = tint, // El tinte solo se aplica a los íconos clásicos
+                modifier = modifier
+            )
+        }
+    }
 }

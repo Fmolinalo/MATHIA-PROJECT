@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Calculate
 import com.example.mathia.AppColors
 import com.example.mathia.StudentViewModel
 import com.example.mathia.model.Student
+import com.example.mathia.ui.theme.Purple2Dinamico
 
 @Composable
 fun LoginScreen(
@@ -33,7 +34,7 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(AppColors.Bg)
+            .background(MaterialTheme.colorScheme.background)
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -56,7 +57,7 @@ fun LoginScreen(
             text = "Ingresa tu PIN",
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
-            color = AppColors.Purple
+            color = Purple2Dinamico
         )
         Spacer(Modifier.height(24.dp))
 
@@ -203,8 +204,8 @@ fun LoginScreen(
             onClick = onBack,
             modifier = Modifier.width(180.dp),
             shape = RoundedCornerShape(50.dp),
-            border = androidx.compose.foundation.BorderStroke(2.dp, AppColors.Purple),
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = AppColors.Purple)
+            border = androidx.compose.foundation.BorderStroke(2.dp, Purple2Dinamico),
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = Purple2Dinamico)
         ) {
             Text("Volver", fontWeight = FontWeight.Bold)
         }

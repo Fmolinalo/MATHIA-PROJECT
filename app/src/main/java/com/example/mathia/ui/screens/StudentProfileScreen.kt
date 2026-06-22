@@ -48,6 +48,11 @@ import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Lightbulb
+import com.example.mathia.ui.theme.Gray2Dinamico
+import com.example.mathia.ui.theme.GrayDinamico
+import com.example.mathia.ui.theme.Purple
+import com.example.mathia.ui.theme.Purple2
+import com.example.mathia.ui.theme.Purple2Dinamico
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -93,10 +98,10 @@ fun StudentProfileScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Perfil de Estudiante", fontWeight = FontWeight.Bold, color = AppColors.Purple) },
+                title = { Text("Perfil de Estudiante", fontWeight = FontWeight.Bold, color = Purple2Dinamico) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = AppColors.Purple)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = Purple2Dinamico)
                     }
                 },
                 actions = {
@@ -105,7 +110,7 @@ fun StudentProfileScreen(
                         clipboardManager.setText(AnnotatedString(shareText))
                         Toast.makeText(context, "¡Progreso copiado al portapapeles! Listo para compartir.", Toast.LENGTH_SHORT).show()
                     }) {
-                        Icon(Icons.Default.Share, "Compartir", tint = AppColors.Purple)
+                        Icon(Icons.Default.Share, "Compartir", tint = Purple2Dinamico)
                     }
                 }
             )
@@ -115,7 +120,7 @@ fun StudentProfileScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .background(AppColors.Bg)
+                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -126,7 +131,7 @@ fun StudentProfileScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Column(
                     modifier = Modifier.padding(20.dp),
@@ -138,7 +143,7 @@ fun StudentProfileScreen(
                             .background(AppColors.PurpleLight, CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
-                        AvatarIcon(student.avatar, modifier = Modifier.size(54.dp), tint = AppColors.Purple)
+                        AvatarIcon(student.avatar, modifier = Modifier.size(54.dp), tint = Purple2Dinamico)
                     }
                     Spacer(Modifier.height(12.dp))
                     
@@ -146,7 +151,7 @@ fun StudentProfileScreen(
                         text = "${student.name} ${student.lastName}",
                         fontWeight = FontWeight.ExtraBold,
                         fontSize = 24.sp,
-                        color = AppColors.Purple,
+                        color = Purple2Dinamico,
                         textAlign = TextAlign.Center
                     )
                     
@@ -191,7 +196,7 @@ fun StudentProfileScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Row(
@@ -201,10 +206,10 @@ fun StudentProfileScreen(
                         Icon(
                             imageVector = Icons.Default.TrendingUp,
                             contentDescription = null,
-                            tint = AppColors.Purple,
+                            tint = Purple2Dinamico,
                             modifier = Modifier.size(20.dp)
                         )
-                        Text("Nivel y Experiencia", fontWeight = FontWeight.Bold, color = AppColors.Purple, fontSize = 16.sp)
+                        Text("Nivel y Experiencia", fontWeight = FontWeight.Bold, color = Purple2Dinamico, fontSize = 16.sp)
                     }
                     
                     Row(
@@ -228,7 +233,7 @@ fun StudentProfileScreen(
                             Icon(
                                 imageVector = Icons.Default.EmojiEvents,
                                 contentDescription = null,
-                                tint = AppColors.Purple,
+                                tint = Purple2Dinamico,
                                 modifier = Modifier.size(24.dp)
                             )
                         }
@@ -241,7 +246,7 @@ fun StudentProfileScreen(
                             .fillMaxWidth()
                             .height(10.dp)
                             .clip(RoundedCornerShape(5.dp)),
-                        color = AppColors.Purple,
+                        color = Purple2Dinamico,
                         trackColor = AppColors.Gray200
                     )
 
@@ -279,15 +284,15 @@ fun StudentProfileScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Icon(Icons.Default.Assessment, null, tint = AppColors.Purple, modifier = Modifier.size(20.dp))
-                        Text("Estadísticas de Aprendizaje", fontWeight = FontWeight.Bold, color = AppColors.Purple, fontSize = 16.sp)
+                        Icon(Icons.Default.Assessment, null, tint = Purple2Dinamico, modifier = Modifier.size(20.dp))
+                        Text("Estadísticas de Aprendizaje", fontWeight = FontWeight.Bold, color = Purple2Dinamico, fontSize = 16.sp)
                     }
                     
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -331,15 +336,15 @@ fun StudentProfileScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Icon(Icons.Default.Star, null, tint = AppColors.Purple, modifier = Modifier.size(20.dp))
-                        Text("Precisión por Competencia", fontWeight = FontWeight.Bold, color = AppColors.Purple, fontSize = 16.sp)
+                        Icon(Icons.Default.Star, null, tint = Purple2Dinamico, modifier = Modifier.size(20.dp))
+                        Text("Precisión por Competencia", fontWeight = FontWeight.Bold, color = Purple2Dinamico, fontSize = 16.sp)
                     }
                     student.skills.forEach { (skill, score) ->
                         SkillProgressBar(skill = skill, value = score)
@@ -351,7 +356,7 @@ fun StudentProfileScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Column(
                     modifier = Modifier.padding(20.dp),
@@ -362,11 +367,11 @@ fun StudentProfileScreen(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.align(Alignment.Start)
                     ) {
-                        Icon(Icons.Default.CalendarMonth, null, tint = AppColors.Purple, modifier = Modifier.size(20.dp))
+                        Icon(Icons.Default.CalendarMonth, null, tint = Purple2Dinamico, modifier = Modifier.size(20.dp))
                         Text(
                             text = "Calendario de Estudio (Junio 2026)",
                             fontWeight = FontWeight.Bold,
-                            color = AppColors.Purple,
+                            color = Purple2Dinamico,
                             fontSize = 16.sp
                         )
                     }
@@ -440,15 +445,15 @@ fun StudentProfileScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Icon(Icons.Default.EmojiEvents, null, tint = AppColors.Purple, modifier = Modifier.size(20.dp))
-                        Text("Logros e Insignias", fontWeight = FontWeight.Bold, color = AppColors.Purple, fontSize = 16.sp)
+                        Icon(Icons.Default.EmojiEvents, null, tint = Purple2Dinamico, modifier = Modifier.size(20.dp))
+                        Text("Logros e Insignias", fontWeight = FontWeight.Bold, color = Purple2Dinamico, fontSize = 16.sp)
                     }
                     
                     achievements.forEach { badge ->
@@ -497,22 +502,22 @@ fun StudentProfileScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFFAF5FF)),
-                border = BorderStroke(1.5.dp, AppColors.Purple.copy(alpha = 0.2f))
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                border = BorderStroke(1.5.dp, Purple2Dinamico.copy(alpha = 0.2f))
             ) {
                 Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Icon(Icons.Default.Lightbulb, null, tint = AppColors.Purple, modifier = Modifier.size(20.dp))
-                        Text("Consejos de Estudio de Mateo", fontWeight = FontWeight.Bold, color = AppColors.Purple, fontSize = 16.sp)
+                        Icon(Icons.Default.Lightbulb, null, tint = Purple2Dinamico, modifier = Modifier.size(20.dp))
+                        Text("Consejos de Estudio de Mateo", fontWeight = FontWeight.Bold, color = Purple2Dinamico, fontSize = 16.sp)
                     }
                     if (student.recomendaciones.isEmpty()) {
-                        Text("Mateo está revisando tus estadísticas. ¡Sigue practicando para recibir sugerencias!", fontSize = 13.sp, color = AppColors.Gray600)
+                        Text("Mateo está revisando tus estadísticas. ¡Sigue practicando para recibir sugerencias!", fontSize = 13.sp, color = Gray2Dinamico)
                     } else {
                         student.recomendaciones.forEach { rec ->
-                            Text("• $rec", fontSize = 13.sp, color = AppColors.Gray800)
+                            Text("• $rec", fontSize = 13.sp, color = Gray2Dinamico)
                         }
                     }
                 }
@@ -522,7 +527,7 @@ fun StudentProfileScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Column(
                     modifier = Modifier.padding(20.dp),
@@ -534,10 +539,10 @@ fun StudentProfileScreen(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.align(Alignment.Start)
                     ) {
-                        Icon(Icons.Default.Assessment, null, tint = AppColors.Purple, modifier = Modifier.size(20.dp))
-                        Text("Desempeño Semanal", fontWeight = FontWeight.Bold, color = AppColors.Purple)
+                        Icon(Icons.Default.Assessment, null, tint = Purple2Dinamico, modifier = Modifier.size(20.dp))
+                        Text("Desempeño Semanal", fontWeight = FontWeight.Bold, color = Purple2Dinamico)
                     }
-                    MiniBarChart(data = student.weekData, color = AppColors.Purple)
+                    MiniBarChart(data = student.weekData, color = Purple2Dinamico)
                     Text("Evolución de los últimos 7 días practicados", fontSize = 11.sp, color = AppColors.Gray500)
                 }
             }

@@ -8,19 +8,18 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
@@ -31,6 +30,7 @@ import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
+import com.example.mathia.viewModels.ThemeViewModel
 import com.example.mathia.model.*
 import com.example.mathia.ui.screens.*
 import com.example.mathia.ui.theme.MathkidsTheme
@@ -38,44 +38,14 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import androidx.compose.runtime.collectAsState
 
-// ─── App Colors ───────────────────────────────────────────────────────────
-object AppColors {
-    // New palette colors
-    val MathiaRed = Color(0xFFD9303E)
-    val MathiaBurgundy = Color(0xFF732231)
-    val MathiaNavy = Color(0xFF231640)
-    val MathiaTeal = Color(0xFF11594C)
-    val MathiaGold = Color(0xFFD9C771)
-
-    // Mapping existing color names to avoid compilation errors and re-theme dynamically
-    val Purple = MathiaNavy
-    val PurpleLight = Color(0xFFF5ECE1) // WarmBeige
-    val Pink = MathiaRed
-    val PinkLight = Color(0xFFFFF0F5)
-    val Green = MathiaTeal
-    val GreenLight = Color(0xFFE6F9EC)
-    val Amber = MathiaGold
-    val AmberLight = Color(0xFFFFFCE6)
-    val Blue = MathiaNavy
-    val Red = MathiaRed
-    val Bg = Color(0xFFFDFBF7)
-    val White = Color(0xFFFFFFFF)
-    
-    // Grays mapped to warmer tones
-    val Gray100 = Color(0xFFF9F6F0)
-    val Gray200 = Color(0xFFEAE3D5)
-    val Gray400 = Color(0xFFBCAFA0)
-    val Gray500 = Color(0xFF8F7E6D)
-    val Gray600 = Color(0xFF6E5F50)
-    val Gray700 = Color(0xFF4E3F31)
-    val Gray800 = MathiaNavy
-}
 
 // ─── MainActivity ──────────────────────────────────────────────────────────
 class MainActivity : ComponentActivity() {
+
+    private val themeViewModel: ThemeViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,8 +57,11 @@ class MainActivity : ComponentActivity() {
             }
 
         setContent {
-            MathkidsTheme {
-                MainApp()
+
+            val themeMode by themeViewModel.themeMode.collectAsState()
+
+            MathkidsTheme(themeMode = themeMode) {
+                MainApp(themeViewModel = themeViewModel)
             }
         }
     }
@@ -106,10 +79,21 @@ class MainActivity : ComponentActivity() {
 
 // ─── MainApp ───────────────────────────────────────────────────────────────
 @Composable
-fun MainApp() {
+fun MainApp(themeViewModel: ThemeViewModel) {
     val context = LocalContext.current
     val sharedPref = remember { context.getSharedPreferences("mathia_prefs", Context.MODE_PRIVATE) }
-    
+
+    // ── NUEVO: Estado del tema ─────────────────────────────────────────
+    var isDarkMode by remember {
+        mutableStateOf(sharedPref.getBoolean("dark_mode", false))
+    }
+
+    // Función para cambiar y guardar el tema
+    fun toggleDarkMode() {
+        isDarkMode = !isDarkMode
+        sharedPref.edit().putBoolean("dark_mode", isDarkMode).apply()
+    }
+
     var screen by remember { mutableStateOf("splash") } // "splash", "welcome", etc.
 
     // Ensure demo mode is OFF by default — real Firestore data
@@ -411,7 +395,8 @@ fun MainApp() {
                         onUpdateStudent = { s -> student = s },
                         onShowAlert = { alert -> activeAlert = alert },
                         onProfile = { screen = "student_profile" },
-                        viewModel = viewModel
+                        viewModel = viewModel,
+                        themeViewModel = themeViewModel
                     )
                 }
                 "game" -> student?.let { s ->

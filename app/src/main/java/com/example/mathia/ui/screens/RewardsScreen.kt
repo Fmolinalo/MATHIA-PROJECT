@@ -28,6 +28,8 @@ import com.example.mathia.AppColors
 import com.example.mathia.model.Reward
 import com.example.mathia.model.Student
 import com.example.mathia.ui.components.StarProgress
+import com.example.mathia.ui.theme.Purple2Dinamico
+import com.example.mathia.ui.theme.PurpleDinamico
 
 val APP_REWARDS = listOf(
     Reward(1, "Primer Paso", "🐣", 10, "¡Completa tu primer ejercicio!"),
@@ -92,10 +94,12 @@ fun RewardsScreen(student: Student, onBack: () -> Unit) {
         end = Offset(shimmerOffset, shimmerOffset)
     )
 
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(AppColors.Bg)
+            .background(MaterialTheme.colorScheme.background)
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -103,19 +107,30 @@ fun RewardsScreen(student: Student, onBack: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = AppColors.Purple) }
+            IconButton(onClick = onBack) {
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowBack,
+                    null,
+                    tint = Purple2Dinamico
+                ) }
             Icon(
                 imageVector = Icons.Default.EmojiEvents,
                 contentDescription = null,
-                tint = AppColors.Purple,
+                tint = Purple2Dinamico,
                 modifier = Modifier.size(24.dp)
             )
-            Text("Mis Premios", fontSize = 22.sp, fontWeight = FontWeight.ExtraBold, color = AppColors.Purple)
+            Text(
+                "Mis Premios",
+                fontSize = 22.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = Purple2Dinamico)
         }
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            )
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 StarProgress(current = student.stars)
@@ -140,7 +155,9 @@ fun RewardsScreen(student: Student, onBack: () -> Unit) {
                             shape = RoundedCornerShape(24.dp)
                         ),
                     shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    ),
                     elevation = CardDefaults.cardElevation(defaultElevation = if (unlocked) 4.dp else 0.dp)
                 ) {
                     Box(modifier = Modifier.fillMaxSize()) {

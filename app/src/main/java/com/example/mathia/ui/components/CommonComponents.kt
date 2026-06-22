@@ -20,6 +20,8 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import com.example.mathia.AppColors
+import com.example.mathia.ui.theme.Purple2Dinamico
+import com.example.mathia.ui.theme.PurpleDinamico
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -43,15 +45,15 @@ fun StarProgress(current: Int, max: Int = 210) {
                     tint = AppColors.Amber,
                     modifier = Modifier.size(16.dp)
                 )
-                Text("$current / $max estrellas", fontSize = 12.sp, color = AppColors.Gray600)
+                Text("$current / $max estrellas", fontSize = 12.sp, color = PurpleDinamico)
             }
-            Text("${(pct * 100).toInt()}%", fontSize = 12.sp, color = AppColors.Purple, fontWeight = FontWeight.Bold)
+            Text("${(pct * 100).toInt()}%", fontSize = 12.sp, color = PurpleDinamico, fontWeight = FontWeight.Bold)
         }
         Spacer(Modifier.height(4.dp))
         LinearProgressIndicator(
             progress = { pct },
             modifier = Modifier.fillMaxWidth().height(8.dp),
-            color = AppColors.Purple,
+            color = Purple2Dinamico ,
             trackColor = AppColors.Gray200
         )
     }

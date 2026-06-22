@@ -30,12 +30,17 @@ import androidx.compose.ui.res.painterResource
 import com.example.mathia.R
 import com.example.mathia.AppColors
 import com.example.mathia.StudentViewModel
+import com.example.mathia.viewModels.ThemeMode
+import com.example.mathia.viewModels.ThemeViewModel
 import com.example.mathia.model.MathiaAlert
 import com.example.mathia.model.Student
 import com.example.mathia.ui.components.RadarChart
 import com.example.mathia.ui.components.StarProgress
 import com.example.mathia.ui.components.StreakCalendar
 import com.example.mathia.ui.components.AvatarIcon
+import com.example.mathia.ui.theme.Gray2Dinamico
+import com.example.mathia.ui.theme.Purple2Dinamico
+
 
 // Data class para representar cada actividad del menú infantil
 data class ActivityCard(
@@ -58,9 +63,11 @@ fun MainMenuScreen(
     onUpdateStudent: (Student) -> Unit,
     onShowAlert: (MathiaAlert) -> Unit,
     onProfile: () -> Unit,
-    viewModel: StudentViewModel
+    viewModel: StudentViewModel,
+    themeViewModel: ThemeViewModel
 ) {
     var selectedTab by remember { mutableIntStateOf(0) } // 0 = Inicio, 1 = Progreso, 2 = Tienda
+    var showSettingsDialog by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val sharedPref = remember { context.getSharedPreferences("mathia_prefs", Context.MODE_PRIVATE) }
@@ -87,7 +94,7 @@ fun MainMenuScreen(
     Scaffold(
         bottomBar = {
             NavigationBar(
-                containerColor = Color.White,
+                containerColor = MaterialTheme.colorScheme.surface,
                 tonalElevation = 8.dp
             ) {
                 NavigationBarItem(
@@ -154,9 +161,9 @@ fun MainMenuScreen(
                         )
                     },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = AppColors.Purple,
-                        selectedTextColor = AppColors.Purple,
-                        indicatorColor = AppColors.Purple.copy(alpha = 0.12f)
+                        selectedIconColor = Purple2Dinamico,
+                        selectedTextColor = Purple2Dinamico,
+                        indicatorColor = Purple2Dinamico.copy(alpha = 0.12f)
                     )
                 )
                 NavigationBarItem(
@@ -216,7 +223,8 @@ fun MainMenuScreen(
                 onProfile = onProfile,
                 paddingValues = paddingValues,
                 currentTutor = currentTutor,
-                onShowTutorSelector = { showTutorSelector = true }
+                onShowTutorSelector = { showTutorSelector = true },
+                onShowSettings = { showSettingsDialog = true }
             )
         }
     }
@@ -229,6 +237,13 @@ fun MainMenuScreen(
                 sharedPref.edit().putString("student_tutor", tutorKey).apply()
             },
             onDismiss = { showTutorSelector = false }
+        )
+    }
+
+    if (showSettingsDialog) {
+        TemaSelectionDialog(
+            themeViewModel = themeViewModel,
+            onDismiss = { showSettingsDialog = false }
         )
     }
 }
@@ -244,18 +259,19 @@ fun InicioTab(
     onProfile: () -> Unit,
     paddingValues: PaddingValues,
     currentTutor: String,
-    onShowTutorSelector: () -> Unit
+    onShowTutorSelector: () -> Unit,
+    onShowSettings: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
-            .background(AppColors.Bg),
+            .background(MaterialTheme.colorScheme.background),
         verticalArrangement = Arrangement.spacedBy(0.dp)
     ) {
         // ─── HEADER PREMIUM ─────────────────────────────────────────
         item {
-            StudentHeaderPremium(student = student, onProfile = onProfile)
+            StudentHeaderPremium(student = student, onProfile = onProfile, onSettingsClick = onShowSettings)
         }
 
         // ─── SECCIÓN DESAFÍOS ────────────────────────────────────────
@@ -269,14 +285,14 @@ fun InicioTab(
                 Icon(
                     imageVector = Icons.Default.SportsEsports,
                     contentDescription = null,
-                    tint = AppColors.Purple,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
                 )
                 Text(
                     text = "¡Elige tu Desafío!",
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 20.sp,
-                    color = AppColors.Gray800
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
             Spacer(Modifier.height(12.dp))
@@ -349,9 +365,213 @@ fun InicioTab(
     }
 }
 
+
+
+// ─── TEMA DE LA APP ──────────────────────────────────────────────────────────
+@Composable
+fun ConfiguracionScreen(themeViewModel: ThemeViewModel) {
+    // 1. Observamos el estado actual
+    val currentTheme by themeViewModel.themeMode.collectAsState()
+
+    // 2. Evaluamos en qué estado nos encontramos
+    val isSystemTheme = currentTheme == ThemeMode.SYSTEM
+    val isDarkMode = currentTheme == ThemeMode.DARK
+
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text(
+            text = "Apariencia",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // ─── CHECKBOX: Tema del Sistema ─────────────────────────────────────
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(12.dp))
+                // Hacemos que toda la fila sea clickeable, no solo el cuadrito
+                .clickable {
+                    if (isSystemTheme) {
+                        themeViewModel.cambiarTema(ThemeMode.LIGHT) // Si lo apagan, vuelve a claro
+                    } else {
+                        themeViewModel.cambiarTema(ThemeMode.SYSTEM)
+                    }
+                }
+                .padding(horizontal = 8.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Default.SettingsSuggest,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(
+                    text = "Usar tema del sistema",
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+            }
+            Checkbox(
+                checked = isSystemTheme,
+                onCheckedChange = { checked ->
+                    themeViewModel.cambiarTema(if (checked) ThemeMode.SYSTEM else ThemeMode.LIGHT)
+                }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // ─── SWITCH: Modo Oscuro Manual ─────────────────────────────────────
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(12.dp))
+                // Solo se puede clickear si el sistema NO lo está controlando
+                .clickable(enabled = !isSystemTheme) {
+                    themeViewModel.cambiarTema(if (isDarkMode) ThemeMode.LIGHT else ThemeMode.DARK)
+                }
+                .padding(horizontal = 8.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    // Cambia el ícono dependiendo de si es claro u oscuro
+                    imageVector = if (isDarkMode) Icons.Default.DarkMode else Icons.Default.LightMode,
+                    contentDescription = null,
+                    // Si está deshabilitado, el ícono se pone gris
+                    tint = if (isSystemTheme) Color.Gray else MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(
+                    text = "Modo Oscuro",
+                    fontSize = 16.sp,
+                    // Si está deshabilitado, el texto se pone gris
+                    color = if (isSystemTheme) Color.Gray else MaterialTheme.colorScheme.onBackground
+                )
+            }
+            Switch(
+                checked = isDarkMode,
+                onCheckedChange = { checked ->
+                    themeViewModel.cambiarTema(if (checked) ThemeMode.DARK else ThemeMode.LIGHT)
+                },
+                enabled = !isSystemTheme // ESTO bloquea el switch si "Sistema" está marcado
+            )
+        }
+    }
+}
+
+@Composable
+fun TemaSelectionDialog(
+    themeViewModel: ThemeViewModel,
+    onDismiss: () -> Unit
+) {
+    // Observamos el estado en tiempo real dentro del diálogo
+    val currentTheme by themeViewModel.themeMode.collectAsState()
+    val isSystemTheme = currentTheme == ThemeMode.SYSTEM
+    val isDarkMode = currentTheme == ThemeMode.DARK
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text("Apariencia", fontWeight = FontWeight.Bold)
+        },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Text(
+                    text = "Configura el aspecto visual de la aplicación:",
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                // ─── CHECKBOX: Tema del Sistema ───
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable {
+                            if (isSystemTheme) {
+                                themeViewModel.cambiarTema(ThemeMode.LIGHT)
+                            } else {
+                                themeViewModel.cambiarTema(ThemeMode.SYSTEM)
+                            }
+                        }
+                        .padding(horizontal = 4.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.SettingsSuggest,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text("Tema del sistema", fontSize = 16.sp)
+                    }
+                    Checkbox(
+                        checked = isSystemTheme,
+                        onCheckedChange = { checked ->
+                            themeViewModel.cambiarTema(if (checked) ThemeMode.SYSTEM else ThemeMode.LIGHT)
+                        }
+                    )
+                }
+
+                // ─── SWITCH: Modo Oscuro Manual ───
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable(enabled = !isSystemTheme) {
+                            themeViewModel.cambiarTema(if (isDarkMode) ThemeMode.LIGHT else ThemeMode.DARK)
+                        }
+                        .padding(horizontal = 4.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = if (isDarkMode) Icons.Default.DarkMode else Icons.Default.LightMode,
+                            contentDescription = null,
+                            tint = if (isSystemTheme) Color.Gray else MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            text = "Modo Oscuro",
+                            fontSize = 16.sp,
+                            color = if (isSystemTheme) Color.Gray else MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                    Switch(
+                        checked = isDarkMode,
+                        onCheckedChange = { checked ->
+                            themeViewModel.cambiarTema(if (checked) ThemeMode.DARK else ThemeMode.LIGHT)
+                        },
+                        enabled = !isSystemTheme // Se desactiva si el sistema toma el control
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cerrar")
+            }
+        }
+    )
+}
+
 // ─── HEADER PREMIUM DEL ESTUDIANTE ──────────────────────────────────────────
 @Composable
-fun StudentHeaderPremium(student: Student, onProfile: () -> Unit) {
+fun StudentHeaderPremium(student: Student, onProfile: () -> Unit, onSettingsClick: () -> Unit ) {
     val infiniteTransition = rememberInfiniteTransition(label = "avatar_pulse")
     val avatarScale by infiniteTransition.animateFloat(
         initialValue = 1f,
@@ -423,6 +643,16 @@ fun StudentHeaderPremium(student: Student, onProfile: () -> Unit) {
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         color = AppColors.Amber
+                    )
+                }
+                IconButton(
+                    onClick = onSettingsClick,
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = "Ajustes",
+                        tint = Color.White
                     )
                 }
             }
@@ -747,7 +977,7 @@ fun MisionesCard(student: Student) {
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.background),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
@@ -761,14 +991,14 @@ fun MisionesCard(student: Student) {
                 Icon(
                     imageVector = Icons.Default.Flag,
                     contentDescription = null,
-                    tint = AppColors.Purple,
+                    tint = Purple2Dinamico,
                     modifier = Modifier.size(20.dp)
                 )
                 Text(
                     text = "Misiones de Hoy",
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 16.sp,
-                    color = AppColors.Gray800
+                    color = Gray2Dinamico
                 )
             }
 
@@ -793,7 +1023,7 @@ fun MisionesCard(student: Student) {
                 current = student.weeklyMissionProgress,
                 target = weeklyTarget,
                 progress = weeklyPct,
-                color = AppColors.Purple
+                color = Purple2Dinamico
             )
         }
     }
@@ -852,7 +1082,7 @@ fun ProgresoTab(student: Student, paddingValues: PaddingValues) {
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
-            .background(AppColors.Bg)
+            .background(MaterialTheme.colorScheme.background)
             .padding(horizontal = 20.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -866,14 +1096,14 @@ fun ProgresoTab(student: Student, paddingValues: PaddingValues) {
                 Icon(
                     imageVector = Icons.Default.Assessment,
                     contentDescription = null,
-                    tint = AppColors.Purple,
+                    tint = Purple2Dinamico,
                     modifier = Modifier.size(24.dp)
                 )
                 Text(
                     text = "Mi Progreso",
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 20.sp,
-                    color = AppColors.Gray800
+                    color = Purple2Dinamico
                 )
             }
         }
@@ -883,7 +1113,7 @@ fun ProgresoTab(student: Student, paddingValues: PaddingValues) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Row(
@@ -921,7 +1151,7 @@ fun ProgresoTab(student: Student, paddingValues: PaddingValues) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(modifier = Modifier.padding(18.dp)) {
@@ -935,7 +1165,7 @@ fun ProgresoTab(student: Student, paddingValues: PaddingValues) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(
@@ -949,14 +1179,14 @@ fun ProgresoTab(student: Student, paddingValues: PaddingValues) {
                         Icon(
                             imageVector = Icons.Default.Explore,
                             contentDescription = null,
-                            tint = AppColors.Purple,
+                            tint = Purple2Dinamico,
                             modifier = Modifier.size(20.dp)
                         )
                         Text(
                             text = "Mapa de Habilidades",
                             fontWeight = FontWeight.ExtraBold,
                             fontSize = 16.sp,
-                            color = AppColors.Gray800
+                            color = Purple2Dinamico
                         )
                     }
                     Spacer(Modifier.height(12.dp))
@@ -985,7 +1215,7 @@ fun ProgresoTab(student: Student, paddingValues: PaddingValues) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(modifier = Modifier.padding(18.dp)) {
@@ -996,14 +1226,14 @@ fun ProgresoTab(student: Student, paddingValues: PaddingValues) {
                         Icon(
                             imageVector = Icons.Default.TrendingUp,
                             contentDescription = null,
-                            tint = AppColors.Purple,
+                            tint = Purple2Dinamico,
                             modifier = Modifier.size(20.dp)
                         )
                         Text(
                             text = "Estadísticas Generales",
                             fontWeight = FontWeight.ExtraBold,
                             fontSize = 16.sp,
-                            color = AppColors.Gray800
+                            color = Purple2Dinamico
                         )
                     }
                     Spacer(Modifier.height(14.dp))
@@ -1029,7 +1259,7 @@ fun ProgresoTab(student: Student, paddingValues: PaddingValues) {
                                 Icon(
                                     imageVector = icon,
                                     contentDescription = null,
-                                    tint = AppColors.Purple,
+                                    tint = Purple2Dinamico,
                                     modifier = Modifier.size(18.dp)
                                 )
                                 Text(label, fontSize = 13.sp, color = AppColors.Gray600)

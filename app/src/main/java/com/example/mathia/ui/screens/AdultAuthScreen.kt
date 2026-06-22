@@ -108,7 +108,7 @@ fun AdultAuthScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(AppColors.Bg)
+            .background(MaterialTheme.colorScheme.background)
             .padding(24.dp),
         contentAlignment = Alignment.Center
     ) {
