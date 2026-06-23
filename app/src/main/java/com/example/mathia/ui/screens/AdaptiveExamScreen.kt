@@ -19,11 +19,11 @@ import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.EmojiEvents
 import com.example.mathia.AppColors
 import com.example.mathia.QuestionFirebase
-import com.example.mathia.QuestionRepository
 import com.example.mathia.StudentViewModel
 import com.example.mathia.model.*
 import java.text.SimpleDateFormat
 import java.util.*
+import com.example.mathia.QuestionRepository
 
 @Composable
 fun AdaptiveExamScreen(
@@ -41,14 +41,28 @@ fun AdaptiveExamScreen(
     var questionStartTime by remember { mutableLongStateOf(System.currentTimeMillis()) }
 
     LaunchedEffect(Unit) {
-        val todas = repository.cargarPreguntas(student.grade.lowercase())
-        
-        // Adaptive query logic: takes 4 basic questions (diff 1), 3 intermediate (diff 2), and 3 advanced (diff 3)
-        val diff1 = todas.filter { it.dificultad == 1 }.shuffled().take(4)
-        val diff2 = todas.filter { it.dificultad == 2 }.shuffled().take(3)
-        val diff3 = todas.filter { it.dificultad == 3 }.shuffled().take(3)
-        
-        questions = (diff1 + diff2 + diff3).shuffled()
+        // 1. Pedimos todas las preguntas (Firebase + la IA inyectada)
+        val todas = repository.cargarPreguntasMixtas(student.grade.lowercase(), "fracciones")
+
+        // 2. Extraemos a la IA (buscando el emoji) y la quitamos temporalmente del resto
+        val preguntaIA = todas.find { it.enunciado.contains("🤖") }
+        val preguntasFirebase = todas.filter { !it.enunciado.contains("🤖") }
+
+        // 3. Ejecutamos la lógica original de tu equipo SOLAMENTE con las de Firebase
+        val diff1 = preguntasFirebase.filter { it.dificultad == 1 }.shuffled().take(4)
+        val diff2 = preguntasFirebase.filter { it.dificultad == 2 }.shuffled().take(3)
+        val diff3 = preguntasFirebase.filter { it.dificultad == 3 }.shuffled().take(3)
+
+        // 4. Juntamos las seleccionadas de Firebase
+        val seleccionFinal = (diff1 + diff2 + diff3).toMutableList()
+
+        // 5. ¡El Pase VIP! Si la IA logró generar una pregunta, la forzamos adentro
+        if (preguntaIA != null) {
+            seleccionFinal.add(preguntaIA)
+        }
+
+        // 6. Mezclamos la lista final para que el niño no sepa en qué orden saldrá la de la IA
+        questions = seleccionFinal.shuffled()
         isLoading = false
     }
 
